@@ -1,0 +1,99 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Distance on a great circle</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 62.4">24.5 → 13.8</span></div><div>Time: <span class="number">13.4s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="preprocess"><div class="program math">\[ \begin{array}{c}[lambda1, lambda2] = \mathsf{sort}([lambda1, lambda2])\\ \end{array} \]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Java</option><option>Python</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[R \cdot \left(2 \cdot \tan^{-1}_* \frac{\sqrt{{\sin \left(\frac{\phi_1 - \phi_2}{2}\right)}^{2} + \left(\left(\cos \phi_1 \cdot \cos \phi_2\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)}}{\sqrt{1 - \left({\sin \left(\frac{\phi_1 - \phi_2}{2}\right)}^{2} + \left(\left(\cos \phi_1 \cdot \cos \phi_2\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right)}}\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \sin \left(0.5 \cdot \left(\lambda_1 - \lambda_2\right)\right)\\
+t_1 := {\left(\sin \left(\phi_1 \cdot 0.5\right) \cdot \cos \left(\phi_2 \cdot 0.5\right) - \cos \left(\phi_1 \cdot 0.5\right) \cdot \sin \left(\phi_2 \cdot 0.5\right)\right)}^{2}\\
+R \cdot \left(2 \cdot \tan^{-1}_* \frac{\sqrt{\cos \phi_2 \cdot \left(\cos \phi_1 \cdot {t_0}^{2}\right) + t_1}}{\sqrt{1 + \left(\left(\left(\cos \phi_2 \cdot \cos \phi_1\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \left(1 - e^{\mathsf{log1p}\left(t_0\right)}\right) - t_1\right)}}\right)
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (R lambda1 lambda2 phi1 phi2)
+ :precision binary64
+ (*
+  R
+  (*
+   2.0
+   (atan2
+    (sqrt
+     (+
+      (pow (sin (/ (- phi1 phi2) 2.0)) 2.0)
+      (*
+       (* (* (cos phi1) (cos phi2)) (sin (/ (- lambda1 lambda2) 2.0)))
+       (sin (/ (- lambda1 lambda2) 2.0)))))
+    (sqrt
+     (-
+      1.0
+      (+
+       (pow (sin (/ (- phi1 phi2) 2.0)) 2.0)
+       (*
+        (* (* (cos phi1) (cos phi2)) (sin (/ (- lambda1 lambda2) 2.0)))
+        (sin (/ (- lambda1 lambda2) 2.0))))))))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (R lambda1 lambda2 phi1 phi2)
+ :precision binary64
+ (let* ((t_0 (sin (* 0.5 (- lambda1 lambda2))))
+        (t_1
+         (pow
+          (-
+           (* (sin (* phi1 0.5)) (cos (* phi2 0.5)))
+           (* (cos (* phi1 0.5)) (sin (* phi2 0.5))))
+          2.0)))
+   (*
+    R
+    (*
+     2.0
+     (atan2
+      (sqrt (+ (* (cos phi2) (* (cos phi1) (pow t_0 2.0))) t_1))
+      (sqrt
+       (+
+        1.0
+        (-
+         (*
+          (* (* (cos phi2) (cos phi1)) (sin (/ (- lambda1 lambda2) 2.0)))
+          (- 1.0 (exp (log1p t_0))))
+         t_1))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double R, double lambda1, double lambda2, double phi1, double phi2) {
+	return R * (2.0 * atan2(sqrt((pow(sin(((phi1 - phi2) / 2.0)), 2.0) + (((cos(phi1) * cos(phi2)) * sin(((lambda1 - lambda2) / 2.0))) * sin(((lambda1 - lambda2) / 2.0))))), sqrt((1.0 - (pow(sin(((phi1 - phi2) / 2.0)), 2.0) + (((cos(phi1) * cos(phi2)) * sin(((lambda1 - lambda2) / 2.0))) * sin(((lambda1 - lambda2) / 2.0))))))));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double R, double lambda1, double lambda2, double phi1, double phi2) {
+	double t_0 = sin((0.5 * (lambda1 - lambda2)));
+	double t_1 = pow(((sin((phi1 * 0.5)) * cos((phi2 * 0.5))) - (cos((phi1 * 0.5)) * sin((phi2 * 0.5)))), 2.0);
+	return R * (2.0 * atan2(sqrt(((cos(phi2) * (cos(phi1) * pow(t_0, 2.0))) + t_1)), sqrt((1.0 + ((((cos(phi2) * cos(phi1)) * sin(((lambda1 - lambda2) / 2.0))) * (1.0 - exp(log1p(t_0)))) - t_1)))));
+}
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double R, double lambda1, double lambda2, double phi1, double phi2) {
+	return R * (2.0 * Math.atan2(Math.sqrt((Math.pow(Math.sin(((phi1 - phi2) / 2.0)), 2.0) + (((Math.cos(phi1) * Math.cos(phi2)) * Math.sin(((lambda1 - lambda2) / 2.0))) * Math.sin(((lambda1 - lambda2) / 2.0))))), Math.sqrt((1.0 - (Math.pow(Math.sin(((phi1 - phi2) / 2.0)), 2.0) + (((Math.cos(phi1) * Math.cos(phi2)) * Math.sin(((lambda1 - lambda2) / 2.0))) * Math.sin(((lambda1 - lambda2) / 2.0))))))));
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double R, double lambda1, double lambda2, double phi1, double phi2) {
+	double t_0 = Math.sin((0.5 * (lambda1 - lambda2)));
+	double t_1 = Math.pow(((Math.sin((phi1 * 0.5)) * Math.cos((phi2 * 0.5))) - (Math.cos((phi1 * 0.5)) * Math.sin((phi2 * 0.5)))), 2.0);
+	return R * (2.0 * Math.atan2(Math.sqrt(((Math.cos(phi2) * (Math.cos(phi1) * Math.pow(t_0, 2.0))) + t_1)), Math.sqrt((1.0 + ((((Math.cos(phi2) * Math.cos(phi1)) * Math.sin(((lambda1 - lambda2) / 2.0))) * (1.0 - Math.exp(Math.log1p(t_0)))) - t_1)))));
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(R, lambda1, lambda2, phi1, phi2):
+	return R * (2.0 * math.atan2(math.sqrt((math.pow(math.sin(((phi1 - phi2) / 2.0)), 2.0) + (((math.cos(phi1) * math.cos(phi2)) * math.sin(((lambda1 - lambda2) / 2.0))) * math.sin(((lambda1 - lambda2) / 2.0))))), math.sqrt((1.0 - (math.pow(math.sin(((phi1 - phi2) / 2.0)), 2.0) + (((math.cos(phi1) * math.cos(phi2)) * math.sin(((lambda1 - lambda2) / 2.0))) * math.sin(((lambda1 - lambda2) / 2.0))))))))
+</pre><div class="arrow">↓</div><pre class="program">def code(R, lambda1, lambda2, phi1, phi2):
+	t_0 = math.sin((0.5 * (lambda1 - lambda2)))
+	t_1 = math.pow(((math.sin((phi1 * 0.5)) * math.cos((phi2 * 0.5))) - (math.cos((phi1 * 0.5)) * math.sin((phi2 * 0.5)))), 2.0)
+	return R * (2.0 * math.atan2(math.sqrt(((math.cos(phi2) * (math.cos(phi1) * math.pow(t_0, 2.0))) + t_1)), math.sqrt((1.0 + ((((math.cos(phi2) * math.cos(phi1)) * math.sin(((lambda1 - lambda2) / 2.0))) * (1.0 - math.exp(math.log1p(t_0)))) - t_1)))))
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(R, lambda1, lambda2, phi1, phi2)
+	return Float64(R * Float64(2.0 * atan(sqrt(Float64((sin(Float64(Float64(phi1 - phi2) / 2.0)) ^ 2.0) + Float64(Float64(Float64(cos(phi1) * cos(phi2)) * sin(Float64(Float64(lambda1 - lambda2) / 2.0))) * sin(Float64(Float64(lambda1 - lambda2) / 2.0))))), sqrt(Float64(1.0 - Float64((sin(Float64(Float64(phi1 - phi2) / 2.0)) ^ 2.0) + Float64(Float64(Float64(cos(phi1) * cos(phi2)) * sin(Float64(Float64(lambda1 - lambda2) / 2.0))) * sin(Float64(Float64(lambda1 - lambda2) / 2.0)))))))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(R, lambda1, lambda2, phi1, phi2)
+	t_0 = sin(Float64(0.5 * Float64(lambda1 - lambda2)))
+	t_1 = Float64(Float64(sin(Float64(phi1 * 0.5)) * cos(Float64(phi2 * 0.5))) - Float64(cos(Float64(phi1 * 0.5)) * sin(Float64(phi2 * 0.5)))) ^ 2.0
+	return Float64(R * Float64(2.0 * atan(sqrt(Float64(Float64(cos(phi2) * Float64(cos(phi1) * (t_0 ^ 2.0))) + t_1)), sqrt(Float64(1.0 + Float64(Float64(Float64(Float64(cos(phi2) * cos(phi1)) * sin(Float64(Float64(lambda1 - lambda2) / 2.0))) * Float64(1.0 - exp(log1p(t_0)))) - t_1))))))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[R_, lambda1_, lambda2_, phi1_, phi2_] := N[(R * N[(2.0 * N[ArcTan[N[Sqrt[N[(N[Power[N[Sin[N[(N[(phi1 - phi2), $MachinePrecision] / 2.0), $MachinePrecision]], $MachinePrecision], 2.0], $MachinePrecision] + N[(N[(N[(N[Cos[phi1], $MachinePrecision] * N[Cos[phi2], $MachinePrecision]), $MachinePrecision] * N[Sin[N[(N[(lambda1 - lambda2), $MachinePrecision] / 2.0), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] * N[Sin[N[(N[(lambda1 - lambda2), $MachinePrecision] / 2.0), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision] / N[Sqrt[N[(1.0 - N[(N[Power[N[Sin[N[(N[(phi1 - phi2), $MachinePrecision] / 2.0), $MachinePrecision]], $MachinePrecision], 2.0], $MachinePrecision] + N[(N[(N[(N[Cos[phi1], $MachinePrecision] * N[Cos[phi2], $MachinePrecision]), $MachinePrecision] * N[Sin[N[(N[(lambda1 - lambda2), $MachinePrecision] / 2.0), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] * N[Sin[N[(N[(lambda1 - lambda2), $MachinePrecision] / 2.0), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[R_, lambda1_, lambda2_, phi1_, phi2_] := Block[{t$95$0 = N[Sin[N[(0.5 * N[(lambda1 - lambda2), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]}, Block[{t$95$1 = N[Power[N[(N[(N[Sin[N[(phi1 * 0.5), $MachinePrecision]], $MachinePrecision] * N[Cos[N[(phi2 * 0.5), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] - N[(N[Cos[N[(phi1 * 0.5), $MachinePrecision]], $MachinePrecision] * N[Sin[N[(phi2 * 0.5), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision]}, N[(R * N[(2.0 * N[ArcTan[N[Sqrt[N[(N[(N[Cos[phi2], $MachinePrecision] * N[(N[Cos[phi1], $MachinePrecision] * N[Power[t$95$0, 2.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + t$95$1), $MachinePrecision]], $MachinePrecision] / N[Sqrt[N[(1.0 + N[(N[(N[(N[(N[Cos[phi2], $MachinePrecision] * N[Cos[phi1], $MachinePrecision]), $MachinePrecision] * N[Sin[N[(N[(lambda1 - lambda2), $MachinePrecision] / 2.0), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] * N[(1.0 - N[Exp[N[Log[1 + t$95$0], $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - t$95$1), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">R \cdot \left(2 \cdot \tan^{-1}_* \frac{\sqrt{{\sin \left(\frac{\phi_1 - \phi_2}{2}\right)}^{2} + \left(\left(\cos \phi_1 \cdot \cos \phi_2\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)}}{\sqrt{1 - \left({\sin \left(\frac{\phi_1 - \phi_2}{2}\right)}^{2} + \left(\left(\cos \phi_1 \cdot \cos \phi_2\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right)}}\right)
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \sin \left(0.5 \cdot \left(\lambda_1 - \lambda_2\right)\right)\\
+t_1 := {\left(\sin \left(\phi_1 \cdot 0.5\right) \cdot \cos \left(\phi_2 \cdot 0.5\right) - \cos \left(\phi_1 \cdot 0.5\right) \cdot \sin \left(\phi_2 \cdot 0.5\right)\right)}^{2}\\
+R \cdot \left(2 \cdot \tan^{-1}_* \frac{\sqrt{\cos \phi_2 \cdot \left(\cos \phi_1 \cdot {t_0}^{2}\right) + t_1}}{\sqrt{1 + \left(\left(\left(\cos \phi_2 \cdot \cos \phi_1\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \left(1 - e^{\mathsf{log1p}\left(t_0\right)}\right) - t_1\right)}}\right)
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">R</label><input type="text" class="input-submit" name="var-name-0" value="-3.5964734410215414e-43"/></li><li><label for="var-name-1">lambda1</label><input type="text" class="input-submit" name="var-name-1" value="5.085823482469335e-102"/></li><li><label for="var-name-2">lambda2</label><input type="text" class="input-submit" name="var-name-2" value="-1.2541341689038163e+172"/></li><li><label for="var-name-3">phi1</label><input type="text" class="input-submit" name="var-name-3" value="1.1491860511378583e-51"/></li><li><label for="var-name-4">phi2</label><input type="text" class="input-submit" name="var-name-4" value="2.5585921222165375e+37"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 22.1">24.5</span></p><div class="math">\[R \cdot \left(2 \cdot \tan^{-1}_* \frac{\sqrt{{\sin \left(\frac{\phi_1 - \phi_2}{2}\right)}^{2} + \left(\left(\cos \phi_1 \cdot \cos \phi_2\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)}}{\sqrt{1 - \left({\sin \left(\frac{\phi_1 - \phi_2}{2}\right)}^{2} + \left(\left(\cos \phi_1 \cdot \cos \phi_2\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right)}}\right)
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 21.4">23.9</span></p><div class="math">\[\leadsto R \cdot \left(2 \cdot \tan^{-1}_* \frac{\sqrt{{\color{blue}{\left(\sin \left(\phi_1 \cdot 0.5\right) \cdot \cos \left(\phi_2 \cdot 0.5\right) - \cos \left(\phi_1 \cdot 0.5\right) \cdot \sin \left(\phi_2 \cdot 0.5\right)\right)}}^{2} + \left(\left(\cos \phi_1 \cdot \cos \phi_2\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)}}{\sqrt{1 - \left({\sin \left(\frac{\phi_1 - \phi_2}{2}\right)}^{2} + \left(\left(\cos \phi_1 \cdot \cos \phi_2\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right)}}\right)
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 12.2">13.8</span></p><div class="math">\[\leadsto R \cdot \left(2 \cdot \tan^{-1}_* \frac{\sqrt{{\left(\sin \left(\phi_1 \cdot 0.5\right) \cdot \cos \left(\phi_2 \cdot 0.5\right) - \cos \left(\phi_1 \cdot 0.5\right) \cdot \sin \left(\phi_2 \cdot 0.5\right)\right)}^{2} + \left(\left(\cos \phi_1 \cdot \cos \phi_2\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)}}{\sqrt{1 - \left({\color{blue}{\left(\sin \left(\phi_1 \cdot 0.5\right) \cdot \cos \left(\phi_2 \cdot 0.5\right) - \cos \left(\phi_1 \cdot 0.5\right) \cdot \sin \left(\phi_2 \cdot 0.5\right)\right)}}^{2} + \left(\left(\cos \phi_1 \cdot \cos \phi_2\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right)}}\right)
+\]</div></li><li><p>Taylor expanded in phi2 around inf <span class="error" title="Internally 12.2">13.8</span></p><div class="math">\[\leadsto R \cdot \left(2 \cdot \tan^{-1}_* \frac{\color{blue}{\sqrt{\cos \phi_2 \cdot \left(\cos \phi_1 \cdot {\sin \left(0.5 \cdot \left(\lambda_1 - \lambda_2\right)\right)}^{2}\right) + {\left(\cos \left(0.5 \cdot \phi_2\right) \cdot \sin \left(0.5 \cdot \phi_1\right) - \sin \left(0.5 \cdot \phi_2\right) \cdot \cos \left(0.5 \cdot \phi_1\right)\right)}^{2}}}}{\sqrt{1 - \left({\left(\sin \left(\phi_1 \cdot 0.5\right) \cdot \cos \left(\phi_2 \cdot 0.5\right) - \cos \left(\phi_1 \cdot 0.5\right) \cdot \sin \left(\phi_2 \cdot 0.5\right)\right)}^{2} + \left(\left(\cos \phi_1 \cdot \cos \phi_2\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right)}}\right)
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 12.1">13.8</span></p><div class="math">\[\leadsto R \cdot \left(2 \cdot \tan^{-1}_* \frac{\sqrt{\cos \phi_2 \cdot \left(\cos \phi_1 \cdot {\sin \left(0.5 \cdot \left(\lambda_1 - \lambda_2\right)\right)}^{2}\right) + {\left(\cos \left(0.5 \cdot \phi_2\right) \cdot \sin \left(0.5 \cdot \phi_1\right) - \sin \left(0.5 \cdot \phi_2\right) \cdot \cos \left(0.5 \cdot \phi_1\right)\right)}^{2}}}{\sqrt{1 - \left({\left(\sin \left(\phi_1 \cdot 0.5\right) \cdot \cos \left(\phi_2 \cdot 0.5\right) - \cos \left(\phi_1 \cdot 0.5\right) \cdot \sin \left(\phi_2 \cdot 0.5\right)\right)}^{2} + \left(\left(\cos \phi_1 \cdot \cos \phi_2\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \color{blue}{\left(e^{\mathsf{log1p}\left(\sin \left(\left(\lambda_1 - \lambda_2\right) \cdot 0.5\right)\right)} - 1\right)}\right)}}\right)
+\]</div></li><li><p>Final simplification<span class="error" title="Internally 12.1">13.8</span></p><div class="math">\[\leadsto R \cdot \left(2 \cdot \tan^{-1}_* \frac{\sqrt{\cos \phi_2 \cdot \left(\cos \phi_1 \cdot {\sin \left(0.5 \cdot \left(\lambda_1 - \lambda_2\right)\right)}^{2}\right) + {\left(\sin \left(\phi_1 \cdot 0.5\right) \cdot \cos \left(\phi_2 \cdot 0.5\right) - \cos \left(\phi_1 \cdot 0.5\right) \cdot \sin \left(\phi_2 \cdot 0.5\right)\right)}^{2}}}{\sqrt{1 + \left(\left(\left(\cos \phi_2 \cdot \cos \phi_1\right) \cdot \sin \left(\frac{\lambda_1 - \lambda_2}{2}\right)\right) \cdot \left(1 - e^{\mathsf{log1p}\left(\sin \left(0.5 \cdot \left(\lambda_1 - \lambda_2\right)\right)\right)}\right) - {\left(\sin \left(\phi_1 \cdot 0.5\right) \cdot \cos \left(\phi_2 \cdot 0.5\right) - \cos \left(\phi_1 \cdot 0.5\right) \cdot \sin \left(\phi_2 \cdot 0.5\right)\right)}^{2}\right)}}\right)
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (R lambda1 lambda2 phi1 phi2)
+  :name "Distance on a great circle"
+  :precision binary64
+  (* R (* 2.0 (atan2 (sqrt (+ (pow (sin (/ (- phi1 phi2) 2.0)) 2.0) (* (* (* (cos phi1) (cos phi2)) (sin (/ (- lambda1 lambda2) 2.0))) (sin (/ (- lambda1 lambda2) 2.0))))) (sqrt (- 1.0 (+ (pow (sin (/ (- phi1 phi2) 2.0)) 2.0) (* (* (* (cos phi1) (cos phi2)) (sin (/ (- lambda1 lambda2) 2.0))) (sin (/ (- lambda1 lambda2) 2.0))))))))))
+</code></pre></section></body></html>

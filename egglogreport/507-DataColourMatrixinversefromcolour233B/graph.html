@@ -1,0 +1,104 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Data.Colour.Matrix:inverse from colour-2.3.3, B</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">7.7 → 1.5</span></div><div>Time: <span class="number">3.0s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{x \cdot y - z \cdot t}{a}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := x \cdot y - z \cdot t\\
+\mathbf{if}\;t_1 \leq -5 \cdot 10^{+281}:\\
+\;\;\;\;\mathsf{fma}\left(x, \frac{y}{a}, -\frac{z}{a} \cdot t\right)\\
+
+\mathbf{elif}\;t_1 \leq 5 \cdot 10^{+112}:\\
+\;\;\;\;\frac{\mathsf{fma}\left(x, y, -z \cdot t\right)}{a}\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(x, \frac{y}{a}, -\frac{t}{a} \cdot z\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a) :precision binary64 (/ (- (* x y) (* z t)) a))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a)
+ :precision binary64
+ (let* ((t_1 (- (* x y) (* z t))))
+   (if (&lt;= t_1 -5e+281)
+     (fma x (/ y a) (- (* (/ z a) t)))
+     (if (&lt;= t_1 5e+112)
+       (/ (fma x y (- (* z t))) a)
+       (fma x (/ y a) (- (* (/ t a) z)))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a) {
+	return ((x * y) - (z * t)) / a;
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a) {
+	double t_1 = (x * y) - (z * t);
+	double tmp;
+	if (t_1 &lt;= -5e+281) {
+		tmp = fma(x, (y / a), -((z / a) * t));
+	} else if (t_1 &lt;= 5e+112) {
+		tmp = fma(x, y, -(z * t)) / a;
+	} else {
+		tmp = fma(x, (y / a), -((t / a) * z));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a)
+	return Float64(Float64(Float64(x * y) - Float64(z * t)) / a)
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a)
+	t_1 = Float64(Float64(x * y) - Float64(z * t))
+	tmp = 0.0
+	if (t_1 &lt;= -5e+281)
+		tmp = fma(x, Float64(y / a), Float64(-Float64(Float64(z / a) * t)));
+	elseif (t_1 &lt;= 5e+112)
+		tmp = Float64(fma(x, y, Float64(-Float64(z * t))) / a);
+	else
+		tmp = fma(x, Float64(y / a), Float64(-Float64(Float64(t / a) * z)));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_] := N[(N[(N[(x * y), $MachinePrecision] - N[(z * t), $MachinePrecision]), $MachinePrecision] / a), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_] := Block[{t$95$1 = N[(N[(x * y), $MachinePrecision] - N[(z * t), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[t$95$1, -5e+281], N[(x * N[(y / a), $MachinePrecision] + (-N[(N[(z / a), $MachinePrecision] * t), $MachinePrecision])), $MachinePrecision], If[LessEqual[t$95$1, 5e+112], N[(N[(x * y + (-N[(z * t), $MachinePrecision])), $MachinePrecision] / a), $MachinePrecision], N[(x * N[(y / a), $MachinePrecision] + (-N[(N[(t / a), $MachinePrecision] * z), $MachinePrecision])), $MachinePrecision]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{x \cdot y - z \cdot t}{a}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := x \cdot y - z \cdot t\\
+\mathbf{if}\;t_1 \leq -5 \cdot 10^{+281}:\\
+\;\;\;\;\mathsf{fma}\left(x, \frac{y}{a}, -\frac{z}{a} \cdot t\right)\\
+
+\mathbf{elif}\;t_1 \leq 5 \cdot 10^{+112}:\\
+\;\;\;\;\frac{\mathsf{fma}\left(x, y, -z \cdot t\right)}{a}\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(x, \frac{y}{a}, -\frac{t}{a} \cdot z\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>7.7</td></tr><tr><th>Target</th><td>6.2</td></tr><tr><th>Herbie</th><td>1.5</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;z &lt; -2.468684968699548 \cdot 10^{+170}:\\
+\;\;\;\;\frac{y}{a} \cdot x - \frac{t}{a} \cdot z\\
+
+\mathbf{elif}\;z &lt; 6.309831121978371 \cdot 10^{-71}:\\
+\;\;\;\;\frac{x \cdot y - z \cdot t}{a}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{y}{a} \cdot x - \frac{t}{a} \cdot z\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> (-.f64 (*.f64 x y) (*.f64 z t))  &lt; -5.00000000000000016e281</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 55.5">51.8</span></p><div class="math">\[\frac{x \cdot y - z \cdot t}{a}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 55.5">51.8</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left(x, y, -z \cdot t\right)}{a}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 55.5">51.8</span></p><div class="math">\[\leadsto \frac{\color{blue}{\mathsf{fma}\left(-z, t, x \cdot y\right)}}{a}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 55.6">51.8</span></p><div class="math">\[\leadsto \color{blue}{\frac{1}{a} \cdot \left(x \cdot y\right) + \frac{1}{a} \cdot \left(-z \cdot t\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 30.0">26.1</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(x, \frac{y}{a}, -\frac{z \cdot t}{a}\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.2">0.2</span></p><div class="math">\[\leadsto \mathsf{fma}\left(x, \frac{y}{a}, -\color{blue}{\frac{z}{a} \cdot t}\right)
+\]</div></li></ol><h2><code>if <span class="condition">-5.00000000000000016e281 &lt;  (-.f64 (*.f64 x y) (*.f64 z t))  &lt; 5e112</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 1.1">0.9</span></p><div class="math">\[\frac{x \cdot y - z \cdot t}{a}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 1.1">0.9</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left(x, y, -z \cdot t\right)}{a}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">5e112 &lt;  (-.f64 (*.f64 x y) (*.f64 z t)) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 17.9">18.5</span></p><div class="math">\[\frac{x \cdot y - z \cdot t}{a}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 17.9">18.5</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left(x, y, -z \cdot t\right)}{a}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 17.9">18.5</span></p><div class="math">\[\leadsto \frac{\color{blue}{\mathsf{fma}\left(-z, t, x \cdot y\right)}}{a}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 17.9">18.6</span></p><div class="math">\[\leadsto \color{blue}{\frac{1}{a} \cdot \left(x \cdot y\right) + \frac{1}{a} \cdot \left(-z \cdot t\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 6.9">12.3</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(x, \frac{y}{a}, -\frac{z \cdot t}{a}\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.3">3.9</span></p><div class="math">\[\leadsto \mathsf{fma}\left(x, \frac{y}{a}, -\color{blue}{\frac{t}{a} \cdot z}\right)
+\]</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y z t a)
+  :name "Data.Colour.Matrix:inverse from colour-2.3.3, B"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; z -2.468684968699548e+170) (- (* (/ y a) x) (* (/ t a) z)) (if (&lt; z 6.309831121978371e-71) (/ (- (* x y) (* z t)) a) (- (* (/ y a) x) (* (/ t a) z))))
+
+  (/ (- (* x y) (* z t)) a))
+</code></pre></section></body></html>

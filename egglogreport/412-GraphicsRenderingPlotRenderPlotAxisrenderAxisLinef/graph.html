@@ -1,0 +1,94 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Graphics.Rendering.Plot.Render.Plot.Axis:renderAxisLine from plot-0.2.3.4, B</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">1.2 → 0.6</span></div><div>Time: <span class="number">4.0s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[x + y \cdot \frac{z - t}{a - t}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+\mathbf{if}\;y \leq -1.6245718036745385 \cdot 10^{-60}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{-1}{a - t} \cdot \left(-z\right) + \frac{t}{t - a}, y, x\right)\\
+
+\mathbf{elif}\;y \leq 5.496840460686529 \cdot 10^{-136}:\\
+\;\;\;\;\frac{y \cdot t}{t - a} + \left(\frac{y \cdot z}{a - t} + x\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{t - z}{t - a}, y, x\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a) :precision binary64 (+ x (* y (/ (- z t) (- a t)))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a)
+ :precision binary64
+ (if (&lt;= y -1.6245718036745385e-60)
+   (fma (+ (* (/ -1.0 (- a t)) (- z)) (/ t (- t a))) y x)
+   (if (&lt;= y 5.496840460686529e-136)
+     (+ (/ (* y t) (- t a)) (+ (/ (* y z) (- a t)) x))
+     (fma (/ (- t z) (- t a)) y x))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a) {
+	return x + (y * ((z - t) / (a - t)));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a) {
+	double tmp;
+	if (y &lt;= -1.6245718036745385e-60) {
+		tmp = fma((((-1.0 / (a - t)) * -z) + (t / (t - a))), y, x);
+	} else if (y &lt;= 5.496840460686529e-136) {
+		tmp = ((y * t) / (t - a)) + (((y * z) / (a - t)) + x);
+	} else {
+		tmp = fma(((t - z) / (t - a)), y, x);
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a)
+	return Float64(x + Float64(y * Float64(Float64(z - t) / Float64(a - t))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a)
+	tmp = 0.0
+	if (y &lt;= -1.6245718036745385e-60)
+		tmp = fma(Float64(Float64(Float64(-1.0 / Float64(a - t)) * Float64(-z)) + Float64(t / Float64(t - a))), y, x);
+	elseif (y &lt;= 5.496840460686529e-136)
+		tmp = Float64(Float64(Float64(y * t) / Float64(t - a)) + Float64(Float64(Float64(y * z) / Float64(a - t)) + x));
+	else
+		tmp = fma(Float64(Float64(t - z) / Float64(t - a)), y, x);
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_] := N[(x + N[(y * N[(N[(z - t), $MachinePrecision] / N[(a - t), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_] := If[LessEqual[y, -1.6245718036745385e-60], N[(N[(N[(N[(-1.0 / N[(a - t), $MachinePrecision]), $MachinePrecision] * (-z)), $MachinePrecision] + N[(t / N[(t - a), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * y + x), $MachinePrecision], If[LessEqual[y, 5.496840460686529e-136], N[(N[(N[(y * t), $MachinePrecision] / N[(t - a), $MachinePrecision]), $MachinePrecision] + N[(N[(N[(y * z), $MachinePrecision] / N[(a - t), $MachinePrecision]), $MachinePrecision] + x), $MachinePrecision]), $MachinePrecision], N[(N[(N[(t - z), $MachinePrecision] / N[(t - a), $MachinePrecision]), $MachinePrecision] * y + x), $MachinePrecision]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">x + y \cdot \frac{z - t}{a - t}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+\mathbf{if}\;y \leq -1.6245718036745385 \cdot 10^{-60}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{-1}{a - t} \cdot \left(-z\right) + \frac{t}{t - a}, y, x\right)\\
+
+\mathbf{elif}\;y \leq 5.496840460686529 \cdot 10^{-136}:\\
+\;\;\;\;\frac{y \cdot t}{t - a} + \left(\frac{y \cdot z}{a - t} + x\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{t - z}{t - a}, y, x\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>1.2</td></tr><tr><th>Target</th><td>0.5</td></tr><tr><th>Herbie</th><td>0.6</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;y &lt; -8.508084860551241 \cdot 10^{-17}:\\
+\;\;\;\;x + y \cdot \frac{z - t}{a - t}\\
+
+\mathbf{elif}\;y &lt; 2.894426862792089 \cdot 10^{-49}:\\
+\;\;\;\;x + \left(y \cdot \left(z - t\right)\right) \cdot \frac{1}{a - t}\\
+
+\mathbf{else}:\\
+\;\;\;\;x + y \cdot \frac{z - t}{a - t}\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> y  &lt; -1.6245718036745385e-60</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 1.1">0.6</span></p><div class="math">\[x + y \cdot \frac{z - t}{a - t}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 1.1">0.6</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{t - z}{t - a}, y, x\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 1.1">0.6</span></p><div class="math">\[\leadsto \mathsf{fma}\left(\color{blue}{\frac{-1}{a - t} \cdot \left(-z\right) + \frac{t}{t - a}}, y, x\right)
+\]</div></li></ol><h2><code>if <span class="condition">-1.6245718036745385e-60 &lt;  y  &lt; 5.4968404606865288e-136</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 3.7">2.2</span></p><div class="math">\[x + y \cdot \frac{z - t}{a - t}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 3.7">2.2</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{t - z}{t - a}, y, x\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 3.7">2.2</span></p><div class="math">\[\leadsto \mathsf{fma}\left(\color{blue}{\frac{-1}{a - t} \cdot \left(-z\right) + \frac{t}{t - a}}, y, x\right)
+\]</div></li><li><p>Taylor expanded in z around 0 <span class="error" title="Internally 0.0">0.5</span></p><div class="math">\[\leadsto \color{blue}{\frac{y \cdot t}{t - a} + \left(\frac{y \cdot z}{a - t} + x\right)}
+\]</div></li></ol><h2><code>if <span class="condition">5.4968404606865288e-136 &lt;  y </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.1">0.7</span></p><div class="math">\[x + y \cdot \frac{z - t}{a - t}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.1">0.7</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{t - z}{t - a}, y, x\right)}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y z t a)
+  :name "Graphics.Rendering.Plot.Render.Plot.Axis:renderAxisLine from plot-0.2.3.4, B"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; y -8.508084860551241e-17) (+ x (* y (/ (- z t) (- a t)))) (if (&lt; y 2.894426862792089e-49) (+ x (* (* y (- z t)) (/ 1.0 (- a t)))) (+ x (* y (/ (- z t) (- a t))))))
+
+  (+ x (* y (/ (- z t) (- a t)))))
+</code></pre></section></body></html>

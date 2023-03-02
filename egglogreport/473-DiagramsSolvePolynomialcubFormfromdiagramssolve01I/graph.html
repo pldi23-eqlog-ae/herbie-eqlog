@@ -1,0 +1,104 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Diagrams.Solve.Polynomial:cubForm  from diagrams-solve-0.1, I</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">7.8 → 1.4</span></div><div>Time: <span class="number">3.3s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{x \cdot y - \left(z \cdot 9\right) \cdot t}{a \cdot 2}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := -4.5 \cdot \left(z \cdot \frac{t}{a}\right) + 0.5 \cdot \left(x \cdot \frac{y}{a}\right)\\
+t_2 := x \cdot y - \left(z \cdot 9\right) \cdot t\\
+\mathbf{if}\;t_2 \leq -2 \cdot 10^{+240}:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;t_2 \leq 10^{+147}:\\
+\;\;\;\;\mathsf{fma}\left(-4.5, \frac{z \cdot t}{a}, \frac{0.5 \cdot \left(x \cdot y\right)}{a}\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a)
+ :precision binary64
+ (/ (- (* x y) (* (* z 9.0) t)) (* a 2.0)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a)
+ :precision binary64
+ (let* ((t_1 (+ (* -4.5 (* z (/ t a))) (* 0.5 (* x (/ y a)))))
+        (t_2 (- (* x y) (* (* z 9.0) t))))
+   (if (&lt;= t_2 -2e+240)
+     t_1
+     (if (&lt;= t_2 1e+147) (fma -4.5 (/ (* z t) a) (/ (* 0.5 (* x y)) a)) t_1))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a) {
+	return ((x * y) - ((z * 9.0) * t)) / (a * 2.0);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a) {
+	double t_1 = (-4.5 * (z * (t / a))) + (0.5 * (x * (y / a)));
+	double t_2 = (x * y) - ((z * 9.0) * t);
+	double tmp;
+	if (t_2 &lt;= -2e+240) {
+		tmp = t_1;
+	} else if (t_2 &lt;= 1e+147) {
+		tmp = fma(-4.5, ((z * t) / a), ((0.5 * (x * y)) / a));
+	} else {
+		tmp = t_1;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a)
+	return Float64(Float64(Float64(x * y) - Float64(Float64(z * 9.0) * t)) / Float64(a * 2.0))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a)
+	t_1 = Float64(Float64(-4.5 * Float64(z * Float64(t / a))) + Float64(0.5 * Float64(x * Float64(y / a))))
+	t_2 = Float64(Float64(x * y) - Float64(Float64(z * 9.0) * t))
+	tmp = 0.0
+	if (t_2 &lt;= -2e+240)
+		tmp = t_1;
+	elseif (t_2 &lt;= 1e+147)
+		tmp = fma(-4.5, Float64(Float64(z * t) / a), Float64(Float64(0.5 * Float64(x * y)) / a));
+	else
+		tmp = t_1;
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_] := N[(N[(N[(x * y), $MachinePrecision] - N[(N[(z * 9.0), $MachinePrecision] * t), $MachinePrecision]), $MachinePrecision] / N[(a * 2.0), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_] := Block[{t$95$1 = N[(N[(-4.5 * N[(z * N[(t / a), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(0.5 * N[(x * N[(y / a), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$2 = N[(N[(x * y), $MachinePrecision] - N[(N[(z * 9.0), $MachinePrecision] * t), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[t$95$2, -2e+240], t$95$1, If[LessEqual[t$95$2, 1e+147], N[(-4.5 * N[(N[(z * t), $MachinePrecision] / a), $MachinePrecision] + N[(N[(0.5 * N[(x * y), $MachinePrecision]), $MachinePrecision] / a), $MachinePrecision]), $MachinePrecision], t$95$1]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{x \cdot y - \left(z \cdot 9\right) \cdot t}{a \cdot 2}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := -4.5 \cdot \left(z \cdot \frac{t}{a}\right) + 0.5 \cdot \left(x \cdot \frac{y}{a}\right)\\
+t_2 := x \cdot y - \left(z \cdot 9\right) \cdot t\\
+\mathbf{if}\;t_2 \leq -2 \cdot 10^{+240}:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;t_2 \leq 10^{+147}:\\
+\;\;\;\;\mathsf{fma}\left(-4.5, \frac{z \cdot t}{a}, \frac{0.5 \cdot \left(x \cdot y\right)}{a}\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>7.8</td></tr><tr><th>Target</th><td>5.7</td></tr><tr><th>Herbie</th><td>1.4</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;a &lt; -2.090464557976709 \cdot 10^{+86}:\\
+\;\;\;\;0.5 \cdot \frac{y \cdot x}{a} - 4.5 \cdot \frac{t}{\frac{a}{z}}\\
+
+\mathbf{elif}\;a &lt; 2.144030707833976 \cdot 10^{+99}:\\
+\;\;\;\;\frac{x \cdot y - z \cdot \left(9 \cdot t\right)}{a \cdot 2}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{y}{a} \cdot \left(x \cdot 0.5\right) - \frac{t}{a} \cdot \left(z \cdot 4.5\right)\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> (-.f64 (*.f64 x y) (*.f64 (*.f64 z 9) t))  &lt; -2.00000000000000003e240 or 9.9999999999999998e146 &lt;  (-.f64 (*.f64 x y) (*.f64 (*.f64 z 9) t)) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 28.1">26.6</span></p><div class="math">\[\frac{x \cdot y - \left(z \cdot 9\right) \cdot t}{a \cdot 2}
+\]</div></li><li><p>Taylor expanded in x around 0 <span class="error" title="Internally 26.4">26.2</span></p><div class="math">\[\leadsto \color{blue}{-4.5 \cdot \frac{t \cdot z}{a} + 0.5 \cdot \frac{y \cdot x}{a}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 16.5">15.4</span></p><div class="math">\[\leadsto -4.5 \cdot \color{blue}{\left(z \cdot \frac{t}{a}\right)} + 0.5 \cdot \frac{y \cdot x}{a}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.4">2.4</span></p><div class="math">\[\leadsto -4.5 \cdot \left(z \cdot \frac{t}{a}\right) + 0.5 \cdot \color{blue}{\left(x \cdot \frac{y}{a}\right)}
+\]</div></li></ol><h2><code>if <span class="condition">-2.00000000000000003e240 &lt;  (-.f64 (*.f64 x y) (*.f64 (*.f64 z 9) t))  &lt; 9.9999999999999998e146</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 1.2">1.0</span></p><div class="math">\[\frac{x \cdot y - \left(z \cdot 9\right) \cdot t}{a \cdot 2}
+\]</div></li><li><p>Taylor expanded in x around 0 <span class="error" title="Internally 1.1">1.0</span></p><div class="math">\[\leadsto \color{blue}{-4.5 \cdot \frac{t \cdot z}{a} + 0.5 \cdot \frac{y \cdot x}{a}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 4.6">5.8</span></p><div class="math">\[\leadsto -4.5 \cdot \color{blue}{\left(z \cdot \frac{t}{a}\right)} + 0.5 \cdot \frac{y \cdot x}{a}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 8.9">10.4</span></p><div class="math">\[\leadsto -4.5 \cdot \left(z \cdot \frac{t}{a}\right) + 0.5 \cdot \color{blue}{\left(x \cdot \frac{y}{a}\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 1.1">1.0</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(-4.5, \frac{z \cdot t}{a}, \frac{0.5 \cdot \left(x \cdot y\right)}{a}\right)}
+\]</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y z t a)
+  :name "Diagrams.Solve.Polynomial:cubForm  from diagrams-solve-0.1, I"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; a -2.090464557976709e+86) (- (* 0.5 (/ (* y x) a)) (* 4.5 (/ t (/ a z)))) (if (&lt; a 2.144030707833976e+99) (/ (- (* x y) (* z (* 9.0 t))) (* a 2.0)) (- (* (/ y a) (* x 0.5)) (* (/ t a) (* z 4.5)))))
+
+  (/ (- (* x y) (* (* z 9.0) t)) (* a 2.0)))
+</code></pre></section></body></html>

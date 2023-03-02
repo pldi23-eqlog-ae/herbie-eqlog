@@ -1,0 +1,144 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Jmat.Real.dawson</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 57.7">29.1 → 0.2</span></div><div>Time: <span class="number">1.8s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{\left(\left(\left(\left(1 + 0.1049934947 \cdot \left(x \cdot x\right)\right) + 0.0424060604 \cdot \left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0072644182 \cdot \left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0005064034 \cdot \left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0001789971 \cdot \left(\left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)}{\left(\left(\left(\left(\left(1 + 0.7715471019 \cdot \left(x \cdot x\right)\right) + 0.2909738639 \cdot \left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0694555761 \cdot \left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0140005442 \cdot \left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0008327945 \cdot \left(\left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + \left(2 \cdot 0.0001789971\right) \cdot \left(\left(\left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)} \cdot x
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := {\left(x \cdot x\right)}^{\left(3 + 2\right)}\\
+t_1 := \mathsf{fma}\left(0.2514179000665374, {x}^{-3}, \frac{0.5}{x}\right)\\
+t_2 := {\left(x \cdot x\right)}^{\left(2 \cdot 2\right)}\\
+t_3 := {\left(x \cdot x\right)}^{3}\\
+\mathbf{if}\;x \leq -447766.36172659305:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;x \leq 9.544882123799739 \cdot 10^{-5}:\\
+\;\;\;\;\frac{\mathsf{fma}\left(t_0, 0.0001789971, \mathsf{fma}\left(t_2, 0.0005064034, \mathsf{fma}\left(0.0072644182, t_3, 1 + \left(x \cdot x\right) \cdot \left(0.1049934947 + 0.0424060604 \cdot \left(x \cdot x\right)\right)\right)\right)\right) \cdot x}{\mathsf{fma}\left(0.0003579942, {\left({\left(x \cdot x\right)}^{2}\right)}^{3}, \mathsf{fma}\left(0.0008327945, t_0, \mathsf{fma}\left(t_2, 0.0140005442, \mathsf{fma}\left(t_3, 0.0694555761, 1 + \left(x \cdot x\right) \cdot \left(0.7715471019 + 0.2909738639 \cdot \left(x \cdot x\right)\right)\right)\right)\right)\right)}\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x)
+ :precision binary64
+ (*
+  (/
+   (+
+    (+
+     (+
+      (+ (+ 1.0 (* 0.1049934947 (* x x))) (* 0.0424060604 (* (* x x) (* x x))))
+      (* 0.0072644182 (* (* (* x x) (* x x)) (* x x))))
+     (* 0.0005064034 (* (* (* (* x x) (* x x)) (* x x)) (* x x))))
+    (* 0.0001789971 (* (* (* (* (* x x) (* x x)) (* x x)) (* x x)) (* x x))))
+   (+
+    (+
+     (+
+      (+
+       (+
+        (+ 1.0 (* 0.7715471019 (* x x)))
+        (* 0.2909738639 (* (* x x) (* x x))))
+       (* 0.0694555761 (* (* (* x x) (* x x)) (* x x))))
+      (* 0.0140005442 (* (* (* (* x x) (* x x)) (* x x)) (* x x))))
+     (* 0.0008327945 (* (* (* (* (* x x) (* x x)) (* x x)) (* x x)) (* x x))))
+    (*
+     (* 2.0 0.0001789971)
+     (* (* (* (* (* (* x x) (* x x)) (* x x)) (* x x)) (* x x)) (* x x)))))
+  x))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x)
+ :precision binary64
+ (let* ((t_0 (pow (* x x) (+ 3.0 2.0)))
+        (t_1 (fma 0.2514179000665374 (pow x -3.0) (/ 0.5 x)))
+        (t_2 (pow (* x x) (* 2.0 2.0)))
+        (t_3 (pow (* x x) 3.0)))
+   (if (&lt;= x -447766.36172659305)
+     t_1
+     (if (&lt;= x 9.544882123799739e-5)
+       (/
+        (*
+         (fma
+          t_0
+          0.0001789971
+          (fma
+           t_2
+           0.0005064034
+           (fma
+            0.0072644182
+            t_3
+            (+ 1.0 (* (* x x) (+ 0.1049934947 (* 0.0424060604 (* x x))))))))
+         x)
+        (fma
+         0.0003579942
+         (pow (pow (* x x) 2.0) 3.0)
+         (fma
+          0.0008327945
+          t_0
+          (fma
+           t_2
+           0.0140005442
+           (fma
+            t_3
+            0.0694555761
+            (+ 1.0 (* (* x x) (+ 0.7715471019 (* 0.2909738639 (* x x))))))))))
+       t_1))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x) {
+	return ((((((1.0 + (0.1049934947 * (x * x))) + (0.0424060604 * ((x * x) * (x * x)))) + (0.0072644182 * (((x * x) * (x * x)) * (x * x)))) + (0.0005064034 * ((((x * x) * (x * x)) * (x * x)) * (x * x)))) + (0.0001789971 * (((((x * x) * (x * x)) * (x * x)) * (x * x)) * (x * x)))) / ((((((1.0 + (0.7715471019 * (x * x))) + (0.2909738639 * ((x * x) * (x * x)))) + (0.0694555761 * (((x * x) * (x * x)) * (x * x)))) + (0.0140005442 * ((((x * x) * (x * x)) * (x * x)) * (x * x)))) + (0.0008327945 * (((((x * x) * (x * x)) * (x * x)) * (x * x)) * (x * x)))) + ((2.0 * 0.0001789971) * ((((((x * x) * (x * x)) * (x * x)) * (x * x)) * (x * x)) * (x * x))))) * x;
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x) {
+	double t_0 = pow((x * x), (3.0 + 2.0));
+	double t_1 = fma(0.2514179000665374, pow(x, -3.0), (0.5 / x));
+	double t_2 = pow((x * x), (2.0 * 2.0));
+	double t_3 = pow((x * x), 3.0);
+	double tmp;
+	if (x &lt;= -447766.36172659305) {
+		tmp = t_1;
+	} else if (x &lt;= 9.544882123799739e-5) {
+		tmp = (fma(t_0, 0.0001789971, fma(t_2, 0.0005064034, fma(0.0072644182, t_3, (1.0 + ((x * x) * (0.1049934947 + (0.0424060604 * (x * x)))))))) * x) / fma(0.0003579942, pow(pow((x * x), 2.0), 3.0), fma(0.0008327945, t_0, fma(t_2, 0.0140005442, fma(t_3, 0.0694555761, (1.0 + ((x * x) * (0.7715471019 + (0.2909738639 * (x * x)))))))));
+	} else {
+		tmp = t_1;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x)
+	return Float64(Float64(Float64(Float64(Float64(Float64(Float64(1.0 + Float64(0.1049934947 * Float64(x * x))) + Float64(0.0424060604 * Float64(Float64(x * x) * Float64(x * x)))) + Float64(0.0072644182 * Float64(Float64(Float64(x * x) * Float64(x * x)) * Float64(x * x)))) + Float64(0.0005064034 * Float64(Float64(Float64(Float64(x * x) * Float64(x * x)) * Float64(x * x)) * Float64(x * x)))) + Float64(0.0001789971 * Float64(Float64(Float64(Float64(Float64(x * x) * Float64(x * x)) * Float64(x * x)) * Float64(x * x)) * Float64(x * x)))) / Float64(Float64(Float64(Float64(Float64(Float64(1.0 + Float64(0.7715471019 * Float64(x * x))) + Float64(0.2909738639 * Float64(Float64(x * x) * Float64(x * x)))) + Float64(0.0694555761 * Float64(Float64(Float64(x * x) * Float64(x * x)) * Float64(x * x)))) + Float64(0.0140005442 * Float64(Float64(Float64(Float64(x * x) * Float64(x * x)) * Float64(x * x)) * Float64(x * x)))) + Float64(0.0008327945 * Float64(Float64(Float64(Float64(Float64(x * x) * Float64(x * x)) * Float64(x * x)) * Float64(x * x)) * Float64(x * x)))) + Float64(Float64(2.0 * 0.0001789971) * Float64(Float64(Float64(Float64(Float64(Float64(x * x) * Float64(x * x)) * Float64(x * x)) * Float64(x * x)) * Float64(x * x)) * Float64(x * x))))) * x)
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x)
+	t_0 = Float64(x * x) ^ Float64(3.0 + 2.0)
+	t_1 = fma(0.2514179000665374, (x ^ -3.0), Float64(0.5 / x))
+	t_2 = Float64(x * x) ^ Float64(2.0 * 2.0)
+	t_3 = Float64(x * x) ^ 3.0
+	tmp = 0.0
+	if (x &lt;= -447766.36172659305)
+		tmp = t_1;
+	elseif (x &lt;= 9.544882123799739e-5)
+		tmp = Float64(Float64(fma(t_0, 0.0001789971, fma(t_2, 0.0005064034, fma(0.0072644182, t_3, Float64(1.0 + Float64(Float64(x * x) * Float64(0.1049934947 + Float64(0.0424060604 * Float64(x * x)))))))) * x) / fma(0.0003579942, ((Float64(x * x) ^ 2.0) ^ 3.0), fma(0.0008327945, t_0, fma(t_2, 0.0140005442, fma(t_3, 0.0694555761, Float64(1.0 + Float64(Float64(x * x) * Float64(0.7715471019 + Float64(0.2909738639 * Float64(x * x))))))))));
+	else
+		tmp = t_1;
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_] := N[(N[(N[(N[(N[(N[(N[(1.0 + N[(0.1049934947 * N[(x * x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(0.0424060604 * N[(N[(x * x), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(0.0072644182 * N[(N[(N[(x * x), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(0.0005064034 * N[(N[(N[(N[(x * x), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(0.0001789971 * N[(N[(N[(N[(N[(x * x), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] / N[(N[(N[(N[(N[(N[(1.0 + N[(0.7715471019 * N[(x * x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(0.2909738639 * N[(N[(x * x), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(0.0694555761 * N[(N[(N[(x * x), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(0.0140005442 * N[(N[(N[(N[(x * x), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(0.0008327945 * N[(N[(N[(N[(N[(x * x), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(N[(2.0 * 0.0001789971), $MachinePrecision] * N[(N[(N[(N[(N[(N[(x * x), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision] * N[(x * x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * x), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_] := Block[{t$95$0 = N[Power[N[(x * x), $MachinePrecision], N[(3.0 + 2.0), $MachinePrecision]], $MachinePrecision]}, Block[{t$95$1 = N[(0.2514179000665374 * N[Power[x, -3.0], $MachinePrecision] + N[(0.5 / x), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$2 = N[Power[N[(x * x), $MachinePrecision], N[(2.0 * 2.0), $MachinePrecision]], $MachinePrecision]}, Block[{t$95$3 = N[Power[N[(x * x), $MachinePrecision], 3.0], $MachinePrecision]}, If[LessEqual[x, -447766.36172659305], t$95$1, If[LessEqual[x, 9.544882123799739e-5], N[(N[(N[(t$95$0 * 0.0001789971 + N[(t$95$2 * 0.0005064034 + N[(0.0072644182 * t$95$3 + N[(1.0 + N[(N[(x * x), $MachinePrecision] * N[(0.1049934947 + N[(0.0424060604 * N[(x * x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * x), $MachinePrecision] / N[(0.0003579942 * N[Power[N[Power[N[(x * x), $MachinePrecision], 2.0], $MachinePrecision], 3.0], $MachinePrecision] + N[(0.0008327945 * t$95$0 + N[(t$95$2 * 0.0140005442 + N[(t$95$3 * 0.0694555761 + N[(1.0 + N[(N[(x * x), $MachinePrecision] * N[(0.7715471019 + N[(0.2909738639 * N[(x * x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], t$95$1]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{\left(\left(\left(\left(1 + 0.1049934947 \cdot \left(x \cdot x\right)\right) + 0.0424060604 \cdot \left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0072644182 \cdot \left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0005064034 \cdot \left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0001789971 \cdot \left(\left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)}{\left(\left(\left(\left(\left(1 + 0.7715471019 \cdot \left(x \cdot x\right)\right) + 0.2909738639 \cdot \left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0694555761 \cdot \left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0140005442 \cdot \left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0008327945 \cdot \left(\left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + \left(2 \cdot 0.0001789971\right) \cdot \left(\left(\left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)} \cdot x
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := {\left(x \cdot x\right)}^{\left(3 + 2\right)}\\
+t_1 := \mathsf{fma}\left(0.2514179000665374, {x}^{-3}, \frac{0.5}{x}\right)\\
+t_2 := {\left(x \cdot x\right)}^{\left(2 \cdot 2\right)}\\
+t_3 := {\left(x \cdot x\right)}^{3}\\
+\mathbf{if}\;x \leq -447766.36172659305:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;x \leq 9.544882123799739 \cdot 10^{-5}:\\
+\;\;\;\;\frac{\mathsf{fma}\left(t_0, 0.0001789971, \mathsf{fma}\left(t_2, 0.0005064034, \mathsf{fma}\left(0.0072644182, t_3, 1 + \left(x \cdot x\right) \cdot \left(0.1049934947 + 0.0424060604 \cdot \left(x \cdot x\right)\right)\right)\right)\right) \cdot x}{\mathsf{fma}\left(0.0003579942, {\left({\left(x \cdot x\right)}^{2}\right)}^{3}, \mathsf{fma}\left(0.0008327945, t_0, \mathsf{fma}\left(t_2, 0.0140005442, \mathsf{fma}\left(t_3, 0.0694555761, 1 + \left(x \cdot x\right) \cdot \left(0.7715471019 + 0.2909738639 \cdot \left(x \cdot x\right)\right)\right)\right)\right)\right)}\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> x  &lt; -447766.361726593052 or 9.54488212379973904e-5 &lt;  x </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 58.0">59.1</span></p><div class="math">\[\frac{\left(\left(\left(\left(1 + 0.1049934947 \cdot \left(x \cdot x\right)\right) + 0.0424060604 \cdot \left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0072644182 \cdot \left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0005064034 \cdot \left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0001789971 \cdot \left(\left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)}{\left(\left(\left(\left(\left(1 + 0.7715471019 \cdot \left(x \cdot x\right)\right) + 0.2909738639 \cdot \left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0694555761 \cdot \left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0140005442 \cdot \left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0008327945 \cdot \left(\left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + \left(2 \cdot 0.0001789971\right) \cdot \left(\left(\left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)} \cdot x
+\]</div></li><li><p>Simplified<span class="error" title="Internally 58.0">59.2</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left({\left(x \cdot x\right)}^{\left(3 + 2\right)}, 0.0001789971, \mathsf{fma}\left({\left(x \cdot x\right)}^{\left(2 \cdot 2\right)}, 0.0005064034, \mathsf{fma}\left(0.0072644182, {\left(x \cdot x\right)}^{3}, 1 + \left(x \cdot x\right) \cdot \left(0.1049934947 + 0.0424060604 \cdot \left(x \cdot x\right)\right)\right)\right)\right) \cdot x}{\mathsf{fma}\left(0.0003579942, {\left({\left(x \cdot x\right)}^{2}\right)}^{3}, \mathsf{fma}\left(0.0008327945, {\left(x \cdot x\right)}^{\left(3 + 2\right)}, \mathsf{fma}\left({\left(x \cdot x\right)}^{\left(2 \cdot 2\right)}, 0.0140005442, \mathsf{fma}\left({\left(x \cdot x\right)}^{3}, 0.0694555761, 1 + \left(x \cdot x\right) \cdot \left(0.7715471019 + 0.2909738639 \cdot \left(x \cdot x\right)\right)\right)\right)\right)\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in x around inf <span class="error" title="Internally 0.0">0.4</span></p><div class="math">\[\leadsto \color{blue}{0.2514179000665374 \cdot \frac{1}{{x}^{3}} + 0.5 \cdot \frac{1}{x}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0">0.4</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(0.2514179000665374, {x}^{-3}, \frac{0.5}{x}\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-447766.361726593052 &lt;  x  &lt; 9.54488212379973904e-5</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.0">0.0</span></p><div class="math">\[\frac{\left(\left(\left(\left(1 + 0.1049934947 \cdot \left(x \cdot x\right)\right) + 0.0424060604 \cdot \left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0072644182 \cdot \left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0005064034 \cdot \left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0001789971 \cdot \left(\left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)}{\left(\left(\left(\left(\left(1 + 0.7715471019 \cdot \left(x \cdot x\right)\right) + 0.2909738639 \cdot \left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0694555761 \cdot \left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0140005442 \cdot \left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + 0.0008327945 \cdot \left(\left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)\right) + \left(2 \cdot 0.0001789971\right) \cdot \left(\left(\left(\left(\left(\left(x \cdot x\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right) \cdot \left(x \cdot x\right)\right)} \cdot x
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.0">0.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left({\left(x \cdot x\right)}^{\left(3 + 2\right)}, 0.0001789971, \mathsf{fma}\left({\left(x \cdot x\right)}^{\left(2 \cdot 2\right)}, 0.0005064034, \mathsf{fma}\left(0.0072644182, {\left(x \cdot x\right)}^{3}, 1 + \left(x \cdot x\right) \cdot \left(0.1049934947 + 0.0424060604 \cdot \left(x \cdot x\right)\right)\right)\right)\right) \cdot x}{\mathsf{fma}\left(0.0003579942, {\left({\left(x \cdot x\right)}^{2}\right)}^{3}, \mathsf{fma}\left(0.0008327945, {\left(x \cdot x\right)}^{\left(3 + 2\right)}, \mathsf{fma}\left({\left(x \cdot x\right)}^{\left(2 \cdot 2\right)}, 0.0140005442, \mathsf{fma}\left({\left(x \cdot x\right)}^{3}, 0.0694555761, 1 + \left(x \cdot x\right) \cdot \left(0.7715471019 + 0.2909738639 \cdot \left(x \cdot x\right)\right)\right)\right)\right)\right)}}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x)
+  :name "Jmat.Real.dawson"
+  :precision binary64
+  (* (/ (+ (+ (+ (+ (+ 1.0 (* 0.1049934947 (* x x))) (* 0.0424060604 (* (* x x) (* x x)))) (* 0.0072644182 (* (* (* x x) (* x x)) (* x x)))) (* 0.0005064034 (* (* (* (* x x) (* x x)) (* x x)) (* x x)))) (* 0.0001789971 (* (* (* (* (* x x) (* x x)) (* x x)) (* x x)) (* x x)))) (+ (+ (+ (+ (+ (+ 1.0 (* 0.7715471019 (* x x))) (* 0.2909738639 (* (* x x) (* x x)))) (* 0.0694555761 (* (* (* x x) (* x x)) (* x x)))) (* 0.0140005442 (* (* (* (* x x) (* x x)) (* x x)) (* x x)))) (* 0.0008327945 (* (* (* (* (* x x) (* x x)) (* x x)) (* x x)) (* x x)))) (* (* 2.0 0.0001789971) (* (* (* (* (* (* x x) (* x x)) (* x x)) (* x x)) (* x x)) (* x x))))) x))
+</code></pre></section></body></html>

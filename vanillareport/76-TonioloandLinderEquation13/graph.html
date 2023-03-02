@@ -1,0 +1,255 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Toniolo and Linder, Equation (13)</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">33.9 → 32.4</span></div><div>Time: <span class="number">5.0s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\sqrt{\left(\left(2 \cdot n\right) \cdot U\right) \cdot \left(\left(t - 2 \cdot \frac{\ell \cdot \ell}{Om}\right) - \left(n \cdot {\left(\frac{\ell}{Om}\right)}^{2}\right) \cdot \left(U - U*\right)\right)}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := \sqrt{2 \cdot \left(n \cdot U\right)} \cdot \sqrt{\mathsf{fma}\left(\frac{\ell}{Om}, \mathsf{fma}\left(n, \frac{\ell}{Om} \cdot \left(U* - U\right), \ell \cdot -2\right), t\right)}\\
+t_2 := n \cdot \left(t \cdot U\right)\\
+t_3 := \sqrt{\mathsf{fma}\left(-4, \frac{n}{Om} \cdot \left(\ell \cdot \left(\ell \cdot U\right)\right), 2 \cdot t_2\right)}\\
+t_4 := \sqrt{\mathsf{fma}\left(2, t_2, \frac{\left(-2 \cdot \left(n \cdot \left(\ell \cdot \ell\right)\right)\right) \cdot \left(U \cdot \left(2 + \frac{n}{Om} \cdot \left(U - U*\right)\right)\right)}{Om}\right)}\\
+t_5 := {\left(\frac{\ell}{Om}\right)}^{2}\\
+t_6 := \sqrt{\left(U \cdot \left(n \cdot 2\right)\right) \cdot \left(\left(t - 2 \cdot \frac{\ell \cdot \ell}{Om}\right) + \left(n \cdot t_5\right) \cdot \left(U* - U\right)\right)}\\
+\mathbf{if}\;t \leq -7.5 \cdot 10^{+266}:\\
+\;\;\;\;t_3\\
+
+\mathbf{elif}\;t \leq -4.2 \cdot 10^{+93}:\\
+\;\;\;\;t_6\\
+
+\mathbf{elif}\;t \leq -1 \cdot 10^{+73}:\\
+\;\;\;\;t_3\\
+
+\mathbf{elif}\;t \leq -1 \cdot 10^{-124}:\\
+\;\;\;\;\sqrt{\left(n \cdot 2\right) \cdot \left(U \cdot \left(t + \frac{\ell}{Om} \cdot \mathsf{fma}\left(\ell, -2, \frac{\ell}{Om} \cdot \left(n \cdot \left(U* - U\right)\right)\right)\right)\right)}\\
+
+\mathbf{elif}\;t \leq -6.6 \cdot 10^{-194}:\\
+\;\;\;\;t_4\\
+
+\mathbf{elif}\;t \leq -7.6 \cdot 10^{-213}:\\
+\;\;\;\;\sqrt{n \cdot 2} \cdot \sqrt{U \cdot \left(t - \mathsf{fma}\left(2, \ell \cdot \frac{\ell}{Om}, n \cdot \left(t_5 \cdot \left(U - U*\right)\right)\right)\right)}\\
+
+\mathbf{elif}\;t \leq -9 \cdot 10^{-303}:\\
+\;\;\;\;t_4\\
+
+\mathbf{elif}\;t \leq 2.55 \cdot 10^{-132}:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;t \leq 10^{+185}:\\
+\;\;\;\;t_6\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (n U t l Om U*)
+ :precision binary64
+ (sqrt
+  (*
+   (* (* 2.0 n) U)
+   (- (- t (* 2.0 (/ (* l l) Om))) (* (* n (pow (/ l Om) 2.0)) (- U U*))))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (n U t l Om U*)
+ :precision binary64
+ (let* ((t_1
+         (*
+          (sqrt (* 2.0 (* n U)))
+          (sqrt (fma (/ l Om) (fma n (* (/ l Om) (- U* U)) (* l -2.0)) t))))
+        (t_2 (* n (* t U)))
+        (t_3 (sqrt (fma -4.0 (* (/ n Om) (* l (* l U))) (* 2.0 t_2))))
+        (t_4
+         (sqrt
+          (fma
+           2.0
+           t_2
+           (/
+            (* (* -2.0 (* n (* l l))) (* U (+ 2.0 (* (/ n Om) (- U U*)))))
+            Om))))
+        (t_5 (pow (/ l Om) 2.0))
+        (t_6
+         (sqrt
+          (*
+           (* U (* n 2.0))
+           (+ (- t (* 2.0 (/ (* l l) Om))) (* (* n t_5) (- U* U)))))))
+   (if (&lt;= t -7.5e+266)
+     t_3
+     (if (&lt;= t -4.2e+93)
+       t_6
+       (if (&lt;= t -1e+73)
+         t_3
+         (if (&lt;= t -1e-124)
+           (sqrt
+            (*
+             (* n 2.0)
+             (*
+              U
+              (+ t (* (/ l Om) (fma l -2.0 (* (/ l Om) (* n (- U* U)))))))))
+           (if (&lt;= t -6.6e-194)
+             t_4
+             (if (&lt;= t -7.6e-213)
+               (*
+                (sqrt (* n 2.0))
+                (sqrt
+                 (* U (- t (fma 2.0 (* l (/ l Om)) (* n (* t_5 (- U U*))))))))
+               (if (&lt;= t -9e-303)
+                 t_4
+                 (if (&lt;= t 2.55e-132) t_1 (if (&lt;= t 1e+185) t_6 t_1)))))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double n, double U, double t, double l, double Om, double U_42_) {
+	return sqrt((((2.0 * n) * U) * ((t - (2.0 * ((l * l) / Om))) - ((n * pow((l / Om), 2.0)) * (U - U_42_)))));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double n, double U, double t, double l, double Om, double U_42_) {
+	double t_1 = sqrt((2.0 * (n * U))) * sqrt(fma((l / Om), fma(n, ((l / Om) * (U_42_ - U)), (l * -2.0)), t));
+	double t_2 = n * (t * U);
+	double t_3 = sqrt(fma(-4.0, ((n / Om) * (l * (l * U))), (2.0 * t_2)));
+	double t_4 = sqrt(fma(2.0, t_2, (((-2.0 * (n * (l * l))) * (U * (2.0 + ((n / Om) * (U - U_42_))))) / Om)));
+	double t_5 = pow((l / Om), 2.0);
+	double t_6 = sqrt(((U * (n * 2.0)) * ((t - (2.0 * ((l * l) / Om))) + ((n * t_5) * (U_42_ - U)))));
+	double tmp;
+	if (t &lt;= -7.5e+266) {
+		tmp = t_3;
+	} else if (t &lt;= -4.2e+93) {
+		tmp = t_6;
+	} else if (t &lt;= -1e+73) {
+		tmp = t_3;
+	} else if (t &lt;= -1e-124) {
+		tmp = sqrt(((n * 2.0) * (U * (t + ((l / Om) * fma(l, -2.0, ((l / Om) * (n * (U_42_ - U)))))))));
+	} else if (t &lt;= -6.6e-194) {
+		tmp = t_4;
+	} else if (t &lt;= -7.6e-213) {
+		tmp = sqrt((n * 2.0)) * sqrt((U * (t - fma(2.0, (l * (l / Om)), (n * (t_5 * (U - U_42_)))))));
+	} else if (t &lt;= -9e-303) {
+		tmp = t_4;
+	} else if (t &lt;= 2.55e-132) {
+		tmp = t_1;
+	} else if (t &lt;= 1e+185) {
+		tmp = t_6;
+	} else {
+		tmp = t_1;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(n, U, t, l, Om, U_42_)
+	return sqrt(Float64(Float64(Float64(2.0 * n) * U) * Float64(Float64(t - Float64(2.0 * Float64(Float64(l * l) / Om))) - Float64(Float64(n * (Float64(l / Om) ^ 2.0)) * Float64(U - U_42_)))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(n, U, t, l, Om, U_42_)
+	t_1 = Float64(sqrt(Float64(2.0 * Float64(n * U))) * sqrt(fma(Float64(l / Om), fma(n, Float64(Float64(l / Om) * Float64(U_42_ - U)), Float64(l * -2.0)), t)))
+	t_2 = Float64(n * Float64(t * U))
+	t_3 = sqrt(fma(-4.0, Float64(Float64(n / Om) * Float64(l * Float64(l * U))), Float64(2.0 * t_2)))
+	t_4 = sqrt(fma(2.0, t_2, Float64(Float64(Float64(-2.0 * Float64(n * Float64(l * l))) * Float64(U * Float64(2.0 + Float64(Float64(n / Om) * Float64(U - U_42_))))) / Om)))
+	t_5 = Float64(l / Om) ^ 2.0
+	t_6 = sqrt(Float64(Float64(U * Float64(n * 2.0)) * Float64(Float64(t - Float64(2.0 * Float64(Float64(l * l) / Om))) + Float64(Float64(n * t_5) * Float64(U_42_ - U)))))
+	tmp = 0.0
+	if (t &lt;= -7.5e+266)
+		tmp = t_3;
+	elseif (t &lt;= -4.2e+93)
+		tmp = t_6;
+	elseif (t &lt;= -1e+73)
+		tmp = t_3;
+	elseif (t &lt;= -1e-124)
+		tmp = sqrt(Float64(Float64(n * 2.0) * Float64(U * Float64(t + Float64(Float64(l / Om) * fma(l, -2.0, Float64(Float64(l / Om) * Float64(n * Float64(U_42_ - U)))))))));
+	elseif (t &lt;= -6.6e-194)
+		tmp = t_4;
+	elseif (t &lt;= -7.6e-213)
+		tmp = Float64(sqrt(Float64(n * 2.0)) * sqrt(Float64(U * Float64(t - fma(2.0, Float64(l * Float64(l / Om)), Float64(n * Float64(t_5 * Float64(U - U_42_))))))));
+	elseif (t &lt;= -9e-303)
+		tmp = t_4;
+	elseif (t &lt;= 2.55e-132)
+		tmp = t_1;
+	elseif (t &lt;= 1e+185)
+		tmp = t_6;
+	else
+		tmp = t_1;
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[n_, U_, t_, l_, Om_, U$42$_] := N[Sqrt[N[(N[(N[(2.0 * n), $MachinePrecision] * U), $MachinePrecision] * N[(N[(t - N[(2.0 * N[(N[(l * l), $MachinePrecision] / Om), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - N[(N[(n * N[Power[N[(l / Om), $MachinePrecision], 2.0], $MachinePrecision]), $MachinePrecision] * N[(U - U$42$), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[n_, U_, t_, l_, Om_, U$42$_] := Block[{t$95$1 = N[(N[Sqrt[N[(2.0 * N[(n * U), $MachinePrecision]), $MachinePrecision]], $MachinePrecision] * N[Sqrt[N[(N[(l / Om), $MachinePrecision] * N[(n * N[(N[(l / Om), $MachinePrecision] * N[(U$42$ - U), $MachinePrecision]), $MachinePrecision] + N[(l * -2.0), $MachinePrecision]), $MachinePrecision] + t), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]}, Block[{t$95$2 = N[(n * N[(t * U), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$3 = N[Sqrt[N[(-4.0 * N[(N[(n / Om), $MachinePrecision] * N[(l * N[(l * U), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(2.0 * t$95$2), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]}, Block[{t$95$4 = N[Sqrt[N[(2.0 * t$95$2 + N[(N[(N[(-2.0 * N[(n * N[(l * l), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * N[(U * N[(2.0 + N[(N[(n / Om), $MachinePrecision] * N[(U - U$42$), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] / Om), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]}, Block[{t$95$5 = N[Power[N[(l / Om), $MachinePrecision], 2.0], $MachinePrecision]}, Block[{t$95$6 = N[Sqrt[N[(N[(U * N[(n * 2.0), $MachinePrecision]), $MachinePrecision] * N[(N[(t - N[(2.0 * N[(N[(l * l), $MachinePrecision] / Om), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(N[(n * t$95$5), $MachinePrecision] * N[(U$42$ - U), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]}, If[LessEqual[t, -7.5e+266], t$95$3, If[LessEqual[t, -4.2e+93], t$95$6, If[LessEqual[t, -1e+73], t$95$3, If[LessEqual[t, -1e-124], N[Sqrt[N[(N[(n * 2.0), $MachinePrecision] * N[(U * N[(t + N[(N[(l / Om), $MachinePrecision] * N[(l * -2.0 + N[(N[(l / Om), $MachinePrecision] * N[(n * N[(U$42$ - U), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision], If[LessEqual[t, -6.6e-194], t$95$4, If[LessEqual[t, -7.6e-213], N[(N[Sqrt[N[(n * 2.0), $MachinePrecision]], $MachinePrecision] * N[Sqrt[N[(U * N[(t - N[(2.0 * N[(l * N[(l / Om), $MachinePrecision]), $MachinePrecision] + N[(n * N[(t$95$5 * N[(U - U$42$), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision], If[LessEqual[t, -9e-303], t$95$4, If[LessEqual[t, 2.55e-132], t$95$1, If[LessEqual[t, 1e+185], t$95$6, t$95$1]]]]]]]]]]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\sqrt{\left(\left(2 \cdot n\right) \cdot U\right) \cdot \left(\left(t - 2 \cdot \frac{\ell \cdot \ell}{Om}\right) - \left(n \cdot {\left(\frac{\ell}{Om}\right)}^{2}\right) \cdot \left(U - U*\right)\right)}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := \sqrt{2 \cdot \left(n \cdot U\right)} \cdot \sqrt{\mathsf{fma}\left(\frac{\ell}{Om}, \mathsf{fma}\left(n, \frac{\ell}{Om} \cdot \left(U* - U\right), \ell \cdot -2\right), t\right)}\\
+t_2 := n \cdot \left(t \cdot U\right)\\
+t_3 := \sqrt{\mathsf{fma}\left(-4, \frac{n}{Om} \cdot \left(\ell \cdot \left(\ell \cdot U\right)\right), 2 \cdot t_2\right)}\\
+t_4 := \sqrt{\mathsf{fma}\left(2, t_2, \frac{\left(-2 \cdot \left(n \cdot \left(\ell \cdot \ell\right)\right)\right) \cdot \left(U \cdot \left(2 + \frac{n}{Om} \cdot \left(U - U*\right)\right)\right)}{Om}\right)}\\
+t_5 := {\left(\frac{\ell}{Om}\right)}^{2}\\
+t_6 := \sqrt{\left(U \cdot \left(n \cdot 2\right)\right) \cdot \left(\left(t - 2 \cdot \frac{\ell \cdot \ell}{Om}\right) + \left(n \cdot t_5\right) \cdot \left(U* - U\right)\right)}\\
+\mathbf{if}\;t \leq -7.5 \cdot 10^{+266}:\\
+\;\;\;\;t_3\\
+
+\mathbf{elif}\;t \leq -4.2 \cdot 10^{+93}:\\
+\;\;\;\;t_6\\
+
+\mathbf{elif}\;t \leq -1 \cdot 10^{+73}:\\
+\;\;\;\;t_3\\
+
+\mathbf{elif}\;t \leq -1 \cdot 10^{-124}:\\
+\;\;\;\;\sqrt{\left(n \cdot 2\right) \cdot \left(U \cdot \left(t + \frac{\ell}{Om} \cdot \mathsf{fma}\left(\ell, -2, \frac{\ell}{Om} \cdot \left(n \cdot \left(U* - U\right)\right)\right)\right)\right)}\\
+
+\mathbf{elif}\;t \leq -6.6 \cdot 10^{-194}:\\
+\;\;\;\;t_4\\
+
+\mathbf{elif}\;t \leq -7.6 \cdot 10^{-213}:\\
+\;\;\;\;\sqrt{n \cdot 2} \cdot \sqrt{U \cdot \left(t - \mathsf{fma}\left(2, \ell \cdot \frac{\ell}{Om}, n \cdot \left(t_5 \cdot \left(U - U*\right)\right)\right)\right)}\\
+
+\mathbf{elif}\;t \leq -9 \cdot 10^{-303}:\\
+\;\;\;\;t_4\\
+
+\mathbf{elif}\;t \leq 2.55 \cdot 10^{-132}:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;t \leq 10^{+185}:\\
+\;\;\;\;t_6\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 6 regimes</li><li><h2><code>if <span class="condition"> t  &lt; -7.4999999999999998e266 or -4.1999999999999996e93 &lt;  t  &lt; -9.99999999999999983e72</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 35.4">37.5</span></p><div class="math">\[\sqrt{\left(\left(2 \cdot n\right) \cdot U\right) \cdot \left(\left(t - 2 \cdot \frac{\ell \cdot \ell}{Om}\right) - \left(n \cdot {\left(\frac{\ell}{Om}\right)}^{2}\right) \cdot \left(U - U*\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 27.8">35.1</span></p><div class="math">\[\leadsto \color{blue}{\sqrt{\left(2 \cdot n\right) \cdot \left(U \cdot \left(t + \frac{\ell}{Om} \cdot \mathsf{fma}\left(\ell, -2, \frac{\ell}{Om} \cdot \left(n \cdot \left(U* - U\right)\right)\right)\right)\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in Om around inf <span class="error" title="Internally 15.9">38.8</span></p><div class="math">\[\leadsto \sqrt{\color{blue}{2 \cdot \left(n \cdot \left(t \cdot U\right)\right) + -4 \cdot \frac{n \cdot \left({\ell}^{2} \cdot U\right)}{Om}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 11.8">37.0</span></p><div class="math">\[\leadsto \sqrt{\color{blue}{\mathsf{fma}\left(-4, \frac{n}{Om} \cdot \left(\ell \cdot \left(\ell \cdot U\right)\right), 2 \cdot \left(n \cdot \left(U \cdot t\right)\right)\right)}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-7.4999999999999998e266 &lt;  t  &lt; -4.1999999999999996e93 or 2.55000000000000003e-132 &lt;  t  &lt; 9.9999999999999998e184</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 24.6">32.4</span></p><div class="math">\[\sqrt{\left(\left(2 \cdot n\right) \cdot U\right) \cdot \left(\left(t - 2 \cdot \frac{\ell \cdot \ell}{Om}\right) - \left(n \cdot {\left(\frac{\ell}{Om}\right)}^{2}\right) \cdot \left(U - U*\right)\right)}
+\]</div></li></ol><h2><code>if <span class="condition">-9.99999999999999983e72 &lt;  t  &lt; -9.99999999999999933e-125</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 22.8">30.0</span></p><div class="math">\[\sqrt{\left(\left(2 \cdot n\right) \cdot U\right) \cdot \left(\left(t - 2 \cdot \frac{\ell \cdot \ell}{Om}\right) - \left(n \cdot {\left(\frac{\ell}{Om}\right)}^{2}\right) \cdot \left(U - U*\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 16.3">29.0</span></p><div class="math">\[\leadsto \color{blue}{\sqrt{\left(2 \cdot n\right) \cdot \left(U \cdot \left(t + \frac{\ell}{Om} \cdot \mathsf{fma}\left(\ell, -2, \frac{\ell}{Om} \cdot \left(n \cdot \left(U* - U\right)\right)\right)\right)\right)}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-9.99999999999999933e-125 &lt;  t  &lt; -6.5999999999999998e-194 or -7.5999999999999999e-213 &lt;  t  &lt; -9.0000000000000002e-303</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 40.2">34.1</span></p><div class="math">\[\sqrt{\left(\left(2 \cdot n\right) \cdot U\right) \cdot \left(\left(t - 2 \cdot \frac{\ell \cdot \ell}{Om}\right) - \left(n \cdot {\left(\frac{\ell}{Om}\right)}^{2}\right) \cdot \left(U - U*\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 42.0">34.5</span></p><div class="math">\[\leadsto \color{blue}{\sqrt{\left(2 \cdot n\right) \cdot \left(U \cdot \left(t + \frac{\ell}{Om} \cdot \mathsf{fma}\left(\ell, -2, \frac{\ell}{Om} \cdot \left(n \cdot \left(U* - U\right)\right)\right)\right)\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in l around -inf <span class="error" title="Internally 39.9">40.8</span></p><div class="math">\[\leadsto \sqrt{\color{blue}{2 \cdot \left(n \cdot \left(t \cdot U\right)\right) + -2 \cdot \frac{n \cdot \left({\ell}^{2} \cdot \left(\left(2 + -1 \cdot \frac{n \cdot \left(U* - U\right)}{Om}\right) \cdot U\right)\right)}{Om}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 31.6">39.7</span></p><div class="math">\[\leadsto \sqrt{\color{blue}{\mathsf{fma}\left(2, n \cdot \left(U \cdot t\right), \frac{\left(-2 \cdot \left(n \cdot \left(\ell \cdot \ell\right)\right)\right) \cdot \left(U \cdot \left(2 - \frac{n}{Om} \cdot \left(U* - U\right)\right)\right)}{Om}\right)}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-6.5999999999999998e-194 &lt;  t  &lt; -7.5999999999999999e-213</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 35.8">39.1</span></p><div class="math">\[\sqrt{\left(\left(2 \cdot n\right) \cdot U\right) \cdot \left(\left(t - 2 \cdot \frac{\ell \cdot \ell}{Om}\right) - \left(n \cdot {\left(\frac{\ell}{Om}\right)}^{2}\right) \cdot \left(U - U*\right)\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 18.4">49.3</span></p><div class="math">\[\leadsto \color{blue}{\sqrt{2 \cdot n} \cdot \sqrt{U \cdot \left(t - \mathsf{fma}\left(2, \ell \cdot \frac{\ell}{Om}, n \cdot \left({\left(\frac{\ell}{Om}\right)}^{2} \cdot \left(U - U*\right)\right)\right)\right)}}
+\]</div></li></ol><h2><code>if <span class="condition">-9.0000000000000002e-303 &lt;  t  &lt; 2.55000000000000003e-132 or 9.9999999999999998e184 &lt;  t </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 42.0">37.7</span></p><div class="math">\[\sqrt{\left(\left(2 \cdot n\right) \cdot U\right) \cdot \left(\left(t - 2 \cdot \frac{\ell \cdot \ell}{Om}\right) - \left(n \cdot {\left(\frac{\ell}{Om}\right)}^{2}\right) \cdot \left(U - U*\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 43.9">36.0</span></p><div class="math">\[\leadsto \color{blue}{\sqrt{\left(2 \cdot n\right) \cdot \left(U \cdot \left(t + \frac{\ell}{Om} \cdot \mathsf{fma}\left(\ell, -2, \frac{\ell}{Om} \cdot \left(n \cdot \left(U* - U\right)\right)\right)\right)\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 25.8">29.3</span></p><div class="math">\[\leadsto \color{blue}{\sqrt{2 \cdot \left(n \cdot U\right)} \cdot \sqrt{\mathsf{fma}\left(\frac{\ell}{Om}, \mathsf{fma}\left(n, \left(U* - U\right) \cdot \frac{\ell}{Om}, \ell \cdot -2\right), t\right)}}
+\]</div></li></ol></li><li class="event">Recombined 6 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 23.2">32.4</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;t \leq -7.5 \cdot 10^{+266}:\\
+\;\;\;\;\sqrt{\mathsf{fma}\left(-4, \frac{n}{Om} \cdot \left(\ell \cdot \left(\ell \cdot U\right)\right), 2 \cdot \left(n \cdot \left(t \cdot U\right)\right)\right)}\\
+
+\mathbf{elif}\;t \leq -4.2 \cdot 10^{+93}:\\
+\;\;\;\;\sqrt{\left(U \cdot \left(n \cdot 2\right)\right) \cdot \left(\left(t - 2 \cdot \frac{\ell \cdot \ell}{Om}\right) + \left(n \cdot {\left(\frac{\ell}{Om}\right)}^{2}\right) \cdot \left(U* - U\right)\right)}\\
+
+\mathbf{elif}\;t \leq -1 \cdot 10^{+73}:\\
+\;\;\;\;\sqrt{\mathsf{fma}\left(-4, \frac{n}{Om} \cdot \left(\ell \cdot \left(\ell \cdot U\right)\right), 2 \cdot \left(n \cdot \left(t \cdot U\right)\right)\right)}\\
+
+\mathbf{elif}\;t \leq -1 \cdot 10^{-124}:\\
+\;\;\;\;\sqrt{\left(n \cdot 2\right) \cdot \left(U \cdot \left(t + \frac{\ell}{Om} \cdot \mathsf{fma}\left(\ell, -2, \frac{\ell}{Om} \cdot \left(n \cdot \left(U* - U\right)\right)\right)\right)\right)}\\
+
+\mathbf{elif}\;t \leq -6.6 \cdot 10^{-194}:\\
+\;\;\;\;\sqrt{\mathsf{fma}\left(2, n \cdot \left(t \cdot U\right), \frac{\left(-2 \cdot \left(n \cdot \left(\ell \cdot \ell\right)\right)\right) \cdot \left(U \cdot \left(2 + \frac{n}{Om} \cdot \left(U - U*\right)\right)\right)}{Om}\right)}\\
+
+\mathbf{elif}\;t \leq -7.6 \cdot 10^{-213}:\\
+\;\;\;\;\sqrt{n \cdot 2} \cdot \sqrt{U \cdot \left(t - \mathsf{fma}\left(2, \ell \cdot \frac{\ell}{Om}, n \cdot \left({\left(\frac{\ell}{Om}\right)}^{2} \cdot \left(U - U*\right)\right)\right)\right)}\\
+
+\mathbf{elif}\;t \leq -9 \cdot 10^{-303}:\\
+\;\;\;\;\sqrt{\mathsf{fma}\left(2, n \cdot \left(t \cdot U\right), \frac{\left(-2 \cdot \left(n \cdot \left(\ell \cdot \ell\right)\right)\right) \cdot \left(U \cdot \left(2 + \frac{n}{Om} \cdot \left(U - U*\right)\right)\right)}{Om}\right)}\\
+
+\mathbf{elif}\;t \leq 2.55 \cdot 10^{-132}:\\
+\;\;\;\;\sqrt{2 \cdot \left(n \cdot U\right)} \cdot \sqrt{\mathsf{fma}\left(\frac{\ell}{Om}, \mathsf{fma}\left(n, \frac{\ell}{Om} \cdot \left(U* - U\right), \ell \cdot -2\right), t\right)}\\
+
+\mathbf{elif}\;t \leq 10^{+185}:\\
+\;\;\;\;\sqrt{\left(U \cdot \left(n \cdot 2\right)\right) \cdot \left(\left(t - 2 \cdot \frac{\ell \cdot \ell}{Om}\right) + \left(n \cdot {\left(\frac{\ell}{Om}\right)}^{2}\right) \cdot \left(U* - U\right)\right)}\\
+
+\mathbf{else}:\\
+\;\;\;\;\sqrt{2 \cdot \left(n \cdot U\right)} \cdot \sqrt{\mathsf{fma}\left(\frac{\ell}{Om}, \mathsf{fma}\left(n, \frac{\ell}{Om} \cdot \left(U* - U\right), \ell \cdot -2\right), t\right)}\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (n U t l Om U*)
+  :name "Toniolo and Linder, Equation (13)"
+  :precision binary64
+  (sqrt (* (* (* 2.0 n) U) (- (- t (* 2.0 (/ (* l l) Om))) (* (* n (pow (/ l Om) 2.0)) (- U U*))))))
+</code></pre></section></body></html>

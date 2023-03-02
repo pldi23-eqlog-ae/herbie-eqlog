@@ -1,0 +1,29 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for ENA, Section 1.4, Exercise 4b, n=2</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 62.0 → 1.0">15.8 → 0.0</span></div><div>Time: <span class="number">1.1s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[\left(-1000000000 \leq x \land x \leq 1000000000\right) \land \left(-1 \leq \varepsilon \land \varepsilon \leq 1\right)\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[{\left(x + \varepsilon\right)}^{2} - {x}^{2}
+\]</div><div class="arrow">↓</div><div class="program math">\[\varepsilon \cdot \mathsf{fma}\left(2, x, \varepsilon\right)
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x eps) :precision binary64 (- (pow (+ x eps) 2.0) (pow x 2.0)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x eps) :precision binary64 (* eps (fma 2.0 x eps)))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double eps) {
+	return pow((x + eps), 2.0) - pow(x, 2.0);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double eps) {
+	return eps * fma(2.0, x, eps);
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, eps)
+	return Float64((Float64(x + eps) ^ 2.0) - (x ^ 2.0))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, eps)
+	return Float64(eps * fma(2.0, x, eps))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, eps_] := N[(N[Power[N[(x + eps), $MachinePrecision], 2.0], $MachinePrecision] - N[Power[x, 2.0], $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, eps_] := N[(eps * N[(2.0 * x + eps), $MachinePrecision]), $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">{\left(x + \varepsilon\right)}^{2} - {x}^{2}
+</pre><div class="arrow">↓</div><pre class="program">\varepsilon \cdot \mathsf{fma}\left(2, x, \varepsilon\right)
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 14.4">15.8</span></p><div class="math">\[{\left(x + \varepsilon\right)}^{2} - {x}^{2}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.0">0.0</span></p><div class="math">\[\leadsto \color{blue}{\varepsilon \cdot \mathsf{fma}\left(2, x, \varepsilon\right)}
+\]</div><div class="math">Proof</div></li><li><p>Final simplification<span class="error" title="Internally 0.0">0.0</span></p><div class="math">\[\leadsto \varepsilon \cdot \mathsf{fma}\left(2, x, \varepsilon\right)
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x eps)
+  :name "ENA, Section 1.4, Exercise 4b, n=2"
+  :precision binary64
+  :pre (and (and (&lt;= -1000000000.0 x) (&lt;= x 1000000000.0)) (and (&lt;= -1.0 eps) (&lt;= eps 1.0)))
+  (- (pow (+ x eps) 2.0) (pow x 2.0)))
+</code></pre></section></body></html>

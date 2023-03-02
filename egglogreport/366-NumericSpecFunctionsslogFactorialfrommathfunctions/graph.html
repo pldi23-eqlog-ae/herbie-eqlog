@@ -1,0 +1,113 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Numeric.SpecFunctions:$slogFactorial from math-functions-0.1.5.2, B</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">6.3 → 2.7</span></div><div>Time: <span class="number">3.1s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(\left(\left(x - 0.5\right) \cdot \log x - x\right) + 0.91893853320467\right) + \frac{\left(\left(y + 0.0007936500793651\right) \cdot z - 0.0027777777777778\right) \cdot z + 0.083333333333333}{x}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \mathsf{fma}\left(\log x, x + -0.5, 0.91893853320467 - x\right)\\
+\mathbf{if}\;x \leq 10^{+30}:\\
+\;\;\;\;\left(\mathsf{fma}\left(x + -0.5, \log x, 0.91893853320467\right) - x\right) + \frac{\mathsf{fma}\left(\mathsf{fma}\left(y + 0.0007936500793651, z, -0.0027777777777778\right), z, 0.083333333333333\right)}{x}\\
+
+\mathbf{elif}\;x \leq 7.4316061656686256 \cdot 10^{+196}:\\
+\;\;\;\;t_0 + \left(\frac{\mathsf{fma}\left(-0.0027777777777778, z, 0.083333333333333\right)}{x} + \frac{0.0007936500793651 + y}{x} \cdot \left(z \cdot z\right)\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;t_0 + \left(0.083333333333333 \cdot \frac{1}{x} + -0.0027777777777778 \cdot \frac{z}{x}\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z)
+ :precision binary64
+ (+
+  (+ (- (* (- x 0.5) (log x)) x) 0.91893853320467)
+  (/
+   (+
+    (* (- (* (+ y 0.0007936500793651) z) 0.0027777777777778) z)
+    0.083333333333333)
+   x)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z)
+ :precision binary64
+ (let* ((t_0 (fma (log x) (+ x -0.5) (- 0.91893853320467 x))))
+   (if (&lt;= x 1e+30)
+     (+
+      (- (fma (+ x -0.5) (log x) 0.91893853320467) x)
+      (/
+       (fma
+        (fma (+ y 0.0007936500793651) z -0.0027777777777778)
+        z
+        0.083333333333333)
+       x))
+     (if (&lt;= x 7.4316061656686256e+196)
+       (+
+        t_0
+        (+
+         (/ (fma -0.0027777777777778 z 0.083333333333333) x)
+         (* (/ (+ 0.0007936500793651 y) x) (* z z))))
+       (+
+        t_0
+        (+
+         (* 0.083333333333333 (/ 1.0 x))
+         (* -0.0027777777777778 (/ z x))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z) {
+	return ((((x - 0.5) * log(x)) - x) + 0.91893853320467) + ((((((y + 0.0007936500793651) * z) - 0.0027777777777778) * z) + 0.083333333333333) / x);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z) {
+	double t_0 = fma(log(x), (x + -0.5), (0.91893853320467 - x));
+	double tmp;
+	if (x &lt;= 1e+30) {
+		tmp = (fma((x + -0.5), log(x), 0.91893853320467) - x) + (fma(fma((y + 0.0007936500793651), z, -0.0027777777777778), z, 0.083333333333333) / x);
+	} else if (x &lt;= 7.4316061656686256e+196) {
+		tmp = t_0 + ((fma(-0.0027777777777778, z, 0.083333333333333) / x) + (((0.0007936500793651 + y) / x) * (z * z)));
+	} else {
+		tmp = t_0 + ((0.083333333333333 * (1.0 / x)) + (-0.0027777777777778 * (z / x)));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z)
+	return Float64(Float64(Float64(Float64(Float64(x - 0.5) * log(x)) - x) + 0.91893853320467) + Float64(Float64(Float64(Float64(Float64(Float64(y + 0.0007936500793651) * z) - 0.0027777777777778) * z) + 0.083333333333333) / x))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z)
+	t_0 = fma(log(x), Float64(x + -0.5), Float64(0.91893853320467 - x))
+	tmp = 0.0
+	if (x &lt;= 1e+30)
+		tmp = Float64(Float64(fma(Float64(x + -0.5), log(x), 0.91893853320467) - x) + Float64(fma(fma(Float64(y + 0.0007936500793651), z, -0.0027777777777778), z, 0.083333333333333) / x));
+	elseif (x &lt;= 7.4316061656686256e+196)
+		tmp = Float64(t_0 + Float64(Float64(fma(-0.0027777777777778, z, 0.083333333333333) / x) + Float64(Float64(Float64(0.0007936500793651 + y) / x) * Float64(z * z))));
+	else
+		tmp = Float64(t_0 + Float64(Float64(0.083333333333333 * Float64(1.0 / x)) + Float64(-0.0027777777777778 * Float64(z / x))));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_] := N[(N[(N[(N[(N[(x - 0.5), $MachinePrecision] * N[Log[x], $MachinePrecision]), $MachinePrecision] - x), $MachinePrecision] + 0.91893853320467), $MachinePrecision] + N[(N[(N[(N[(N[(N[(y + 0.0007936500793651), $MachinePrecision] * z), $MachinePrecision] - 0.0027777777777778), $MachinePrecision] * z), $MachinePrecision] + 0.083333333333333), $MachinePrecision] / x), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_] := Block[{t$95$0 = N[(N[Log[x], $MachinePrecision] * N[(x + -0.5), $MachinePrecision] + N[(0.91893853320467 - x), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[x, 1e+30], N[(N[(N[(N[(x + -0.5), $MachinePrecision] * N[Log[x], $MachinePrecision] + 0.91893853320467), $MachinePrecision] - x), $MachinePrecision] + N[(N[(N[(N[(y + 0.0007936500793651), $MachinePrecision] * z + -0.0027777777777778), $MachinePrecision] * z + 0.083333333333333), $MachinePrecision] / x), $MachinePrecision]), $MachinePrecision], If[LessEqual[x, 7.4316061656686256e+196], N[(t$95$0 + N[(N[(N[(-0.0027777777777778 * z + 0.083333333333333), $MachinePrecision] / x), $MachinePrecision] + N[(N[(N[(0.0007936500793651 + y), $MachinePrecision] / x), $MachinePrecision] * N[(z * z), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], N[(t$95$0 + N[(N[(0.083333333333333 * N[(1.0 / x), $MachinePrecision]), $MachinePrecision] + N[(-0.0027777777777778 * N[(z / x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(\left(\left(x - 0.5\right) \cdot \log x - x\right) + 0.91893853320467\right) + \frac{\left(\left(y + 0.0007936500793651\right) \cdot z - 0.0027777777777778\right) \cdot z + 0.083333333333333}{x}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \mathsf{fma}\left(\log x, x + -0.5, 0.91893853320467 - x\right)\\
+\mathbf{if}\;x \leq 10^{+30}:\\
+\;\;\;\;\left(\mathsf{fma}\left(x + -0.5, \log x, 0.91893853320467\right) - x\right) + \frac{\mathsf{fma}\left(\mathsf{fma}\left(y + 0.0007936500793651, z, -0.0027777777777778\right), z, 0.083333333333333\right)}{x}\\
+
+\mathbf{elif}\;x \leq 7.4316061656686256 \cdot 10^{+196}:\\
+\;\;\;\;t_0 + \left(\frac{\mathsf{fma}\left(-0.0027777777777778, z, 0.083333333333333\right)}{x} + \frac{0.0007936500793651 + y}{x} \cdot \left(z \cdot z\right)\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;t_0 + \left(0.083333333333333 \cdot \frac{1}{x} + -0.0027777777777778 \cdot \frac{z}{x}\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>6.3</td></tr><tr><th>Target</th><td>1.2</td></tr><tr><th>Herbie</th><td>2.7</td></tr></table><div class="math">\[\left(\left(\left(x - 0.5\right) \cdot \log x + \left(0.91893853320467 - x\right)\right) + \frac{0.083333333333333}{x}\right) + \frac{z}{x} \cdot \left(z \cdot \left(y + 0.0007936500793651\right) - 0.0027777777777778\right)
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> x  &lt; 1e30</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.4">0.5</span></p><div class="math">\[\left(\left(\left(x - 0.5\right) \cdot \log x - x\right) + 0.91893853320467\right) + \frac{\left(\left(y + 0.0007936500793651\right) \cdot z - 0.0027777777777778\right) \cdot z + 0.083333333333333}{x}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.4">0.5</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\log x, x + -0.5, 0.91893853320467 - x\right) + \frac{\mathsf{fma}\left(\mathsf{fma}\left(y + 0.0007936500793651, z, -0.0027777777777778\right), z, 0.083333333333333\right)}{x}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.4">0.5</span></p><div class="math">\[\leadsto \color{blue}{\left(\mathsf{fma}\left(x + -0.5, \log x, 0.91893853320467\right) - x\right)} + \frac{\mathsf{fma}\left(\mathsf{fma}\left(y + 0.0007936500793651, z, -0.0027777777777778\right), z, 0.083333333333333\right)}{x}
+\]</div></li></ol><h2><code>if <span class="condition">1e30 &lt;  x  &lt; 7.4316061656686256e196</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 9.7">8.5</span></p><div class="math">\[\left(\left(\left(x - 0.5\right) \cdot \log x - x\right) + 0.91893853320467\right) + \frac{\left(\left(y + 0.0007936500793651\right) \cdot z - 0.0027777777777778\right) \cdot z + 0.083333333333333}{x}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 9.6">8.4</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\log x, x + -0.5, 0.91893853320467 - x\right) + \frac{\mathsf{fma}\left(\mathsf{fma}\left(y + 0.0007936500793651, z, -0.0027777777777778\right), z, 0.083333333333333\right)}{x}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 9.6">8.4</span></p><div class="math">\[\leadsto \mathsf{fma}\left(\log x, x + -0.5, 0.91893853320467 - x\right) + \frac{\color{blue}{\mathsf{fma}\left(\sqrt{0.083333333333333}, \sqrt{0.083333333333333}, \mathsf{fma}\left(y + 0.0007936500793651, z, -0.0027777777777778\right) \cdot z\right)}}{x}
+\]</div></li><li><p>Taylor expanded in z around 0 <span class="error" title="Internally 4.5">5.6</span></p><div class="math">\[\leadsto \mathsf{fma}\left(\log x, x + -0.5, 0.91893853320467 - x\right) + \color{blue}{\left(\frac{{\left(\sqrt{0.083333333333333}\right)}^{2}}{x} + \left(-0.0027777777777778 \cdot \frac{z}{x} + \left(\frac{y}{x} + 0.0007936500793651 \cdot \frac{1}{x}\right) \cdot {z}^{2}\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 4.5">5.6</span></p><div class="math">\[\leadsto \mathsf{fma}\left(\log x, x + -0.5, 0.91893853320467 - x\right) + \color{blue}{\left(\frac{\mathsf{fma}\left(-0.0027777777777778, z, 0.083333333333333\right)}{x} + \frac{0.0007936500793651 + y}{x} \cdot \left(z \cdot z\right)\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">7.4316061656686256e196 &lt;  x </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 18.5">14.7</span></p><div class="math">\[\left(\left(\left(x - 0.5\right) \cdot \log x - x\right) + 0.91893853320467\right) + \frac{\left(\left(y + 0.0007936500793651\right) \cdot z - 0.0027777777777778\right) \cdot z + 0.083333333333333}{x}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 18.4">14.6</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\log x, x + -0.5, 0.91893853320467 - x\right) + \frac{\mathsf{fma}\left(\mathsf{fma}\left(y + 0.0007936500793651, z, -0.0027777777777778\right), z, 0.083333333333333\right)}{x}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in z around 0 <span class="error" title="Internally 3.8">3.0</span></p><div class="math">\[\leadsto \mathsf{fma}\left(\log x, x + -0.5, 0.91893853320467 - x\right) + \color{blue}{\left(0.083333333333333 \cdot \frac{1}{x} + -0.0027777777777778 \cdot \frac{z}{x}\right)}
+\]</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y z)
+  :name "Numeric.SpecFunctions:$slogFactorial from math-functions-0.1.5.2, B"
+  :precision binary64
+
+  :herbie-target
+  (+ (+ (+ (* (- x 0.5) (log x)) (- 0.91893853320467 x)) (/ 0.083333333333333 x)) (* (/ z x) (- (* z (+ y 0.0007936500793651)) 0.0027777777777778)))
+
+  (+ (+ (- (* (- x 0.5) (log x)) x) 0.91893853320467) (/ (+ (* (- (* (+ y 0.0007936500793651) z) 0.0027777777777778) z) 0.083333333333333) x)))
+</code></pre></section></body></html>

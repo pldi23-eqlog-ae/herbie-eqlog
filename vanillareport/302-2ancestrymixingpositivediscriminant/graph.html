@@ -1,0 +1,133 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for 2-ancestry mixing, positive discriminant</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">36.1 → 35.1</span></div><div>Time: <span class="number">2.7s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Java</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\sqrt[3]{\frac{1}{2 \cdot a} \cdot \left(\left(-g\right) + \sqrt{g \cdot g - h \cdot h}\right)} + \sqrt[3]{\frac{1}{2 \cdot a} \cdot \left(\left(-g\right) - \sqrt{g \cdot g - h \cdot h}\right)}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \sqrt{g \cdot g - h \cdot h}\\
+t_1 := g + t_0\\
+t_2 := \sqrt[3]{t_1 \cdot \frac{-0.5}{a}}\\
+t_3 := \sqrt[3]{\frac{0.5}{a} \cdot \left(t_0 - g\right)}\\
+\mathbf{if}\;h \leq -5.109778323576834 \cdot 10^{-255}:\\
+\;\;\;\;t_3 + t_2\\
+
+\mathbf{elif}\;h \leq 3.463605616987621 \cdot 10^{-181}:\\
+\;\;\;\;t_2 + \frac{\sqrt[3]{0.5 \cdot \left(\mathsf{hypot}\left(g, \sqrt{h \cdot \left(-h\right)}\right) - g\right)}}{\sqrt[3]{a}}\\
+
+\mathbf{else}:\\
+\;\;\;\;t_3 + \sqrt[3]{\frac{-0.5}{a} \cdot {\left(\sqrt{t_1}\right)}^{2}}\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (g h a)
+ :precision binary64
+ (+
+  (cbrt (* (/ 1.0 (* 2.0 a)) (+ (- g) (sqrt (- (* g g) (* h h))))))
+  (cbrt (* (/ 1.0 (* 2.0 a)) (- (- g) (sqrt (- (* g g) (* h h))))))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (g h a)
+ :precision binary64
+ (let* ((t_0 (sqrt (- (* g g) (* h h))))
+        (t_1 (+ g t_0))
+        (t_2 (cbrt (* t_1 (/ -0.5 a))))
+        (t_3 (cbrt (* (/ 0.5 a) (- t_0 g)))))
+   (if (&lt;= h -5.109778323576834e-255)
+     (+ t_3 t_2)
+     (if (&lt;= h 3.463605616987621e-181)
+       (+ t_2 (/ (cbrt (* 0.5 (- (hypot g (sqrt (* h (- h)))) g))) (cbrt a)))
+       (+ t_3 (cbrt (* (/ -0.5 a) (pow (sqrt t_1) 2.0))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double g, double h, double a) {
+	return cbrt(((1.0 / (2.0 * a)) * (-g + sqrt(((g * g) - (h * h)))))) + cbrt(((1.0 / (2.0 * a)) * (-g - sqrt(((g * g) - (h * h))))));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double g, double h, double a) {
+	double t_0 = sqrt(((g * g) - (h * h)));
+	double t_1 = g + t_0;
+	double t_2 = cbrt((t_1 * (-0.5 / a)));
+	double t_3 = cbrt(((0.5 / a) * (t_0 - g)));
+	double tmp;
+	if (h &lt;= -5.109778323576834e-255) {
+		tmp = t_3 + t_2;
+	} else if (h &lt;= 3.463605616987621e-181) {
+		tmp = t_2 + (cbrt((0.5 * (hypot(g, sqrt((h * -h))) - g))) / cbrt(a));
+	} else {
+		tmp = t_3 + cbrt(((-0.5 / a) * pow(sqrt(t_1), 2.0)));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double g, double h, double a) {
+	return Math.cbrt(((1.0 / (2.0 * a)) * (-g + Math.sqrt(((g * g) - (h * h)))))) + Math.cbrt(((1.0 / (2.0 * a)) * (-g - Math.sqrt(((g * g) - (h * h))))));
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double g, double h, double a) {
+	double t_0 = Math.sqrt(((g * g) - (h * h)));
+	double t_1 = g + t_0;
+	double t_2 = Math.cbrt((t_1 * (-0.5 / a)));
+	double t_3 = Math.cbrt(((0.5 / a) * (t_0 - g)));
+	double tmp;
+	if (h &lt;= -5.109778323576834e-255) {
+		tmp = t_3 + t_2;
+	} else if (h &lt;= 3.463605616987621e-181) {
+		tmp = t_2 + (Math.cbrt((0.5 * (Math.hypot(g, Math.sqrt((h * -h))) - g))) / Math.cbrt(a));
+	} else {
+		tmp = t_3 + Math.cbrt(((-0.5 / a) * Math.pow(Math.sqrt(t_1), 2.0)));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(g, h, a)
+	return Float64(cbrt(Float64(Float64(1.0 / Float64(2.0 * a)) * Float64(Float64(-g) + sqrt(Float64(Float64(g * g) - Float64(h * h)))))) + cbrt(Float64(Float64(1.0 / Float64(2.0 * a)) * Float64(Float64(-g) - sqrt(Float64(Float64(g * g) - Float64(h * h)))))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(g, h, a)
+	t_0 = sqrt(Float64(Float64(g * g) - Float64(h * h)))
+	t_1 = Float64(g + t_0)
+	t_2 = cbrt(Float64(t_1 * Float64(-0.5 / a)))
+	t_3 = cbrt(Float64(Float64(0.5 / a) * Float64(t_0 - g)))
+	tmp = 0.0
+	if (h &lt;= -5.109778323576834e-255)
+		tmp = Float64(t_3 + t_2);
+	elseif (h &lt;= 3.463605616987621e-181)
+		tmp = Float64(t_2 + Float64(cbrt(Float64(0.5 * Float64(hypot(g, sqrt(Float64(h * Float64(-h)))) - g))) / cbrt(a)));
+	else
+		tmp = Float64(t_3 + cbrt(Float64(Float64(-0.5 / a) * (sqrt(t_1) ^ 2.0))));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[g_, h_, a_] := N[(N[Power[N[(N[(1.0 / N[(2.0 * a), $MachinePrecision]), $MachinePrecision] * N[((-g) + N[Sqrt[N[(N[(g * g), $MachinePrecision] - N[(h * h), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision], 1/3], $MachinePrecision] + N[Power[N[(N[(1.0 / N[(2.0 * a), $MachinePrecision]), $MachinePrecision] * N[((-g) - N[Sqrt[N[(N[(g * g), $MachinePrecision] - N[(h * h), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision], 1/3], $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[g_, h_, a_] := Block[{t$95$0 = N[Sqrt[N[(N[(g * g), $MachinePrecision] - N[(h * h), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]}, Block[{t$95$1 = N[(g + t$95$0), $MachinePrecision]}, Block[{t$95$2 = N[Power[N[(t$95$1 * N[(-0.5 / a), $MachinePrecision]), $MachinePrecision], 1/3], $MachinePrecision]}, Block[{t$95$3 = N[Power[N[(N[(0.5 / a), $MachinePrecision] * N[(t$95$0 - g), $MachinePrecision]), $MachinePrecision], 1/3], $MachinePrecision]}, If[LessEqual[h, -5.109778323576834e-255], N[(t$95$3 + t$95$2), $MachinePrecision], If[LessEqual[h, 3.463605616987621e-181], N[(t$95$2 + N[(N[Power[N[(0.5 * N[(N[Sqrt[g ^ 2 + N[Sqrt[N[(h * (-h)), $MachinePrecision]], $MachinePrecision] ^ 2], $MachinePrecision] - g), $MachinePrecision]), $MachinePrecision], 1/3], $MachinePrecision] / N[Power[a, 1/3], $MachinePrecision]), $MachinePrecision]), $MachinePrecision], N[(t$95$3 + N[Power[N[(N[(-0.5 / a), $MachinePrecision] * N[Power[N[Sqrt[t$95$1], $MachinePrecision], 2.0], $MachinePrecision]), $MachinePrecision], 1/3], $MachinePrecision]), $MachinePrecision]]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\sqrt[3]{\frac{1}{2 \cdot a} \cdot \left(\left(-g\right) + \sqrt{g \cdot g - h \cdot h}\right)} + \sqrt[3]{\frac{1}{2 \cdot a} \cdot \left(\left(-g\right) - \sqrt{g \cdot g - h \cdot h}\right)}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \sqrt{g \cdot g - h \cdot h}\\
+t_1 := g + t_0\\
+t_2 := \sqrt[3]{t_1 \cdot \frac{-0.5}{a}}\\
+t_3 := \sqrt[3]{\frac{0.5}{a} \cdot \left(t_0 - g\right)}\\
+\mathbf{if}\;h \leq -5.109778323576834 \cdot 10^{-255}:\\
+\;\;\;\;t_3 + t_2\\
+
+\mathbf{elif}\;h \leq 3.463605616987621 \cdot 10^{-181}:\\
+\;\;\;\;t_2 + \frac{\sqrt[3]{0.5 \cdot \left(\mathsf{hypot}\left(g, \sqrt{h \cdot \left(-h\right)}\right) - g\right)}}{\sqrt[3]{a}}\\
+
+\mathbf{else}:\\
+\;\;\;\;t_3 + \sqrt[3]{\frac{-0.5}{a} \cdot {\left(\sqrt{t_1}\right)}^{2}}\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">g</label><input type="text" class="input-submit" name="var-name-0" value="-2.1553828860702288e+272"/></li><li><label for="var-name-1">h</label><input type="text" class="input-submit" name="var-name-1" value="-1.1301734661470327e-119"/></li><li><label for="var-name-2">a</label><input type="text" class="input-submit" name="var-name-2" value="2.5535171318623675e-99"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> h  &lt; -5.1097783235768338e-255</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 37.0">36.7</span></p><div class="math">\[\sqrt[3]{\frac{1}{2 \cdot a} \cdot \left(\left(-g\right) + \sqrt{g \cdot g - h \cdot h}\right)} + \sqrt[3]{\frac{1}{2 \cdot a} \cdot \left(\left(-g\right) - \sqrt{g \cdot g - h \cdot h}\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 37.0">36.6</span></p><div class="math">\[\leadsto \color{blue}{\sqrt[3]{\frac{0.5}{a} \cdot \left(\sqrt{g \cdot g - h \cdot h} - g\right)} + \sqrt[3]{\left(g + \sqrt{g \cdot g - h \cdot h}\right) \cdot \frac{-0.5}{a}}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-5.1097783235768338e-255 &lt;  h  &lt; 3.463605616987621e-181</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 32.1">32.1</span></p><div class="math">\[\sqrt[3]{\frac{1}{2 \cdot a} \cdot \left(\left(-g\right) + \sqrt{g \cdot g - h \cdot h}\right)} + \sqrt[3]{\frac{1}{2 \cdot a} \cdot \left(\left(-g\right) - \sqrt{g \cdot g - h \cdot h}\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 32.1">32.1</span></p><div class="math">\[\leadsto \color{blue}{\sqrt[3]{\frac{0.5}{a} \cdot \left(\sqrt{g \cdot g - h \cdot h} - g\right)} + \sqrt[3]{\left(g + \sqrt{g \cdot g - h \cdot h}\right) \cdot \frac{-0.5}{a}}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 25.8">28.1</span></p><div class="math">\[\leadsto \color{blue}{\frac{\sqrt[3]{0.5 \cdot \left(\mathsf{hypot}\left(g, \sqrt{h \cdot \left(-h\right)}\right) - g\right)}}{\sqrt[3]{a}}} + \sqrt[3]{\left(g + \sqrt{g \cdot g - h \cdot h}\right) \cdot \frac{-0.5}{a}}
+\]</div></li></ol><h2><code>if <span class="condition">3.463605616987621e-181 &lt;  h </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 44.8">38.8</span></p><div class="math">\[\sqrt[3]{\frac{1}{2 \cdot a} \cdot \left(\left(-g\right) + \sqrt{g \cdot g - h \cdot h}\right)} + \sqrt[3]{\frac{1}{2 \cdot a} \cdot \left(\left(-g\right) - \sqrt{g \cdot g - h \cdot h}\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 44.8">38.8</span></p><div class="math">\[\leadsto \color{blue}{\sqrt[3]{\frac{0.5}{a} \cdot \left(\sqrt{g \cdot g - h \cdot h} - g\right)} + \sqrt[3]{\left(g + \sqrt{g \cdot g - h \cdot h}\right) \cdot \frac{-0.5}{a}}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 49.1">43.8</span></p><div class="math">\[\leadsto \sqrt[3]{\frac{0.5}{a} \cdot \left(\sqrt{g \cdot g - h \cdot h} - g\right)} + \sqrt[3]{\left(g + \sqrt{\color{blue}{\mathsf{expm1}\left(\mathsf{log1p}\left(g \cdot g - h \cdot h\right)\right)}}\right) \cdot \frac{-0.5}{a}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 49.2">44.1</span></p><div class="math">\[\leadsto \sqrt[3]{\frac{0.5}{a} \cdot \left(\sqrt{g \cdot g - h \cdot h} - g\right)} + \sqrt[3]{\left(g + \sqrt{\mathsf{expm1}\left(\color{blue}{{\left(\sqrt{\mathsf{log1p}\left(\left(g + h\right) \cdot \left(g - h\right)\right)}\right)}^{2}}\right)}\right) \cdot \frac{-0.5}{a}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 44.8">39.2</span></p><div class="math">\[\leadsto \sqrt[3]{\frac{0.5}{a} \cdot \left(\sqrt{g \cdot g - h \cdot h} - g\right)} + \sqrt[3]{\color{blue}{{\left(\sqrt{g + \sqrt{g \cdot g - h \cdot h}}\right)}^{2}} \cdot \frac{-0.5}{a}}
+\]</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 36.6">35.1</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;h \leq -5.109778323576834 \cdot 10^{-255}:\\
+\;\;\;\;\sqrt[3]{\frac{0.5}{a} \cdot \left(\sqrt{g \cdot g - h \cdot h} - g\right)} + \sqrt[3]{\left(g + \sqrt{g \cdot g - h \cdot h}\right) \cdot \frac{-0.5}{a}}\\
+
+\mathbf{elif}\;h \leq 3.463605616987621 \cdot 10^{-181}:\\
+\;\;\;\;\sqrt[3]{\left(g + \sqrt{g \cdot g - h \cdot h}\right) \cdot \frac{-0.5}{a}} + \frac{\sqrt[3]{0.5 \cdot \left(\mathsf{hypot}\left(g, \sqrt{h \cdot \left(-h\right)}\right) - g\right)}}{\sqrt[3]{a}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\sqrt[3]{\frac{0.5}{a} \cdot \left(\sqrt{g \cdot g - h \cdot h} - g\right)} + \sqrt[3]{\frac{-0.5}{a} \cdot {\left(\sqrt{g + \sqrt{g \cdot g - h \cdot h}}\right)}^{2}}\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (g h a)
+  :name "2-ancestry mixing, positive discriminant"
+  :precision binary64
+  (+ (cbrt (* (/ 1.0 (* 2.0 a)) (+ (- g) (sqrt (- (* g g) (* h h)))))) (cbrt (* (/ 1.0 (* 2.0 a)) (- (- g) (sqrt (- (* g g) (* h h))))))))
+</code></pre></section></body></html>

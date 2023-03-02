@@ -1,0 +1,69 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Diagrams.Trail:splitAtParam  from diagrams-lib-1.3.0.3, A</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">7.5 → 2.1</span></div><div>Time: <span class="number">4.3s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{x + \frac{y \cdot z - x}{t \cdot z - x}}{x + 1}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+\mathbf{if}\;\frac{x + \frac{y \cdot z - x}{t \cdot z - x}}{x + 1} \leq 4 \cdot 10^{+190}:\\
+\;\;\;\;\frac{x + \mathsf{fma}\left(y, \frac{z}{\mathsf{fma}\left(t, z, -x\right)}, \frac{x}{x - t \cdot z}\right)}{x + 1}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\left(-\frac{x}{\left(1 + x\right) \cdot z}\right) + \frac{y}{1 + x}}{t} + \frac{x}{1 + x}\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t)
+ :precision binary64
+ (/ (+ x (/ (- (* y z) x) (- (* t z) x))) (+ x 1.0)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t)
+ :precision binary64
+ (if (&lt;= (/ (+ x (/ (- (* y z) x) (- (* t z) x))) (+ x 1.0)) 4e+190)
+   (/ (+ x (fma y (/ z (fma t z (- x))) (/ x (- x (* t z))))) (+ x 1.0))
+   (+ (/ (+ (- (/ x (* (+ 1.0 x) z))) (/ y (+ 1.0 x))) t) (/ x (+ 1.0 x)))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t) {
+	return (x + (((y * z) - x) / ((t * z) - x))) / (x + 1.0);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t) {
+	double tmp;
+	if (((x + (((y * z) - x) / ((t * z) - x))) / (x + 1.0)) &lt;= 4e+190) {
+		tmp = (x + fma(y, (z / fma(t, z, -x)), (x / (x - (t * z))))) / (x + 1.0);
+	} else {
+		tmp = ((-(x / ((1.0 + x) * z)) + (y / (1.0 + x))) / t) + (x / (1.0 + x));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t)
+	return Float64(Float64(x + Float64(Float64(Float64(y * z) - x) / Float64(Float64(t * z) - x))) / Float64(x + 1.0))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t)
+	tmp = 0.0
+	if (Float64(Float64(x + Float64(Float64(Float64(y * z) - x) / Float64(Float64(t * z) - x))) / Float64(x + 1.0)) &lt;= 4e+190)
+		tmp = Float64(Float64(x + fma(y, Float64(z / fma(t, z, Float64(-x))), Float64(x / Float64(x - Float64(t * z))))) / Float64(x + 1.0));
+	else
+		tmp = Float64(Float64(Float64(Float64(-Float64(x / Float64(Float64(1.0 + x) * z))) + Float64(y / Float64(1.0 + x))) / t) + Float64(x / Float64(1.0 + x)));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_] := N[(N[(x + N[(N[(N[(y * z), $MachinePrecision] - x), $MachinePrecision] / N[(N[(t * z), $MachinePrecision] - x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] / N[(x + 1.0), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_] := If[LessEqual[N[(N[(x + N[(N[(N[(y * z), $MachinePrecision] - x), $MachinePrecision] / N[(N[(t * z), $MachinePrecision] - x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] / N[(x + 1.0), $MachinePrecision]), $MachinePrecision], 4e+190], N[(N[(x + N[(y * N[(z / N[(t * z + (-x)), $MachinePrecision]), $MachinePrecision] + N[(x / N[(x - N[(t * z), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] / N[(x + 1.0), $MachinePrecision]), $MachinePrecision], N[(N[(N[((-N[(x / N[(N[(1.0 + x), $MachinePrecision] * z), $MachinePrecision]), $MachinePrecision]) + N[(y / N[(1.0 + x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] / t), $MachinePrecision] + N[(x / N[(1.0 + x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{x + \frac{y \cdot z - x}{t \cdot z - x}}{x + 1}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+\mathbf{if}\;\frac{x + \frac{y \cdot z - x}{t \cdot z - x}}{x + 1} \leq 4 \cdot 10^{+190}:\\
+\;\;\;\;\frac{x + \mathsf{fma}\left(y, \frac{z}{\mathsf{fma}\left(t, z, -x\right)}, \frac{x}{x - t \cdot z}\right)}{x + 1}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\left(-\frac{x}{\left(1 + x\right) \cdot z}\right) + \frac{y}{1 + x}}{t} + \frac{x}{1 + x}\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>7.5</td></tr><tr><th>Target</th><td>0.3</td></tr><tr><th>Herbie</th><td>2.1</td></tr></table><div class="math">\[\frac{x + \left(\frac{y}{t - \frac{x}{z}} - \frac{x}{t \cdot z - x}\right)}{x + 1}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> (/.f64 (+.f64 x (/.f64 (-.f64 (*.f64 y z) x) (-.f64 (*.f64 t z) x))) (+.f64 x 1))  &lt; 4.0000000000000003e190</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 3.5">2.9</span></p><div class="math">\[\frac{x + \frac{y \cdot z - x}{t \cdot z - x}}{x + 1}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 1.1">0.9</span></p><div class="math">\[\leadsto \frac{x + \color{blue}{\mathsf{fma}\left(y, \frac{z}{\mathsf{fma}\left(t, z, -x\right)}, \frac{x}{x - t \cdot z}\right)}}{x + 1}
+\]</div></li></ol><h2><code>if <span class="condition">4.0000000000000003e190 &lt;  (/.f64 (+.f64 x (/.f64 (-.f64 (*.f64 y z) x) (-.f64 (*.f64 t z) x))) (+.f64 x 1)) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 60.0">51.8</span></p><div class="math">\[\frac{x + \frac{y \cdot z - x}{t \cdot z - x}}{x + 1}
+\]</div></li><li><p>Taylor expanded in t around -inf <span class="error" title="Internally 0">13.2</span></p><div class="math">\[\leadsto \color{blue}{-1 \cdot \frac{-1 \cdot \frac{y}{1 + x} - -1 \cdot \frac{x}{\left(1 + x\right) \cdot z}}{t} + \frac{x}{1 + x}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0">13.2</span></p><div class="math">\[\leadsto \color{blue}{\frac{\left(-\frac{x}{\left(1 + x\right) \cdot z}\right) + \frac{y}{1 + x}}{t} + \frac{x}{1 + x}}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y z t)
+  :name "Diagrams.Trail:splitAtParam  from diagrams-lib-1.3.0.3, A"
+  :precision binary64
+
+  :herbie-target
+  (/ (+ x (- (/ y (- t (/ x z))) (/ x (- (* t z) x)))) (+ x 1.0))
+
+  (/ (+ x (/ (- (* y z) x) (- (* t z) x))) (+ x 1.0)))
+</code></pre></section></body></html>

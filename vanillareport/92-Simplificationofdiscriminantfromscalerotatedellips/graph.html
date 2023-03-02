@@ -1,0 +1,94 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Simplification of discriminant from scale-rotated-ellipse</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">41.2 → 14.9</span></div><div>Time: <span class="number">30.0s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{\frac{\left(\left(2 \cdot \left({b}^{2} - {a}^{2}\right)\right) \cdot \sin \left(\frac{angle}{180} \cdot \pi\right)\right) \cdot \cos \left(\frac{angle}{180} \cdot \pi\right)}{x-scale}}{y-scale} \cdot \frac{\frac{\left(\left(2 \cdot \left({b}^{2} - {a}^{2}\right)\right) \cdot \sin \left(\frac{angle}{180} \cdot \pi\right)\right) \cdot \cos \left(\frac{angle}{180} \cdot \pi\right)}{x-scale}}{y-scale} - \left(4 \cdot \frac{\frac{{\left(a \cdot \sin \left(\frac{angle}{180} \cdot \pi\right)\right)}^{2} + {\left(b \cdot \cos \left(\frac{angle}{180} \cdot \pi\right)\right)}^{2}}{x-scale}}{x-scale}\right) \cdot \frac{\frac{{\left(a \cdot \cos \left(\frac{angle}{180} \cdot \pi\right)\right)}^{2} + {\left(b \cdot \sin \left(\frac{angle}{180} \cdot \pi\right)\right)}^{2}}{y-scale}}{y-scale}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \pi \cdot \left(0.005555555555555556 \cdot angle\right)\\
+t_1 := \sin t_0\\
+t_2 := \cos t_0\\
+a \cdot \left(a \cdot \mathsf{fma}\left(-8, {\left(\frac{t_2 \cdot b}{\frac{y-scale \cdot x-scale}{t_1}}\right)}^{2}, {\left(\frac{b}{y-scale \cdot x-scale}\right)}^{2} \cdot \left(\left({t_2}^{4} + {t_1}^{4}\right) \cdot -4\right)\right)\right)
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (a b angle x-scale y-scale)
+ :precision binary64
+ (-
+  (*
+   (/
+    (/
+     (*
+      (* (* 2.0 (- (pow b 2.0) (pow a 2.0))) (sin (* (/ angle 180.0) PI)))
+      (cos (* (/ angle 180.0) PI)))
+     x-scale)
+    y-scale)
+   (/
+    (/
+     (*
+      (* (* 2.0 (- (pow b 2.0) (pow a 2.0))) (sin (* (/ angle 180.0) PI)))
+      (cos (* (/ angle 180.0) PI)))
+     x-scale)
+    y-scale))
+  (*
+   (*
+    4.0
+    (/
+     (/
+      (+
+       (pow (* a (sin (* (/ angle 180.0) PI))) 2.0)
+       (pow (* b (cos (* (/ angle 180.0) PI))) 2.0))
+      x-scale)
+     x-scale))
+   (/
+    (/
+     (+
+      (pow (* a (cos (* (/ angle 180.0) PI))) 2.0)
+      (pow (* b (sin (* (/ angle 180.0) PI))) 2.0))
+     y-scale)
+    y-scale))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (a b angle x-scale y-scale)
+ :precision binary64
+ (let* ((t_0 (* PI (* 0.005555555555555556 angle)))
+        (t_1 (sin t_0))
+        (t_2 (cos t_0)))
+   (*
+    a
+    (*
+     a
+     (fma
+      -8.0
+      (pow (/ (* t_2 b) (/ (* y-scale x-scale) t_1)) 2.0)
+      (*
+       (pow (/ b (* y-scale x-scale)) 2.0)
+       (* (+ (pow t_2 4.0) (pow t_1 4.0)) -4.0)))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double a, double b, double angle, double x_45_scale, double y_45_scale) {
+	return ((((((2.0 * (pow(b, 2.0) - pow(a, 2.0))) * sin(((angle / 180.0) * ((double) M_PI)))) * cos(((angle / 180.0) * ((double) M_PI)))) / x_45_scale) / y_45_scale) * (((((2.0 * (pow(b, 2.0) - pow(a, 2.0))) * sin(((angle / 180.0) * ((double) M_PI)))) * cos(((angle / 180.0) * ((double) M_PI)))) / x_45_scale) / y_45_scale)) - ((4.0 * (((pow((a * sin(((angle / 180.0) * ((double) M_PI)))), 2.0) + pow((b * cos(((angle / 180.0) * ((double) M_PI)))), 2.0)) / x_45_scale) / x_45_scale)) * (((pow((a * cos(((angle / 180.0) * ((double) M_PI)))), 2.0) + pow((b * sin(((angle / 180.0) * ((double) M_PI)))), 2.0)) / y_45_scale) / y_45_scale));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double a, double b, double angle, double x_45_scale, double y_45_scale) {
+	double t_0 = ((double) M_PI) * (0.005555555555555556 * angle);
+	double t_1 = sin(t_0);
+	double t_2 = cos(t_0);
+	return a * (a * fma(-8.0, pow(((t_2 * b) / ((y_45_scale * x_45_scale) / t_1)), 2.0), (pow((b / (y_45_scale * x_45_scale)), 2.0) * ((pow(t_2, 4.0) + pow(t_1, 4.0)) * -4.0))));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(a, b, angle, x_45_scale, y_45_scale)
+	return Float64(Float64(Float64(Float64(Float64(Float64(Float64(2.0 * Float64((b ^ 2.0) - (a ^ 2.0))) * sin(Float64(Float64(angle / 180.0) * pi))) * cos(Float64(Float64(angle / 180.0) * pi))) / x_45_scale) / y_45_scale) * Float64(Float64(Float64(Float64(Float64(2.0 * Float64((b ^ 2.0) - (a ^ 2.0))) * sin(Float64(Float64(angle / 180.0) * pi))) * cos(Float64(Float64(angle / 180.0) * pi))) / x_45_scale) / y_45_scale)) - Float64(Float64(4.0 * Float64(Float64(Float64((Float64(a * sin(Float64(Float64(angle / 180.0) * pi))) ^ 2.0) + (Float64(b * cos(Float64(Float64(angle / 180.0) * pi))) ^ 2.0)) / x_45_scale) / x_45_scale)) * Float64(Float64(Float64((Float64(a * cos(Float64(Float64(angle / 180.0) * pi))) ^ 2.0) + (Float64(b * sin(Float64(Float64(angle / 180.0) * pi))) ^ 2.0)) / y_45_scale) / y_45_scale)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(a, b, angle, x_45_scale, y_45_scale)
+	t_0 = Float64(pi * Float64(0.005555555555555556 * angle))
+	t_1 = sin(t_0)
+	t_2 = cos(t_0)
+	return Float64(a * Float64(a * fma(-8.0, (Float64(Float64(t_2 * b) / Float64(Float64(y_45_scale * x_45_scale) / t_1)) ^ 2.0), Float64((Float64(b / Float64(y_45_scale * x_45_scale)) ^ 2.0) * Float64(Float64((t_2 ^ 4.0) + (t_1 ^ 4.0)) * -4.0)))))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[a_, b_, angle_, x$45$scale_, y$45$scale_] := N[(N[(N[(N[(N[(N[(N[(2.0 * N[(N[Power[b, 2.0], $MachinePrecision] - N[Power[a, 2.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * N[Sin[N[(N[(angle / 180.0), $MachinePrecision] * Pi), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] * N[Cos[N[(N[(angle / 180.0), $MachinePrecision] * Pi), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] / x$45$scale), $MachinePrecision] / y$45$scale), $MachinePrecision] * N[(N[(N[(N[(N[(2.0 * N[(N[Power[b, 2.0], $MachinePrecision] - N[Power[a, 2.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * N[Sin[N[(N[(angle / 180.0), $MachinePrecision] * Pi), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] * N[Cos[N[(N[(angle / 180.0), $MachinePrecision] * Pi), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] / x$45$scale), $MachinePrecision] / y$45$scale), $MachinePrecision]), $MachinePrecision] - N[(N[(4.0 * N[(N[(N[(N[Power[N[(a * N[Sin[N[(N[(angle / 180.0), $MachinePrecision] * Pi), $MachinePrecision]], $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision] + N[Power[N[(b * N[Cos[N[(N[(angle / 180.0), $MachinePrecision] * Pi), $MachinePrecision]], $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision]), $MachinePrecision] / x$45$scale), $MachinePrecision] / x$45$scale), $MachinePrecision]), $MachinePrecision] * N[(N[(N[(N[Power[N[(a * N[Cos[N[(N[(angle / 180.0), $MachinePrecision] * Pi), $MachinePrecision]], $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision] + N[Power[N[(b * N[Sin[N[(N[(angle / 180.0), $MachinePrecision] * Pi), $MachinePrecision]], $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision]), $MachinePrecision] / y$45$scale), $MachinePrecision] / y$45$scale), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[a_, b_, angle_, x$45$scale_, y$45$scale_] := Block[{t$95$0 = N[(Pi * N[(0.005555555555555556 * angle), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$1 = N[Sin[t$95$0], $MachinePrecision]}, Block[{t$95$2 = N[Cos[t$95$0], $MachinePrecision]}, N[(a * N[(a * N[(-8.0 * N[Power[N[(N[(t$95$2 * b), $MachinePrecision] / N[(N[(y$45$scale * x$45$scale), $MachinePrecision] / t$95$1), $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision] + N[(N[Power[N[(b / N[(y$45$scale * x$45$scale), $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision] * N[(N[(N[Power[t$95$2, 4.0], $MachinePrecision] + N[Power[t$95$1, 4.0], $MachinePrecision]), $MachinePrecision] * -4.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{\frac{\left(\left(2 \cdot \left({b}^{2} - {a}^{2}\right)\right) \cdot \sin \left(\frac{angle}{180} \cdot \pi\right)\right) \cdot \cos \left(\frac{angle}{180} \cdot \pi\right)}{x-scale}}{y-scale} \cdot \frac{\frac{\left(\left(2 \cdot \left({b}^{2} - {a}^{2}\right)\right) \cdot \sin \left(\frac{angle}{180} \cdot \pi\right)\right) \cdot \cos \left(\frac{angle}{180} \cdot \pi\right)}{x-scale}}{y-scale} - \left(4 \cdot \frac{\frac{{\left(a \cdot \sin \left(\frac{angle}{180} \cdot \pi\right)\right)}^{2} + {\left(b \cdot \cos \left(\frac{angle}{180} \cdot \pi\right)\right)}^{2}}{x-scale}}{x-scale}\right) \cdot \frac{\frac{{\left(a \cdot \cos \left(\frac{angle}{180} \cdot \pi\right)\right)}^{2} + {\left(b \cdot \sin \left(\frac{angle}{180} \cdot \pi\right)\right)}^{2}}{y-scale}}{y-scale}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \pi \cdot \left(0.005555555555555556 \cdot angle\right)\\
+t_1 := \sin t_0\\
+t_2 := \cos t_0\\
+a \cdot \left(a \cdot \mathsf{fma}\left(-8, {\left(\frac{t_2 \cdot b}{\frac{y-scale \cdot x-scale}{t_1}}\right)}^{2}, {\left(\frac{b}{y-scale \cdot x-scale}\right)}^{2} \cdot \left(\left({t_2}^{4} + {t_1}^{4}\right) \cdot -4\right)\right)\right)
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 40.7">41.2</span></p><div class="math">\[\frac{\frac{\left(\left(2 \cdot \left({b}^{2} - {a}^{2}\right)\right) \cdot \sin \left(\frac{angle}{180} \cdot \pi\right)\right) \cdot \cos \left(\frac{angle}{180} \cdot \pi\right)}{x-scale}}{y-scale} \cdot \frac{\frac{\left(\left(2 \cdot \left({b}^{2} - {a}^{2}\right)\right) \cdot \sin \left(\frac{angle}{180} \cdot \pi\right)\right) \cdot \cos \left(\frac{angle}{180} \cdot \pi\right)}{x-scale}}{y-scale} - \left(4 \cdot \frac{\frac{{\left(a \cdot \sin \left(\frac{angle}{180} \cdot \pi\right)\right)}^{2} + {\left(b \cdot \cos \left(\frac{angle}{180} \cdot \pi\right)\right)}^{2}}{x-scale}}{x-scale}\right) \cdot \frac{\frac{{\left(a \cdot \cos \left(\frac{angle}{180} \cdot \pi\right)\right)}^{2} + {\left(b \cdot \sin \left(\frac{angle}{180} \cdot \pi\right)\right)}^{2}}{y-scale}}{y-scale}
+\]</div></li><li><p>Taylor expanded in a around inf <span class="error" title="Internally 38.1">39.6</span></p><div class="math">\[\leadsto \color{blue}{{a}^{2} \cdot \left(-8 \cdot \frac{{b}^{2} \cdot \left({\cos \left(0.005555555555555556 \cdot \left(angle \cdot \pi\right)\right)}^{2} \cdot {\sin \left(0.005555555555555556 \cdot \left(angle \cdot \pi\right)\right)}^{2}\right)}{{y-scale}^{2} \cdot {x-scale}^{2}} - 4 \cdot \left(\frac{{b}^{2} \cdot {\cos \left(0.005555555555555556 \cdot \left(angle \cdot \pi\right)\right)}^{4}}{{y-scale}^{2} \cdot {x-scale}^{2}} + \frac{{b}^{2} \cdot {\sin \left(0.005555555555555556 \cdot \left(angle \cdot \pi\right)\right)}^{4}}{{y-scale}^{2} \cdot {x-scale}^{2}}\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 30.4">31.8</span></p><div class="math">\[\leadsto \color{blue}{\left(a \cdot a\right) \cdot \mathsf{fma}\left(-8, \frac{{\cos \left(\pi \cdot \left(0.005555555555555556 \cdot angle\right)\right)}^{2} \cdot \left(b \cdot b\right)}{\frac{\left(y-scale \cdot x-scale\right) \cdot \left(y-scale \cdot x-scale\right)}{{\sin \left(\pi \cdot \left(0.005555555555555556 \cdot angle\right)\right)}^{2}}}, \left(\frac{b \cdot b}{\left(y-scale \cdot x-scale\right) \cdot \left(y-scale \cdot x-scale\right)} \cdot \left({\cos \left(\pi \cdot \left(0.005555555555555556 \cdot angle\right)\right)}^{4} + {\sin \left(\pi \cdot \left(0.005555555555555556 \cdot angle\right)\right)}^{4}\right)\right) \cdot -4\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 15.4">14.9</span></p><div class="math">\[\leadsto \color{blue}{{\left(a \cdot \left(a \cdot \mathsf{fma}\left(-8, {\left(\frac{\cos \left(\pi \cdot \left(0.005555555555555556 \cdot angle\right)\right) \cdot b}{\frac{y-scale \cdot x-scale}{\sin \left(\pi \cdot \left(0.005555555555555556 \cdot angle\right)\right)}}\right)}^{2}, {\left(\frac{b}{y-scale \cdot x-scale}\right)}^{2} \cdot \left(\left({\cos \left(\pi \cdot \left(0.005555555555555556 \cdot angle\right)\right)}^{4} + {\sin \left(\pi \cdot \left(0.005555555555555556 \cdot angle\right)\right)}^{4}\right) \cdot -4\right)\right)\right)\right)}^{1}}
+\]</div></li><li><p>Final simplification<span class="error" title="Internally 15.4">14.9</span></p><div class="math">\[\leadsto a \cdot \left(a \cdot \mathsf{fma}\left(-8, {\left(\frac{\cos \left(\pi \cdot \left(0.005555555555555556 \cdot angle\right)\right) \cdot b}{\frac{y-scale \cdot x-scale}{\sin \left(\pi \cdot \left(0.005555555555555556 \cdot angle\right)\right)}}\right)}^{2}, {\left(\frac{b}{y-scale \cdot x-scale}\right)}^{2} \cdot \left(\left({\cos \left(\pi \cdot \left(0.005555555555555556 \cdot angle\right)\right)}^{4} + {\sin \left(\pi \cdot \left(0.005555555555555556 \cdot angle\right)\right)}^{4}\right) \cdot -4\right)\right)\right)
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (a b angle x-scale y-scale)
+  :name "Simplification of discriminant from scale-rotated-ellipse"
+  :precision binary64
+  (- (* (/ (/ (* (* (* 2.0 (- (pow b 2.0) (pow a 2.0))) (sin (* (/ angle 180.0) PI))) (cos (* (/ angle 180.0) PI))) x-scale) y-scale) (/ (/ (* (* (* 2.0 (- (pow b 2.0) (pow a 2.0))) (sin (* (/ angle 180.0) PI))) (cos (* (/ angle 180.0) PI))) x-scale) y-scale)) (* (* 4.0 (/ (/ (+ (pow (* a (sin (* (/ angle 180.0) PI))) 2.0) (pow (* b (cos (* (/ angle 180.0) PI))) 2.0)) x-scale) x-scale)) (/ (/ (+ (pow (* a (cos (* (/ angle 180.0) PI))) 2.0) (pow (* b (sin (* (/ angle 180.0) PI))) 2.0)) y-scale) y-scale))))
+</code></pre></section></body></html>

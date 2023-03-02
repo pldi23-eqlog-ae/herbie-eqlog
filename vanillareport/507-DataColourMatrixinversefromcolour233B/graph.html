@@ -1,0 +1,110 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Data.Colour.Matrix:inverse from colour-2.3.3, B</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">7.7 → 0.8</span></div><div>Time: <span class="number">2.2s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="preprocess"><div class="program math">\[ \begin{array}{c}[x, y] = \mathsf{sort}([x, y])\\ \end{array} \]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{x \cdot y - z \cdot t}{a}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := \mathsf{fma}\left(-1, \frac{t}{\frac{a}{z}}, \frac{y}{\frac{a}{x}}\right)\\
+t_2 := x \cdot y - z \cdot t\\
+\mathbf{if}\;t_2 \leq -\infty:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;t_2 \leq 10^{+208}:\\
+\;\;\;\;\frac{x \cdot y}{a} - \frac{z \cdot t}{a}\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a) :precision binary64 (/ (- (* x y) (* z t)) a))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a)
+ :precision binary64
+ (let* ((t_1 (fma -1.0 (/ t (/ a z)) (/ y (/ a x)))) (t_2 (- (* x y) (* z t))))
+   (if (&lt;= t_2 (- INFINITY))
+     t_1
+     (if (&lt;= t_2 1e+208) (- (/ (* x y) a) (/ (* z t) a)) t_1))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a) {
+	return ((x * y) - (z * t)) / a;
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a) {
+	double t_1 = fma(-1.0, (t / (a / z)), (y / (a / x)));
+	double t_2 = (x * y) - (z * t);
+	double tmp;
+	if (t_2 &lt;= -((double) INFINITY)) {
+		tmp = t_1;
+	} else if (t_2 &lt;= 1e+208) {
+		tmp = ((x * y) / a) - ((z * t) / a);
+	} else {
+		tmp = t_1;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a)
+	return Float64(Float64(Float64(x * y) - Float64(z * t)) / a)
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a)
+	t_1 = fma(-1.0, Float64(t / Float64(a / z)), Float64(y / Float64(a / x)))
+	t_2 = Float64(Float64(x * y) - Float64(z * t))
+	tmp = 0.0
+	if (t_2 &lt;= Float64(-Inf))
+		tmp = t_1;
+	elseif (t_2 &lt;= 1e+208)
+		tmp = Float64(Float64(Float64(x * y) / a) - Float64(Float64(z * t) / a));
+	else
+		tmp = t_1;
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_] := N[(N[(N[(x * y), $MachinePrecision] - N[(z * t), $MachinePrecision]), $MachinePrecision] / a), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_] := Block[{t$95$1 = N[(-1.0 * N[(t / N[(a / z), $MachinePrecision]), $MachinePrecision] + N[(y / N[(a / x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$2 = N[(N[(x * y), $MachinePrecision] - N[(z * t), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[t$95$2, (-Infinity)], t$95$1, If[LessEqual[t$95$2, 1e+208], N[(N[(N[(x * y), $MachinePrecision] / a), $MachinePrecision] - N[(N[(z * t), $MachinePrecision] / a), $MachinePrecision]), $MachinePrecision], t$95$1]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{x \cdot y - z \cdot t}{a}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := \mathsf{fma}\left(-1, \frac{t}{\frac{a}{z}}, \frac{y}{\frac{a}{x}}\right)\\
+t_2 := x \cdot y - z \cdot t\\
+\mathbf{if}\;t_2 \leq -\infty:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;t_2 \leq 10^{+208}:\\
+\;\;\;\;\frac{x \cdot y}{a} - \frac{z \cdot t}{a}\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>7.7</td></tr><tr><th>Target</th><td>6.3</td></tr><tr><th>Herbie</th><td>0.8</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;z &lt; -2.468684968699548 \cdot 10^{+170}:\\
+\;\;\;\;\frac{y}{a} \cdot x - \frac{t}{a} \cdot z\\
+
+\mathbf{elif}\;z &lt; 6.309831121978371 \cdot 10^{-71}:\\
+\;\;\;\;\frac{x \cdot y - z \cdot t}{a}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{y}{a} \cdot x - \frac{t}{a} \cdot z\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> (-.f64 (*.f64 x y) (*.f64 z t))  &lt; -inf.0 or 9.9999999999999998e207 &lt;  (-.f64 (*.f64 x y) (*.f64 z t)) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 39.6">41.1</span></p><div class="math">\[\frac{x \cdot y - z \cdot t}{a}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.3">0.8</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{y}{1}, \frac{x}{a}, -\frac{z}{\frac{a}{t}}\right)}
+\]</div></li><li><p>Taylor expanded in a around 0 <span class="error" title="Internally 39.6">41.1</span></p><div class="math">\[\leadsto \color{blue}{\frac{y \cdot x - t \cdot z}{a}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.3">0.8</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(-1, \frac{t}{\frac{a}{z}}, \frac{y}{\frac{a}{x}}\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-inf.0 &lt;  (-.f64 (*.f64 x y) (*.f64 z t))  &lt; 9.9999999999999998e207</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 1.0">0.9</span></p><div class="math">\[\frac{x \cdot y - z \cdot t}{a}
+\]</div></li><li><p>Taylor expanded in x around 0 <span class="error" title="Internally 1.0">0.9</span></p><div class="math">\[\leadsto \color{blue}{-1 \cdot \frac{t \cdot z}{a} + \frac{y \cdot x}{a}}
+\]</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 0.9">0.8</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;x \cdot y - z \cdot t \leq -\infty:\\
+\;\;\;\;\mathsf{fma}\left(-1, \frac{t}{\frac{a}{z}}, \frac{y}{\frac{a}{x}}\right)\\
+
+\mathbf{elif}\;x \cdot y - z \cdot t \leq 10^{+208}:\\
+\;\;\;\;\frac{x \cdot y}{a} - \frac{z \cdot t}{a}\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(-1, \frac{t}{\frac{a}{z}}, \frac{y}{\frac{a}{x}}\right)\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x y z t a)
+  :name "Data.Colour.Matrix:inverse from colour-2.3.3, B"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; z -2.468684968699548e+170) (- (* (/ y a) x) (* (/ t a) z)) (if (&lt; z 6.309831121978371e-71) (/ (- (* x y) (* z t)) a) (- (* (/ y a) x) (* (/ t a) z))))
+
+  (/ (- (* x y) (* z t)) a))
+</code></pre></section></body></html>

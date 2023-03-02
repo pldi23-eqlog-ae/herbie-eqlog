@@ -1,0 +1,168 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Toniolo and Linder, Equation (7)</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">42.9 → 11.2</span></div><div>Time: <span class="number">3.7s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{\sqrt{2} \cdot t}{\sqrt{\frac{x + 1}{x - 1} \cdot \left(\ell \cdot \ell + 2 \cdot \left(t \cdot t\right)\right) - \ell \cdot \ell}}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := 2 \cdot {t}^{2}\\
+t_2 := t \cdot \sqrt{2}\\
+t_3 := 2 + \frac{4}{x}\\
+t_4 := \sqrt{t_3}\\
+\mathbf{if}\;t \leq -1.723423578103978 \cdot 10^{+41}:\\
+\;\;\;\;\frac{t_2}{t_4 \cdot \left(-t\right)}\\
+
+\mathbf{elif}\;t \leq -7.2 \cdot 10^{-163}:\\
+\;\;\;\;\frac{t_2}{\sqrt{\left(\frac{{\ell}^{2}}{x} + \left(2 \cdot \frac{{t}^{2}}{x} + t_1\right)\right) + \frac{{\ell}^{2} + t_1}{x}}}\\
+
+\mathbf{elif}\;t \leq -8 \cdot 10^{-213}:\\
+\;\;\;\;\frac{t_2}{\frac{2}{\frac{t}{\ell \cdot \frac{\ell}{x}}} \cdot \left(\sqrt{\frac{1}{t_3}} \cdot -0.5\right) - t \cdot t_4}\\
+
+\mathbf{elif}\;t \leq 2.868285057570977 \cdot 10^{-36}:\\
+\;\;\;\;\frac{t_2}{\sqrt{\frac{\ell}{\frac{x}{\ell}} + \mathsf{fma}\left(2, \frac{t}{\frac{x}{t}} + t \cdot t, \frac{\mathsf{fma}\left(\ell, \ell, 2 \cdot \left(t \cdot t\right)\right)}{x}\right)}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{t_2}{t_2 \cdot \sqrt{\frac{x + 1}{x + -1}}}\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x l t)
+ :precision binary64
+ (/
+  (* (sqrt 2.0) t)
+  (sqrt (- (* (/ (+ x 1.0) (- x 1.0)) (+ (* l l) (* 2.0 (* t t)))) (* l l)))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x l t)
+ :precision binary64
+ (let* ((t_1 (* 2.0 (pow t 2.0)))
+        (t_2 (* t (sqrt 2.0)))
+        (t_3 (+ 2.0 (/ 4.0 x)))
+        (t_4 (sqrt t_3)))
+   (if (&lt;= t -1.723423578103978e+41)
+     (/ t_2 (* t_4 (- t)))
+     (if (&lt;= t -7.2e-163)
+       (/
+        t_2
+        (sqrt
+         (+
+          (+ (/ (pow l 2.0) x) (+ (* 2.0 (/ (pow t 2.0) x)) t_1))
+          (/ (+ (pow l 2.0) t_1) x))))
+       (if (&lt;= t -8e-213)
+         (/
+          t_2
+          (-
+           (* (/ 2.0 (/ t (* l (/ l x)))) (* (sqrt (/ 1.0 t_3)) -0.5))
+           (* t t_4)))
+         (if (&lt;= t 2.868285057570977e-36)
+           (/
+            t_2
+            (sqrt
+             (+
+              (/ l (/ x l))
+              (fma
+               2.0
+               (+ (/ t (/ x t)) (* t t))
+               (/ (fma l l (* 2.0 (* t t))) x)))))
+           (/ t_2 (* t_2 (sqrt (/ (+ x 1.0) (+ x -1.0)))))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double l, double t) {
+	return (sqrt(2.0) * t) / sqrt(((((x + 1.0) / (x - 1.0)) * ((l * l) + (2.0 * (t * t)))) - (l * l)));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double l, double t) {
+	double t_1 = 2.0 * pow(t, 2.0);
+	double t_2 = t * sqrt(2.0);
+	double t_3 = 2.0 + (4.0 / x);
+	double t_4 = sqrt(t_3);
+	double tmp;
+	if (t &lt;= -1.723423578103978e+41) {
+		tmp = t_2 / (t_4 * -t);
+	} else if (t &lt;= -7.2e-163) {
+		tmp = t_2 / sqrt((((pow(l, 2.0) / x) + ((2.0 * (pow(t, 2.0) / x)) + t_1)) + ((pow(l, 2.0) + t_1) / x)));
+	} else if (t &lt;= -8e-213) {
+		tmp = t_2 / (((2.0 / (t / (l * (l / x)))) * (sqrt((1.0 / t_3)) * -0.5)) - (t * t_4));
+	} else if (t &lt;= 2.868285057570977e-36) {
+		tmp = t_2 / sqrt(((l / (x / l)) + fma(2.0, ((t / (x / t)) + (t * t)), (fma(l, l, (2.0 * (t * t))) / x))));
+	} else {
+		tmp = t_2 / (t_2 * sqrt(((x + 1.0) / (x + -1.0))));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, l, t)
+	return Float64(Float64(sqrt(2.0) * t) / sqrt(Float64(Float64(Float64(Float64(x + 1.0) / Float64(x - 1.0)) * Float64(Float64(l * l) + Float64(2.0 * Float64(t * t)))) - Float64(l * l))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, l, t)
+	t_1 = Float64(2.0 * (t ^ 2.0))
+	t_2 = Float64(t * sqrt(2.0))
+	t_3 = Float64(2.0 + Float64(4.0 / x))
+	t_4 = sqrt(t_3)
+	tmp = 0.0
+	if (t &lt;= -1.723423578103978e+41)
+		tmp = Float64(t_2 / Float64(t_4 * Float64(-t)));
+	elseif (t &lt;= -7.2e-163)
+		tmp = Float64(t_2 / sqrt(Float64(Float64(Float64((l ^ 2.0) / x) + Float64(Float64(2.0 * Float64((t ^ 2.0) / x)) + t_1)) + Float64(Float64((l ^ 2.0) + t_1) / x))));
+	elseif (t &lt;= -8e-213)
+		tmp = Float64(t_2 / Float64(Float64(Float64(2.0 / Float64(t / Float64(l * Float64(l / x)))) * Float64(sqrt(Float64(1.0 / t_3)) * -0.5)) - Float64(t * t_4)));
+	elseif (t &lt;= 2.868285057570977e-36)
+		tmp = Float64(t_2 / sqrt(Float64(Float64(l / Float64(x / l)) + fma(2.0, Float64(Float64(t / Float64(x / t)) + Float64(t * t)), Float64(fma(l, l, Float64(2.0 * Float64(t * t))) / x)))));
+	else
+		tmp = Float64(t_2 / Float64(t_2 * sqrt(Float64(Float64(x + 1.0) / Float64(x + -1.0)))));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, l_, t_] := N[(N[(N[Sqrt[2.0], $MachinePrecision] * t), $MachinePrecision] / N[Sqrt[N[(N[(N[(N[(x + 1.0), $MachinePrecision] / N[(x - 1.0), $MachinePrecision]), $MachinePrecision] * N[(N[(l * l), $MachinePrecision] + N[(2.0 * N[(t * t), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - N[(l * l), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, l_, t_] := Block[{t$95$1 = N[(2.0 * N[Power[t, 2.0], $MachinePrecision]), $MachinePrecision]}, Block[{t$95$2 = N[(t * N[Sqrt[2.0], $MachinePrecision]), $MachinePrecision]}, Block[{t$95$3 = N[(2.0 + N[(4.0 / x), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$4 = N[Sqrt[t$95$3], $MachinePrecision]}, If[LessEqual[t, -1.723423578103978e+41], N[(t$95$2 / N[(t$95$4 * (-t)), $MachinePrecision]), $MachinePrecision], If[LessEqual[t, -7.2e-163], N[(t$95$2 / N[Sqrt[N[(N[(N[(N[Power[l, 2.0], $MachinePrecision] / x), $MachinePrecision] + N[(N[(2.0 * N[(N[Power[t, 2.0], $MachinePrecision] / x), $MachinePrecision]), $MachinePrecision] + t$95$1), $MachinePrecision]), $MachinePrecision] + N[(N[(N[Power[l, 2.0], $MachinePrecision] + t$95$1), $MachinePrecision] / x), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision], If[LessEqual[t, -8e-213], N[(t$95$2 / N[(N[(N[(2.0 / N[(t / N[(l * N[(l / x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * N[(N[Sqrt[N[(1.0 / t$95$3), $MachinePrecision]], $MachinePrecision] * -0.5), $MachinePrecision]), $MachinePrecision] - N[(t * t$95$4), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], If[LessEqual[t, 2.868285057570977e-36], N[(t$95$2 / N[Sqrt[N[(N[(l / N[(x / l), $MachinePrecision]), $MachinePrecision] + N[(2.0 * N[(N[(t / N[(x / t), $MachinePrecision]), $MachinePrecision] + N[(t * t), $MachinePrecision]), $MachinePrecision] + N[(N[(l * l + N[(2.0 * N[(t * t), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] / x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision], N[(t$95$2 / N[(t$95$2 * N[Sqrt[N[(N[(x + 1.0), $MachinePrecision] / N[(x + -1.0), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]]]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{\sqrt{2} \cdot t}{\sqrt{\frac{x + 1}{x - 1} \cdot \left(\ell \cdot \ell + 2 \cdot \left(t \cdot t\right)\right) - \ell \cdot \ell}}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := 2 \cdot {t}^{2}\\
+t_2 := t \cdot \sqrt{2}\\
+t_3 := 2 + \frac{4}{x}\\
+t_4 := \sqrt{t_3}\\
+\mathbf{if}\;t \leq -1.723423578103978 \cdot 10^{+41}:\\
+\;\;\;\;\frac{t_2}{t_4 \cdot \left(-t\right)}\\
+
+\mathbf{elif}\;t \leq -7.2 \cdot 10^{-163}:\\
+\;\;\;\;\frac{t_2}{\sqrt{\left(\frac{{\ell}^{2}}{x} + \left(2 \cdot \frac{{t}^{2}}{x} + t_1\right)\right) + \frac{{\ell}^{2} + t_1}{x}}}\\
+
+\mathbf{elif}\;t \leq -8 \cdot 10^{-213}:\\
+\;\;\;\;\frac{t_2}{\frac{2}{\frac{t}{\ell \cdot \frac{\ell}{x}}} \cdot \left(\sqrt{\frac{1}{t_3}} \cdot -0.5\right) - t \cdot t_4}\\
+
+\mathbf{elif}\;t \leq 2.868285057570977 \cdot 10^{-36}:\\
+\;\;\;\;\frac{t_2}{\sqrt{\frac{\ell}{\frac{x}{\ell}} + \mathsf{fma}\left(2, \frac{t}{\frac{x}{t}} + t \cdot t, \frac{\mathsf{fma}\left(\ell, \ell, 2 \cdot \left(t \cdot t\right)\right)}{x}\right)}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{t_2}{t_2 \cdot \sqrt{\frac{x + 1}{x + -1}}}\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 5 regimes</li><li><h2><code>if <span class="condition"> t  &lt; -1.7234235781039779e41</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 42.9">43.3</span></p><div class="math">\[\frac{\sqrt{2} \cdot t}{\sqrt{\frac{x + 1}{x - 1} \cdot \left(\ell \cdot \ell + 2 \cdot \left(t \cdot t\right)\right) - \ell \cdot \ell}}
+\]</div></li><li><p>Taylor expanded in x around inf <span class="error" title="Internally 42.1">41.4</span></p><div class="math">\[\leadsto \frac{\sqrt{2} \cdot t}{\sqrt{\color{blue}{\left(\frac{{\ell}^{2}}{x} + \left(2 \cdot \frac{{t}^{2}}{x} + 2 \cdot {t}^{2}\right)\right) - -1 \cdot \frac{{\ell}^{2} + 2 \cdot {t}^{2}}{x}}}}
+\]</div></li><li><p>Taylor expanded in t around -inf <span class="error" title="Internally 1.6">4.6</span></p><div class="math">\[\leadsto \frac{\sqrt{2} \cdot t}{\color{blue}{-1 \cdot \left(t \cdot \sqrt{2 + 4 \cdot \frac{1}{x}}\right)}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 1.6">4.6</span></p><div class="math">\[\leadsto \frac{\sqrt{2} \cdot t}{\color{blue}{t \cdot \left(-\sqrt{2 + \frac{4}{x}}\right)}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-1.7234235781039779e41 &lt;  t  &lt; -7.1999999999999996e-163</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 30.2">30.9</span></p><div class="math">\[\frac{\sqrt{2} \cdot t}{\sqrt{\frac{x + 1}{x - 1} \cdot \left(\ell \cdot \ell + 2 \cdot \left(t \cdot t\right)\right) - \ell \cdot \ell}}
+\]</div></li><li><p>Taylor expanded in x around inf <span class="error" title="Internally 7.8">9.9</span></p><div class="math">\[\leadsto \frac{\sqrt{2} \cdot t}{\sqrt{\color{blue}{\left(\frac{{\ell}^{2}}{x} + \left(2 \cdot \frac{{t}^{2}}{x} + 2 \cdot {t}^{2}\right)\right) - -1 \cdot \frac{{\ell}^{2} + 2 \cdot {t}^{2}}{x}}}}
+\]</div></li></ol><h2><code>if <span class="condition">-7.1999999999999996e-163 &lt;  t  &lt; -7.9999999999999996e-213</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 64.0">62.8</span></p><div class="math">\[\frac{\sqrt{2} \cdot t}{\sqrt{\frac{x + 1}{x - 1} \cdot \left(\ell \cdot \ell + 2 \cdot \left(t \cdot t\right)\right) - \ell \cdot \ell}}
+\]</div></li><li><p>Taylor expanded in x around inf <span class="error" title="Internally 50.8">38.5</span></p><div class="math">\[\leadsto \frac{\sqrt{2} \cdot t}{\sqrt{\color{blue}{\left(\frac{{\ell}^{2}}{x} + \left(2 \cdot \frac{{t}^{2}}{x} + 2 \cdot {t}^{2}\right)\right) - -1 \cdot \frac{{\ell}^{2} + 2 \cdot {t}^{2}}{x}}}}
+\]</div></li><li><p>Taylor expanded in t around -inf <span class="error" title="Internally 12.0">22.3</span></p><div class="math">\[\leadsto \frac{\sqrt{2} \cdot t}{\color{blue}{-0.5 \cdot \left(\frac{\frac{{\ell}^{2}}{x} - -1 \cdot \frac{{\ell}^{2}}{x}}{t} \cdot \sqrt{\frac{1}{2 + 4 \cdot \frac{1}{x}}}\right) + -1 \cdot \left(t \cdot \sqrt{2 + 4 \cdot \frac{1}{x}}\right)}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 12.0">22.3</span></p><div class="math">\[\leadsto \frac{\sqrt{2} \cdot t}{\color{blue}{\frac{2}{\frac{t}{\frac{\ell}{x} \cdot \ell}} \cdot \left(\sqrt{\frac{1}{2 + \frac{4}{x}}} \cdot -0.5\right) - t \cdot \sqrt{2 + \frac{4}{x}}}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-7.9999999999999996e-213 &lt;  t  &lt; 2.868285057570977e-36</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 48.7">51.7</span></p><div class="math">\[\frac{\sqrt{2} \cdot t}{\sqrt{\frac{x + 1}{x - 1} \cdot \left(\ell \cdot \ell + 2 \cdot \left(t \cdot t\right)\right) - \ell \cdot \ell}}
+\]</div></li><li><p>Taylor expanded in x around inf <span class="error" title="Internally 19.7">24.8</span></p><div class="math">\[\leadsto \frac{\sqrt{2} \cdot t}{\sqrt{\color{blue}{\left(\frac{{\ell}^{2}}{x} + \left(2 \cdot \frac{{t}^{2}}{x} + 2 \cdot {t}^{2}\right)\right) - -1 \cdot \frac{{\ell}^{2} + 2 \cdot {t}^{2}}{x}}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 19.7">24.8</span></p><div class="math">\[\leadsto \frac{\sqrt{2} \cdot t}{\sqrt{\color{blue}{\frac{\ell}{\frac{x}{\ell}} + \mathsf{fma}\left(2, \frac{t}{\frac{x}{t}} + t \cdot t, \frac{\mathsf{fma}\left(\ell, \ell, 2 \cdot \left(t \cdot t\right)\right)}{x}\right)}}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">2.868285057570977e-36 &lt;  t </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 37.9">39.7</span></p><div class="math">\[\frac{\sqrt{2} \cdot t}{\sqrt{\frac{x + 1}{x - 1} \cdot \left(\ell \cdot \ell + 2 \cdot \left(t \cdot t\right)\right) - \ell \cdot \ell}}
+\]</div></li><li><p>Taylor expanded in l around 0 <span class="error" title="Internally 2.0">5.5</span></p><div class="math">\[\leadsto \frac{\sqrt{2} \cdot t}{\color{blue}{\left(\sqrt{2} \cdot t\right) \cdot \sqrt{\frac{1 + x}{x - 1}}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 2.0">5.5</span></p><div class="math">\[\leadsto \frac{\sqrt{2} \cdot t}{\color{blue}{\left(t \cdot \sqrt{2}\right) \cdot \sqrt{\frac{x + 1}{x + -1}}}}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 5 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 7.3">11.2</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;t \leq -1.723423578103978 \cdot 10^{+41}:\\
+\;\;\;\;\frac{t \cdot \sqrt{2}}{\sqrt{2 + \frac{4}{x}} \cdot \left(-t\right)}\\
+
+\mathbf{elif}\;t \leq -7.2 \cdot 10^{-163}:\\
+\;\;\;\;\frac{t \cdot \sqrt{2}}{\sqrt{\left(\frac{{\ell}^{2}}{x} + \left(2 \cdot \frac{{t}^{2}}{x} + 2 \cdot {t}^{2}\right)\right) + \frac{{\ell}^{2} + 2 \cdot {t}^{2}}{x}}}\\
+
+\mathbf{elif}\;t \leq -8 \cdot 10^{-213}:\\
+\;\;\;\;\frac{t \cdot \sqrt{2}}{\frac{2}{\frac{t}{\ell \cdot \frac{\ell}{x}}} \cdot \left(\sqrt{\frac{1}{2 + \frac{4}{x}}} \cdot -0.5\right) - t \cdot \sqrt{2 + \frac{4}{x}}}\\
+
+\mathbf{elif}\;t \leq 2.868285057570977 \cdot 10^{-36}:\\
+\;\;\;\;\frac{t \cdot \sqrt{2}}{\sqrt{\frac{\ell}{\frac{x}{\ell}} + \mathsf{fma}\left(2, \frac{t}{\frac{x}{t}} + t \cdot t, \frac{\mathsf{fma}\left(\ell, \ell, 2 \cdot \left(t \cdot t\right)\right)}{x}\right)}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{t \cdot \sqrt{2}}{\left(t \cdot \sqrt{2}\right) \cdot \sqrt{\frac{x + 1}{x + -1}}}\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x l t)
+  :name "Toniolo and Linder, Equation (7)"
+  :precision binary64
+  (/ (* (sqrt 2.0) t) (sqrt (- (* (/ (+ x 1.0) (- x 1.0)) (+ (* l l) (* 2.0 (* t t)))) (* l l)))))
+</code></pre></section></body></html>

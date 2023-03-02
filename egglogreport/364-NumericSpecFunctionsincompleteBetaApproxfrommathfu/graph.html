@@ -1,0 +1,134 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Numeric.SpecFunctions:incompleteBetaApprox from math-functions-0.1.5.2, A</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 62.0">19.7 → 7.4</span></div><div>Time: <span class="number">2.8s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Java</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{x \cdot y}{\left(\left(x + y\right) \cdot \left(x + y\right)\right) \cdot \left(\left(x + y\right) + 1\right)}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := 1 + \left(x + y\right)\\
+t_1 := \sqrt[3]{t_0}\\
+t_2 := {\left(x + y\right)}^{-2} \cdot \left(\frac{y}{t_1} \cdot \frac{x}{\sqrt[3]{{t_0}^{2}}}\right)\\
+\mathbf{if}\;x \leq -5.557255440701011 \cdot 10^{-146}:\\
+\;\;\;\;t_2\\
+
+\mathbf{elif}\;x \leq 1.4610749151403416 \cdot 10^{-142}:\\
+\;\;\;\;\frac{x}{y \cdot \left(1 + y\right)}\\
+
+\mathbf{elif}\;x \leq 4.3646095585197394 \cdot 10^{+169}:\\
+\;\;\;\;t_2\\
+
+\mathbf{else}:\\
+\;\;\;\;\left(\sqrt[3]{\frac{1}{1 + x}} \cdot \frac{y}{x}\right) \cdot {t_1}^{-2}\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y)
+ :precision binary64
+ (/ (* x y) (* (* (+ x y) (+ x y)) (+ (+ x y) 1.0))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y)
+ :precision binary64
+ (let* ((t_0 (+ 1.0 (+ x y)))
+        (t_1 (cbrt t_0))
+        (t_2 (* (pow (+ x y) -2.0) (* (/ y t_1) (/ x (cbrt (pow t_0 2.0)))))))
+   (if (&lt;= x -5.557255440701011e-146)
+     t_2
+     (if (&lt;= x 1.4610749151403416e-142)
+       (/ x (* y (+ 1.0 y)))
+       (if (&lt;= x 4.3646095585197394e+169)
+         t_2
+         (* (* (cbrt (/ 1.0 (+ 1.0 x))) (/ y x)) (pow t_1 -2.0)))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y) {
+	return (x * y) / (((x + y) * (x + y)) * ((x + y) + 1.0));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y) {
+	double t_0 = 1.0 + (x + y);
+	double t_1 = cbrt(t_0);
+	double t_2 = pow((x + y), -2.0) * ((y / t_1) * (x / cbrt(pow(t_0, 2.0))));
+	double tmp;
+	if (x &lt;= -5.557255440701011e-146) {
+		tmp = t_2;
+	} else if (x &lt;= 1.4610749151403416e-142) {
+		tmp = x / (y * (1.0 + y));
+	} else if (x &lt;= 4.3646095585197394e+169) {
+		tmp = t_2;
+	} else {
+		tmp = (cbrt((1.0 / (1.0 + x))) * (y / x)) * pow(t_1, -2.0);
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double x, double y) {
+	return (x * y) / (((x + y) * (x + y)) * ((x + y) + 1.0));
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double x, double y) {
+	double t_0 = 1.0 + (x + y);
+	double t_1 = Math.cbrt(t_0);
+	double t_2 = Math.pow((x + y), -2.0) * ((y / t_1) * (x / Math.cbrt(Math.pow(t_0, 2.0))));
+	double tmp;
+	if (x &lt;= -5.557255440701011e-146) {
+		tmp = t_2;
+	} else if (x &lt;= 1.4610749151403416e-142) {
+		tmp = x / (y * (1.0 + y));
+	} else if (x &lt;= 4.3646095585197394e+169) {
+		tmp = t_2;
+	} else {
+		tmp = (Math.cbrt((1.0 / (1.0 + x))) * (y / x)) * Math.pow(t_1, -2.0);
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y)
+	return Float64(Float64(x * y) / Float64(Float64(Float64(x + y) * Float64(x + y)) * Float64(Float64(x + y) + 1.0)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y)
+	t_0 = Float64(1.0 + Float64(x + y))
+	t_1 = cbrt(t_0)
+	t_2 = Float64((Float64(x + y) ^ -2.0) * Float64(Float64(y / t_1) * Float64(x / cbrt((t_0 ^ 2.0)))))
+	tmp = 0.0
+	if (x &lt;= -5.557255440701011e-146)
+		tmp = t_2;
+	elseif (x &lt;= 1.4610749151403416e-142)
+		tmp = Float64(x / Float64(y * Float64(1.0 + y)));
+	elseif (x &lt;= 4.3646095585197394e+169)
+		tmp = t_2;
+	else
+		tmp = Float64(Float64(cbrt(Float64(1.0 / Float64(1.0 + x))) * Float64(y / x)) * (t_1 ^ -2.0));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_] := N[(N[(x * y), $MachinePrecision] / N[(N[(N[(x + y), $MachinePrecision] * N[(x + y), $MachinePrecision]), $MachinePrecision] * N[(N[(x + y), $MachinePrecision] + 1.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_] := Block[{t$95$0 = N[(1.0 + N[(x + y), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$1 = N[Power[t$95$0, 1/3], $MachinePrecision]}, Block[{t$95$2 = N[(N[Power[N[(x + y), $MachinePrecision], -2.0], $MachinePrecision] * N[(N[(y / t$95$1), $MachinePrecision] * N[(x / N[Power[N[Power[t$95$0, 2.0], $MachinePrecision], 1/3], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[x, -5.557255440701011e-146], t$95$2, If[LessEqual[x, 1.4610749151403416e-142], N[(x / N[(y * N[(1.0 + y), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], If[LessEqual[x, 4.3646095585197394e+169], t$95$2, N[(N[(N[Power[N[(1.0 / N[(1.0 + x), $MachinePrecision]), $MachinePrecision], 1/3], $MachinePrecision] * N[(y / x), $MachinePrecision]), $MachinePrecision] * N[Power[t$95$1, -2.0], $MachinePrecision]), $MachinePrecision]]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{x \cdot y}{\left(\left(x + y\right) \cdot \left(x + y\right)\right) \cdot \left(\left(x + y\right) + 1\right)}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := 1 + \left(x + y\right)\\
+t_1 := \sqrt[3]{t_0}\\
+t_2 := {\left(x + y\right)}^{-2} \cdot \left(\frac{y}{t_1} \cdot \frac{x}{\sqrt[3]{{t_0}^{2}}}\right)\\
+\mathbf{if}\;x \leq -5.557255440701011 \cdot 10^{-146}:\\
+\;\;\;\;t_2\\
+
+\mathbf{elif}\;x \leq 1.4610749151403416 \cdot 10^{-142}:\\
+\;\;\;\;\frac{x}{y \cdot \left(1 + y\right)}\\
+
+\mathbf{elif}\;x \leq 4.3646095585197394 \cdot 10^{+169}:\\
+\;\;\;\;t_2\\
+
+\mathbf{else}:\\
+\;\;\;\;\left(\sqrt[3]{\frac{1}{1 + x}} \cdot \frac{y}{x}\right) \cdot {t_1}^{-2}\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">x</label><input type="text" class="input-submit" name="var-name-0" value="-1.1361064774330522e+201"/></li><li><label for="var-name-1">y</label><input type="text" class="input-submit" name="var-name-1" value="5.118558468473052e-47"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>19.7</td></tr><tr><th>Target</th><td>0.1</td></tr><tr><th>Herbie</th><td>7.4</td></tr></table><div class="math">\[\frac{\frac{\frac{x}{\left(y + 1\right) + x}}{y + x}}{\frac{1}{\frac{y}{y + x}}}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> x  &lt; -5.5572554407010109e-146 or 1.46107491514034161e-142 &lt;  x  &lt; 4.36460955851973944e169</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 17.0">16.9</span></p><div class="math">\[\frac{x \cdot y}{\left(\left(x + y\right) \cdot \left(x + y\right)\right) \cdot \left(\left(x + y\right) + 1\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 12.0">12.0</span></p><div class="math">\[\leadsto \color{blue}{{\left(x + y\right)}^{-2} \cdot \frac{x \cdot y}{\left(x + y\right) - -1}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 6.8">6.8</span></p><div class="math">\[\leadsto {\left(x + y\right)}^{-2} \cdot \color{blue}{\left(\frac{y}{\sqrt[3]{1 + \left(x + y\right)}} \cdot \frac{x}{\sqrt[3]{{\left(1 + \left(x + y\right)\right)}^{2}}}\right)}
+\]</div></li></ol><h2><code>if <span class="condition">-5.5572554407010109e-146 &lt;  x  &lt; 1.46107491514034161e-142</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 23.3">23.3</span></p><div class="math">\[\frac{x \cdot y}{\left(\left(x + y\right) \cdot \left(x + y\right)\right) \cdot \left(\left(x + y\right) + 1\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 23.3">23.4</span></p><div class="math">\[\leadsto \color{blue}{{\left(x + y\right)}^{-2} \cdot \frac{x \cdot y}{\left(x + y\right) - -1}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 23.3">23.4</span></p><div class="math">\[\leadsto {\left(x + y\right)}^{-2} \cdot \color{blue}{\left(\frac{y}{\sqrt[3]{1 + \left(x + y\right)}} \cdot \frac{x}{\sqrt[3]{{\left(1 + \left(x + y\right)\right)}^{2}}}\right)}
+\]</div></li><li><p>Taylor expanded in x around 0 <span class="error" title="Internally 12.1">8.9</span></p><div class="math">\[\leadsto \color{blue}{\frac{x}{y \cdot \left(1 + y\right)}}
+\]</div></li></ol><h2><code>if <span class="condition">4.36460955851973944e169 &lt;  x </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 37.2">27.0</span></p><div class="math">\[\frac{x \cdot y}{\left(\left(x + y\right) \cdot \left(x + y\right)\right) \cdot \left(\left(x + y\right) + 1\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 37.2">27.0</span></p><div class="math">\[\leadsto \color{blue}{{\left(x + y\right)}^{-2} \cdot \frac{x \cdot y}{\left(x + y\right) - -1}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 37.2">27.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{{\left(x + y\right)}^{-2} \cdot \left(x \cdot y\right)}{\sqrt[3]{1 + \left(x + y\right)}} \cdot {\left(\sqrt[3]{1 + \left(x + y\right)}\right)}^{-2}}
+\]</div></li><li><p>Taylor expanded in y around 0 <span class="error" title="Internally 2.8">7.8</span></p><div class="math">\[\leadsto \color{blue}{\left({\left(\frac{1}{1 + x}\right)}^{0.3333333333333333} \cdot \frac{y}{x}\right)} \cdot {\left(\sqrt[3]{1 + \left(x + y\right)}\right)}^{-2}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 2.1">7.4</span></p><div class="math">\[\leadsto \color{blue}{\left(\sqrt[3]{\frac{1}{1 + x}} \cdot \frac{y}{x}\right)} \cdot {\left(\sqrt[3]{1 + \left(x + y\right)}\right)}^{-2}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y)
+  :name "Numeric.SpecFunctions:incompleteBetaApprox from math-functions-0.1.5.2, A"
+  :precision binary64
+
+  :herbie-target
+  (/ (/ (/ x (+ (+ y 1.0) x)) (+ y x)) (/ 1.0 (/ y (+ y x))))
+
+  (/ (* x y) (* (* (+ x y) (+ x y)) (+ (+ x y) 1.0))))
+</code></pre></section></body></html>

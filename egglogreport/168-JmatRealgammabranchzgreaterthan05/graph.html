@@ -1,0 +1,172 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Jmat.Real.gamma, branch z greater than 0.5</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 9.9">3.9 → 2.4</span></div><div>Time: <span class="number">4.4s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[z &gt; 0.5\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(\left(\sqrt{\pi \cdot 2} \cdot {\left(\left(\left(z - 1\right) + 7\right) + 0.5\right)}^{\left(\left(z - 1\right) + 0.5\right)}\right) \cdot e^{-\left(\left(\left(z - 1\right) + 7\right) + 0.5\right)}\right) \cdot \left(\left(\left(\left(\left(\left(\left(\left(0.9999999999998099 + \frac{676.5203681218851}{\left(z - 1\right) + 1}\right) + \frac{-1259.1392167224028}{\left(z - 1\right) + 2}\right) + \frac{771.3234287776531}{\left(z - 1\right) + 3}\right) + \frac{-176.6150291621406}{\left(z - 1\right) + 4}\right) + \frac{12.507343278686905}{\left(z - 1\right) + 5}\right) + \frac{-0.13857109526572012}{\left(z - 1\right) + 6}\right) + \frac{9.984369578019572 \cdot 10^{-6}}{\left(z - 1\right) + 7}\right) + \frac{1.5056327351493116 \cdot 10^{-7}}{\left(z - 1\right) + 8}\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \left(z - 1\right) + 7\\
+t_1 := \frac{1259.1392167224028}{-1 - z}\\
+t_2 := \frac{1.5056327351493116 \cdot 10^{-7}}{\left(z - 1\right) + 8}\\
+t_3 := \frac{12.507343278686905}{\left(z - 1\right) + 5}\\
+t_4 := t_0 + 0.5\\
+t_5 := 0.9999999999998099 + \frac{676.5203681218851}{z}\\
+t_6 := \sqrt[3]{t_5}\\
+t_7 := \frac{-0.13857109526572012}{\left(z - 1\right) + 6}\\
+t_8 := \frac{771.3234287776531}{\left(z - 1\right) + 3}\\
+t_9 := \frac{9.984369578019572 \cdot 10^{-6}}{t_0}\\
+t_10 := \frac{-176.6150291621406}{\left(z - 1\right) + 4}\\
+t_11 := \sqrt[3]{t_1}\\
+\mathbf{if}\;z - 1 \leq 140:\\
+\;\;\;\;\left(\left(\sqrt{\pi \cdot 2} \cdot {t_4}^{\left(\left(z - 1\right) + 0.5\right)}\right) \cdot e^{-t_4}\right) \cdot \left(\left(\left(\left(\left(\left(\mathsf{fma}\left(-1259.1392167224028, \frac{-1}{-1 - z}, t_5\right) + t_8\right) + t_10\right) + t_3\right) + t_7\right) + t_9\right) + t_2\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\left(\left(\sqrt{2} \cdot e^{\mathsf{fma}\left(-\log \left(6.5 + z\right), 0.5 - z, -6.5 - z\right)}\right) \cdot \sqrt{\pi}\right) \cdot \left(\left(\left(\left(\left(\left(\left(\sqrt[3]{{t_1}^{2}} + \left(\sqrt[3]{{t_5}^{2}} - t_11 \cdot t_6\right)\right) \cdot \left(t_11 + t_6\right) + t_8\right) + t_10\right) + t_3\right) + t_7\right) + t_9\right) + t_2\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (z)
+ :precision binary64
+ (*
+  (*
+   (* (sqrt (* PI 2.0)) (pow (+ (+ (- z 1.0) 7.0) 0.5) (+ (- z 1.0) 0.5)))
+   (exp (- (+ (+ (- z 1.0) 7.0) 0.5))))
+  (+
+   (+
+    (+
+     (+
+      (+
+       (+
+        (+
+         (+ 0.9999999999998099 (/ 676.5203681218851 (+ (- z 1.0) 1.0)))
+         (/ -1259.1392167224028 (+ (- z 1.0) 2.0)))
+        (/ 771.3234287776531 (+ (- z 1.0) 3.0)))
+       (/ -176.6150291621406 (+ (- z 1.0) 4.0)))
+      (/ 12.507343278686905 (+ (- z 1.0) 5.0)))
+     (/ -0.13857109526572012 (+ (- z 1.0) 6.0)))
+    (/ 9.984369578019572e-6 (+ (- z 1.0) 7.0)))
+   (/ 1.5056327351493116e-7 (+ (- z 1.0) 8.0)))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (z)
+ :precision binary64
+ (let* ((t_0 (+ (- z 1.0) 7.0))
+        (t_1 (/ 1259.1392167224028 (- -1.0 z)))
+        (t_2 (/ 1.5056327351493116e-7 (+ (- z 1.0) 8.0)))
+        (t_3 (/ 12.507343278686905 (+ (- z 1.0) 5.0)))
+        (t_4 (+ t_0 0.5))
+        (t_5 (+ 0.9999999999998099 (/ 676.5203681218851 z)))
+        (t_6 (cbrt t_5))
+        (t_7 (/ -0.13857109526572012 (+ (- z 1.0) 6.0)))
+        (t_8 (/ 771.3234287776531 (+ (- z 1.0) 3.0)))
+        (t_9 (/ 9.984369578019572e-6 t_0))
+        (t_10 (/ -176.6150291621406 (+ (- z 1.0) 4.0)))
+        (t_11 (cbrt t_1)))
+   (if (&lt;= (- z 1.0) 140.0)
+     (*
+      (* (* (sqrt (* PI 2.0)) (pow t_4 (+ (- z 1.0) 0.5))) (exp (- t_4)))
+      (+
+       (+
+        (+
+         (+
+          (+ (+ (fma -1259.1392167224028 (/ -1.0 (- -1.0 z)) t_5) t_8) t_10)
+          t_3)
+         t_7)
+        t_9)
+       t_2))
+     (*
+      (*
+       (* (sqrt 2.0) (exp (fma (- (log (+ 6.5 z))) (- 0.5 z) (- -6.5 z))))
+       (sqrt PI))
+      (+
+       (+
+        (+
+         (+
+          (+
+           (+
+            (*
+             (+ (cbrt (pow t_1 2.0)) (- (cbrt (pow t_5 2.0)) (* t_11 t_6)))
+             (+ t_11 t_6))
+            t_8)
+           t_10)
+          t_3)
+         t_7)
+        t_9)
+       t_2)))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double z) {
+	return ((sqrt((((double) M_PI) * 2.0)) * pow((((z - 1.0) + 7.0) + 0.5), ((z - 1.0) + 0.5))) * exp(-(((z - 1.0) + 7.0) + 0.5))) * ((((((((0.9999999999998099 + (676.5203681218851 / ((z - 1.0) + 1.0))) + (-1259.1392167224028 / ((z - 1.0) + 2.0))) + (771.3234287776531 / ((z - 1.0) + 3.0))) + (-176.6150291621406 / ((z - 1.0) + 4.0))) + (12.507343278686905 / ((z - 1.0) + 5.0))) + (-0.13857109526572012 / ((z - 1.0) + 6.0))) + (9.984369578019572e-6 / ((z - 1.0) + 7.0))) + (1.5056327351493116e-7 / ((z - 1.0) + 8.0)));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double z) {
+	double t_0 = (z - 1.0) + 7.0;
+	double t_1 = 1259.1392167224028 / (-1.0 - z);
+	double t_2 = 1.5056327351493116e-7 / ((z - 1.0) + 8.0);
+	double t_3 = 12.507343278686905 / ((z - 1.0) + 5.0);
+	double t_4 = t_0 + 0.5;
+	double t_5 = 0.9999999999998099 + (676.5203681218851 / z);
+	double t_6 = cbrt(t_5);
+	double t_7 = -0.13857109526572012 / ((z - 1.0) + 6.0);
+	double t_8 = 771.3234287776531 / ((z - 1.0) + 3.0);
+	double t_9 = 9.984369578019572e-6 / t_0;
+	double t_10 = -176.6150291621406 / ((z - 1.0) + 4.0);
+	double t_11 = cbrt(t_1);
+	double tmp;
+	if ((z - 1.0) &lt;= 140.0) {
+		tmp = ((sqrt((((double) M_PI) * 2.0)) * pow(t_4, ((z - 1.0) + 0.5))) * exp(-t_4)) * ((((((fma(-1259.1392167224028, (-1.0 / (-1.0 - z)), t_5) + t_8) + t_10) + t_3) + t_7) + t_9) + t_2);
+	} else {
+		tmp = ((sqrt(2.0) * exp(fma(-log((6.5 + z)), (0.5 - z), (-6.5 - z)))) * sqrt(((double) M_PI))) * ((((((((cbrt(pow(t_1, 2.0)) + (cbrt(pow(t_5, 2.0)) - (t_11 * t_6))) * (t_11 + t_6)) + t_8) + t_10) + t_3) + t_7) + t_9) + t_2);
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(z)
+	return Float64(Float64(Float64(sqrt(Float64(pi * 2.0)) * (Float64(Float64(Float64(z - 1.0) + 7.0) + 0.5) ^ Float64(Float64(z - 1.0) + 0.5))) * exp(Float64(-Float64(Float64(Float64(z - 1.0) + 7.0) + 0.5)))) * Float64(Float64(Float64(Float64(Float64(Float64(Float64(Float64(0.9999999999998099 + Float64(676.5203681218851 / Float64(Float64(z - 1.0) + 1.0))) + Float64(-1259.1392167224028 / Float64(Float64(z - 1.0) + 2.0))) + Float64(771.3234287776531 / Float64(Float64(z - 1.0) + 3.0))) + Float64(-176.6150291621406 / Float64(Float64(z - 1.0) + 4.0))) + Float64(12.507343278686905 / Float64(Float64(z - 1.0) + 5.0))) + Float64(-0.13857109526572012 / Float64(Float64(z - 1.0) + 6.0))) + Float64(9.984369578019572e-6 / Float64(Float64(z - 1.0) + 7.0))) + Float64(1.5056327351493116e-7 / Float64(Float64(z - 1.0) + 8.0))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(z)
+	t_0 = Float64(Float64(z - 1.0) + 7.0)
+	t_1 = Float64(1259.1392167224028 / Float64(-1.0 - z))
+	t_2 = Float64(1.5056327351493116e-7 / Float64(Float64(z - 1.0) + 8.0))
+	t_3 = Float64(12.507343278686905 / Float64(Float64(z - 1.0) + 5.0))
+	t_4 = Float64(t_0 + 0.5)
+	t_5 = Float64(0.9999999999998099 + Float64(676.5203681218851 / z))
+	t_6 = cbrt(t_5)
+	t_7 = Float64(-0.13857109526572012 / Float64(Float64(z - 1.0) + 6.0))
+	t_8 = Float64(771.3234287776531 / Float64(Float64(z - 1.0) + 3.0))
+	t_9 = Float64(9.984369578019572e-6 / t_0)
+	t_10 = Float64(-176.6150291621406 / Float64(Float64(z - 1.0) + 4.0))
+	t_11 = cbrt(t_1)
+	tmp = 0.0
+	if (Float64(z - 1.0) &lt;= 140.0)
+		tmp = Float64(Float64(Float64(sqrt(Float64(pi * 2.0)) * (t_4 ^ Float64(Float64(z - 1.0) + 0.5))) * exp(Float64(-t_4))) * Float64(Float64(Float64(Float64(Float64(Float64(fma(-1259.1392167224028, Float64(-1.0 / Float64(-1.0 - z)), t_5) + t_8) + t_10) + t_3) + t_7) + t_9) + t_2));
+	else
+		tmp = Float64(Float64(Float64(sqrt(2.0) * exp(fma(Float64(-log(Float64(6.5 + z))), Float64(0.5 - z), Float64(-6.5 - z)))) * sqrt(pi)) * Float64(Float64(Float64(Float64(Float64(Float64(Float64(Float64(cbrt((t_1 ^ 2.0)) + Float64(cbrt((t_5 ^ 2.0)) - Float64(t_11 * t_6))) * Float64(t_11 + t_6)) + t_8) + t_10) + t_3) + t_7) + t_9) + t_2));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[z_] := N[(N[(N[(N[Sqrt[N[(Pi * 2.0), $MachinePrecision]], $MachinePrecision] * N[Power[N[(N[(N[(z - 1.0), $MachinePrecision] + 7.0), $MachinePrecision] + 0.5), $MachinePrecision], N[(N[(z - 1.0), $MachinePrecision] + 0.5), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] * N[Exp[(-N[(N[(N[(z - 1.0), $MachinePrecision] + 7.0), $MachinePrecision] + 0.5), $MachinePrecision])], $MachinePrecision]), $MachinePrecision] * N[(N[(N[(N[(N[(N[(N[(N[(0.9999999999998099 + N[(676.5203681218851 / N[(N[(z - 1.0), $MachinePrecision] + 1.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(-1259.1392167224028 / N[(N[(z - 1.0), $MachinePrecision] + 2.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(771.3234287776531 / N[(N[(z - 1.0), $MachinePrecision] + 3.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(-176.6150291621406 / N[(N[(z - 1.0), $MachinePrecision] + 4.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(12.507343278686905 / N[(N[(z - 1.0), $MachinePrecision] + 5.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(-0.13857109526572012 / N[(N[(z - 1.0), $MachinePrecision] + 6.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(9.984369578019572e-6 / N[(N[(z - 1.0), $MachinePrecision] + 7.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(1.5056327351493116e-7 / N[(N[(z - 1.0), $MachinePrecision] + 8.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[z_] := Block[{t$95$0 = N[(N[(z - 1.0), $MachinePrecision] + 7.0), $MachinePrecision]}, Block[{t$95$1 = N[(1259.1392167224028 / N[(-1.0 - z), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$2 = N[(1.5056327351493116e-7 / N[(N[(z - 1.0), $MachinePrecision] + 8.0), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$3 = N[(12.507343278686905 / N[(N[(z - 1.0), $MachinePrecision] + 5.0), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$4 = N[(t$95$0 + 0.5), $MachinePrecision]}, Block[{t$95$5 = N[(0.9999999999998099 + N[(676.5203681218851 / z), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$6 = N[Power[t$95$5, 1/3], $MachinePrecision]}, Block[{t$95$7 = N[(-0.13857109526572012 / N[(N[(z - 1.0), $MachinePrecision] + 6.0), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$8 = N[(771.3234287776531 / N[(N[(z - 1.0), $MachinePrecision] + 3.0), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$9 = N[(9.984369578019572e-6 / t$95$0), $MachinePrecision]}, Block[{t$95$10 = N[(-176.6150291621406 / N[(N[(z - 1.0), $MachinePrecision] + 4.0), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$11 = N[Power[t$95$1, 1/3], $MachinePrecision]}, If[LessEqual[N[(z - 1.0), $MachinePrecision], 140.0], N[(N[(N[(N[Sqrt[N[(Pi * 2.0), $MachinePrecision]], $MachinePrecision] * N[Power[t$95$4, N[(N[(z - 1.0), $MachinePrecision] + 0.5), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] * N[Exp[(-t$95$4)], $MachinePrecision]), $MachinePrecision] * N[(N[(N[(N[(N[(N[(N[(-1259.1392167224028 * N[(-1.0 / N[(-1.0 - z), $MachinePrecision]), $MachinePrecision] + t$95$5), $MachinePrecision] + t$95$8), $MachinePrecision] + t$95$10), $MachinePrecision] + t$95$3), $MachinePrecision] + t$95$7), $MachinePrecision] + t$95$9), $MachinePrecision] + t$95$2), $MachinePrecision]), $MachinePrecision], N[(N[(N[(N[Sqrt[2.0], $MachinePrecision] * N[Exp[N[((-N[Log[N[(6.5 + z), $MachinePrecision]], $MachinePrecision]) * N[(0.5 - z), $MachinePrecision] + N[(-6.5 - z), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] * N[Sqrt[Pi], $MachinePrecision]), $MachinePrecision] * N[(N[(N[(N[(N[(N[(N[(N[(N[Power[N[Power[t$95$1, 2.0], $MachinePrecision], 1/3], $MachinePrecision] + N[(N[Power[N[Power[t$95$5, 2.0], $MachinePrecision], 1/3], $MachinePrecision] - N[(t$95$11 * t$95$6), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * N[(t$95$11 + t$95$6), $MachinePrecision]), $MachinePrecision] + t$95$8), $MachinePrecision] + t$95$10), $MachinePrecision] + t$95$3), $MachinePrecision] + t$95$7), $MachinePrecision] + t$95$9), $MachinePrecision] + t$95$2), $MachinePrecision]), $MachinePrecision]]]]]]]]]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(\left(\sqrt{\pi \cdot 2} \cdot {\left(\left(\left(z - 1\right) + 7\right) + 0.5\right)}^{\left(\left(z - 1\right) + 0.5\right)}\right) \cdot e^{-\left(\left(\left(z - 1\right) + 7\right) + 0.5\right)}\right) \cdot \left(\left(\left(\left(\left(\left(\left(\left(0.9999999999998099 + \frac{676.5203681218851}{\left(z - 1\right) + 1}\right) + \frac{-1259.1392167224028}{\left(z - 1\right) + 2}\right) + \frac{771.3234287776531}{\left(z - 1\right) + 3}\right) + \frac{-176.6150291621406}{\left(z - 1\right) + 4}\right) + \frac{12.507343278686905}{\left(z - 1\right) + 5}\right) + \frac{-0.13857109526572012}{\left(z - 1\right) + 6}\right) + \frac{9.984369578019572 \cdot 10^{-6}}{\left(z - 1\right) + 7}\right) + \frac{1.5056327351493116 \cdot 10^{-7}}{\left(z - 1\right) + 8}\right)
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \left(z - 1\right) + 7\\
+t_1 := \frac{1259.1392167224028}{-1 - z}\\
+t_2 := \frac{1.5056327351493116 \cdot 10^{-7}}{\left(z - 1\right) + 8}\\
+t_3 := \frac{12.507343278686905}{\left(z - 1\right) + 5}\\
+t_4 := t_0 + 0.5\\
+t_5 := 0.9999999999998099 + \frac{676.5203681218851}{z}\\
+t_6 := \sqrt[3]{t_5}\\
+t_7 := \frac{-0.13857109526572012}{\left(z - 1\right) + 6}\\
+t_8 := \frac{771.3234287776531}{\left(z - 1\right) + 3}\\
+t_9 := \frac{9.984369578019572 \cdot 10^{-6}}{t_0}\\
+t_10 := \frac{-176.6150291621406}{\left(z - 1\right) + 4}\\
+t_11 := \sqrt[3]{t_1}\\
+\mathbf{if}\;z - 1 \leq 140:\\
+\;\;\;\;\left(\left(\sqrt{\pi \cdot 2} \cdot {t_4}^{\left(\left(z - 1\right) + 0.5\right)}\right) \cdot e^{-t_4}\right) \cdot \left(\left(\left(\left(\left(\left(\mathsf{fma}\left(-1259.1392167224028, \frac{-1}{-1 - z}, t_5\right) + t_8\right) + t_10\right) + t_3\right) + t_7\right) + t_9\right) + t_2\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\left(\left(\sqrt{2} \cdot e^{\mathsf{fma}\left(-\log \left(6.5 + z\right), 0.5 - z, -6.5 - z\right)}\right) \cdot \sqrt{\pi}\right) \cdot \left(\left(\left(\left(\left(\left(\left(\sqrt[3]{{t_1}^{2}} + \left(\sqrt[3]{{t_5}^{2}} - t_11 \cdot t_6\right)\right) \cdot \left(t_11 + t_6\right) + t_8\right) + t_10\right) + t_3\right) + t_7\right) + t_9\right) + t_2\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> (-.f64 z 1)  &lt; 140</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 2.3">2.2</span></p><div class="math">\[\left(\left(\sqrt{\pi \cdot 2} \cdot {\left(\left(\left(z - 1\right) + 7\right) + 0.5\right)}^{\left(\left(z - 1\right) + 0.5\right)}\right) \cdot e^{-\left(\left(\left(z - 1\right) + 7\right) + 0.5\right)}\right) \cdot \left(\left(\left(\left(\left(\left(\left(\left(0.9999999999998099 + \frac{676.5203681218851}{\left(z - 1\right) + 1}\right) + \frac{-1259.1392167224028}{\left(z - 1\right) + 2}\right) + \frac{771.3234287776531}{\left(z - 1\right) + 3}\right) + \frac{-176.6150291621406}{\left(z - 1\right) + 4}\right) + \frac{12.507343278686905}{\left(z - 1\right) + 5}\right) + \frac{-0.13857109526572012}{\left(z - 1\right) + 6}\right) + \frac{9.984369578019572 \cdot 10^{-6}}{\left(z - 1\right) + 7}\right) + \frac{1.5056327351493116 \cdot 10^{-7}}{\left(z - 1\right) + 8}\right)
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 2.2">2.3</span></p><div class="math">\[\leadsto \left(\left(\sqrt{\pi \cdot 2} \cdot {\left(\left(\left(z - 1\right) + 7\right) + 0.5\right)}^{\left(\left(z - 1\right) + 0.5\right)}\right) \cdot e^{-\left(\left(\left(z - 1\right) + 7\right) + 0.5\right)}\right) \cdot \left(\left(\left(\left(\left(\left(\color{blue}{\mathsf{fma}\left(-1259.1392167224028, \frac{-1}{-1 - z}, 0.9999999999998099 + \frac{676.5203681218851}{z}\right)} + \frac{771.3234287776531}{\left(z - 1\right) + 3}\right) + \frac{-176.6150291621406}{\left(z - 1\right) + 4}\right) + \frac{12.507343278686905}{\left(z - 1\right) + 5}\right) + \frac{-0.13857109526572012}{\left(z - 1\right) + 6}\right) + \frac{9.984369578019572 \cdot 10^{-6}}{\left(z - 1\right) + 7}\right) + \frac{1.5056327351493116 \cdot 10^{-7}}{\left(z - 1\right) + 8}\right)
+\]</div></li></ol><h2><code>if <span class="condition">140 &lt;  (-.f64 z 1) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 64.0">62.3</span></p><div class="math">\[\left(\left(\sqrt{\pi \cdot 2} \cdot {\left(\left(\left(z - 1\right) + 7\right) + 0.5\right)}^{\left(\left(z - 1\right) + 0.5\right)}\right) \cdot e^{-\left(\left(\left(z - 1\right) + 7\right) + 0.5\right)}\right) \cdot \left(\left(\left(\left(\left(\left(\left(\left(0.9999999999998099 + \frac{676.5203681218851}{\left(z - 1\right) + 1}\right) + \frac{-1259.1392167224028}{\left(z - 1\right) + 2}\right) + \frac{771.3234287776531}{\left(z - 1\right) + 3}\right) + \frac{-176.6150291621406}{\left(z - 1\right) + 4}\right) + \frac{12.507343278686905}{\left(z - 1\right) + 5}\right) + \frac{-0.13857109526572012}{\left(z - 1\right) + 6}\right) + \frac{9.984369578019572 \cdot 10^{-6}}{\left(z - 1\right) + 7}\right) + \frac{1.5056327351493116 \cdot 10^{-7}}{\left(z - 1\right) + 8}\right)
+\]</div></li><li><p>Taylor expanded in z around -inf <span class="error" title="Internally 64.0">62.2</span></p><div class="math">\[\leadsto \color{blue}{\left(\left(\sqrt{2} \cdot \left(e^{-1 \cdot \left(\log \left(6.5 - -1 \cdot z\right) \cdot \left(-1 \cdot z + 0.5\right)\right)} \cdot e^{-1 \cdot z - 6.5}\right)\right) \cdot \sqrt{\pi}\right)} \cdot \left(\left(\left(\left(\left(\left(\left(\left(0.9999999999998099 + \frac{676.5203681218851}{\left(z - 1\right) + 1}\right) + \frac{-1259.1392167224028}{\left(z - 1\right) + 2}\right) + \frac{771.3234287776531}{\left(z - 1\right) + 3}\right) + \frac{-176.6150291621406}{\left(z - 1\right) + 4}\right) + \frac{12.507343278686905}{\left(z - 1\right) + 5}\right) + \frac{-0.13857109526572012}{\left(z - 1\right) + 6}\right) + \frac{9.984369578019572 \cdot 10^{-6}}{\left(z - 1\right) + 7}\right) + \frac{1.5056327351493116 \cdot 10^{-7}}{\left(z - 1\right) + 8}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 7.3">7.4</span></p><div class="math">\[\leadsto \color{blue}{\left(\left(\sqrt{2} \cdot e^{\mathsf{fma}\left(-\log \left(6.5 + z\right), 0.5 - z, -6.5 - z\right)}\right) \cdot \sqrt{\pi}\right)} \cdot \left(\left(\left(\left(\left(\left(\left(\left(0.9999999999998099 + \frac{676.5203681218851}{\left(z - 1\right) + 1}\right) + \frac{-1259.1392167224028}{\left(z - 1\right) + 2}\right) + \frac{771.3234287776531}{\left(z - 1\right) + 3}\right) + \frac{-176.6150291621406}{\left(z - 1\right) + 4}\right) + \frac{12.507343278686905}{\left(z - 1\right) + 5}\right) + \frac{-0.13857109526572012}{\left(z - 1\right) + 6}\right) + \frac{9.984369578019572 \cdot 10^{-6}}{\left(z - 1\right) + 7}\right) + \frac{1.5056327351493116 \cdot 10^{-7}}{\left(z - 1\right) + 8}\right)
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 7.3">7.4</span></p><div class="math">\[\leadsto \left(\left(\sqrt{2} \cdot e^{\mathsf{fma}\left(-\log \left(6.5 + z\right), 0.5 - z, -6.5 - z\right)}\right) \cdot \sqrt{\pi}\right) \cdot \left(\left(\left(\left(\left(\left(\color{blue}{\left(\sqrt[3]{{\left(\frac{1259.1392167224028}{-1 - z}\right)}^{2}} + \left(\sqrt[3]{{\left(0.9999999999998099 + \frac{676.5203681218851}{z}\right)}^{2}} - \sqrt[3]{\frac{1259.1392167224028}{-1 - z}} \cdot \sqrt[3]{0.9999999999998099 + \frac{676.5203681218851}{z}}\right)\right) \cdot \left(\sqrt[3]{\frac{1259.1392167224028}{-1 - z}} + \sqrt[3]{0.9999999999998099 + \frac{676.5203681218851}{z}}\right)} + \frac{771.3234287776531}{\left(z - 1\right) + 3}\right) + \frac{-176.6150291621406}{\left(z - 1\right) + 4}\right) + \frac{12.507343278686905}{\left(z - 1\right) + 5}\right) + \frac{-0.13857109526572012}{\left(z - 1\right) + 6}\right) + \frac{9.984369578019572 \cdot 10^{-6}}{\left(z - 1\right) + 7}\right) + \frac{1.5056327351493116 \cdot 10^{-7}}{\left(z - 1\right) + 8}\right)
+\]</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (z)
+  :name "Jmat.Real.gamma, branch z greater than 0.5"
+  :precision binary64
+  :pre (&gt; z 0.5)
+  (* (* (* (sqrt (* PI 2.0)) (pow (+ (+ (- z 1.0) 7.0) 0.5) (+ (- z 1.0) 0.5))) (exp (- (+ (+ (- z 1.0) 7.0) 0.5)))) (+ (+ (+ (+ (+ (+ (+ (+ 0.9999999999998099 (/ 676.5203681218851 (+ (- z 1.0) 1.0))) (/ -1259.1392167224028 (+ (- z 1.0) 2.0))) (/ 771.3234287776531 (+ (- z 1.0) 3.0))) (/ -176.6150291621406 (+ (- z 1.0) 4.0))) (/ 12.507343278686905 (+ (- z 1.0) 5.0))) (/ -0.13857109526572012 (+ (- z 1.0) 6.0))) (/ 9.984369578019572e-6 (+ (- z 1.0) 7.0))) (/ 1.5056327351493116e-7 (+ (- z 1.0) 8.0)))))
+</code></pre></section></body></html>

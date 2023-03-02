@@ -1,0 +1,84 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Sample trimmed logistic on [-pi, pi]</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 7.6 → 7.8">0.3 → 0.4</span></div><div>Time: <span class="number">11.7s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[\left(2.328306437 \cdot 10^{-10} \leq u \land u \leq 1\right) \land \left(0 \leq s \land s \leq 1.0651631\right)\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Java</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(-s\right) \cdot \log \left(\frac{1}{u \cdot \left(\frac{1}{1 + e^{\frac{-\pi}{s}}} - \frac{1}{1 + e^{\frac{\pi}{s}}}\right) + \frac{1}{1 + e^{\frac{\pi}{s}}}} - 1\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := 1 + e^{\frac{\pi}{s}}\\
+t_1 := e^{-\frac{\pi}{s}}\\
+t_2 := {\left(\frac{u}{1 + t_1} + \frac{1 - u}{t_0}\right)}^{-3} + -1\\
+t_3 := \frac{u + -1}{t_0} + \frac{u}{-1 - t_1}\\
+\left(-s\right) \cdot \log \left(\sqrt[3]{t_2} \cdot \frac{\sqrt[3]{{t_2}^{2}}}{{t_3}^{-2} + \left(1 + \frac{-1}{t_3}\right)}\right)
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (u s)
+ :precision binary64
+ (*
+  (- s)
+  (log
+   (-
+    (/
+     1.0
+     (+
+      (*
+       u
+       (- (/ 1.0 (+ 1.0 (exp (/ (- PI) s)))) (/ 1.0 (+ 1.0 (exp (/ PI s))))))
+      (/ 1.0 (+ 1.0 (exp (/ PI s))))))
+    1.0))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (u s)
+ :precision binary64
+ (let* ((t_0 (+ 1.0 (exp (/ PI s))))
+        (t_1 (exp (- (/ PI s))))
+        (t_2 (+ (pow (+ (/ u (+ 1.0 t_1)) (/ (- 1.0 u) t_0)) -3.0) -1.0))
+        (t_3 (+ (/ (+ u -1.0) t_0) (/ u (- -1.0 t_1)))))
+   (*
+    (- s)
+    (log
+     (*
+      (cbrt t_2)
+      (/ (cbrt (pow t_2 2.0)) (+ (pow t_3 -2.0) (+ 1.0 (/ -1.0 t_3)))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double u, double s) {
+	return -s * log(((1.0 / ((u * ((1.0 / (1.0 + exp((-((double) M_PI) / s)))) - (1.0 / (1.0 + exp((((double) M_PI) / s)))))) + (1.0 / (1.0 + exp((((double) M_PI) / s)))))) - 1.0));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double u, double s) {
+	double t_0 = 1.0 + exp((((double) M_PI) / s));
+	double t_1 = exp(-(((double) M_PI) / s));
+	double t_2 = pow(((u / (1.0 + t_1)) + ((1.0 - u) / t_0)), -3.0) + -1.0;
+	double t_3 = ((u + -1.0) / t_0) + (u / (-1.0 - t_1));
+	return -s * log((cbrt(t_2) * (cbrt(pow(t_2, 2.0)) / (pow(t_3, -2.0) + (1.0 + (-1.0 / t_3))))));
+}
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double u, double s) {
+	return -s * Math.log(((1.0 / ((u * ((1.0 / (1.0 + Math.exp((-Math.PI / s)))) - (1.0 / (1.0 + Math.exp((Math.PI / s)))))) + (1.0 / (1.0 + Math.exp((Math.PI / s)))))) - 1.0));
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double u, double s) {
+	double t_0 = 1.0 + Math.exp((Math.PI / s));
+	double t_1 = Math.exp(-(Math.PI / s));
+	double t_2 = Math.pow(((u / (1.0 + t_1)) + ((1.0 - u) / t_0)), -3.0) + -1.0;
+	double t_3 = ((u + -1.0) / t_0) + (u / (-1.0 - t_1));
+	return -s * Math.log((Math.cbrt(t_2) * (Math.cbrt(Math.pow(t_2, 2.0)) / (Math.pow(t_3, -2.0) + (1.0 + (-1.0 / t_3))))));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(u, s)
+	return Float64(Float64(-s) * log(Float64(Float64(1.0 / Float64(Float64(u * Float64(Float64(1.0 / Float64(1.0 + exp(Float64(Float64(-pi) / s)))) - Float64(1.0 / Float64(1.0 + exp(Float64(pi / s)))))) + Float64(1.0 / Float64(1.0 + exp(Float64(pi / s)))))) - 1.0)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(u, s)
+	t_0 = Float64(1.0 + exp(Float64(pi / s)))
+	t_1 = exp(Float64(-Float64(pi / s)))
+	t_2 = Float64((Float64(Float64(u / Float64(1.0 + t_1)) + Float64(Float64(1.0 - u) / t_0)) ^ -3.0) + -1.0)
+	t_3 = Float64(Float64(Float64(u + -1.0) / t_0) + Float64(u / Float64(-1.0 - t_1)))
+	return Float64(Float64(-s) * log(Float64(cbrt(t_2) * Float64(cbrt((t_2 ^ 2.0)) / Float64((t_3 ^ -2.0) + Float64(1.0 + Float64(-1.0 / t_3)))))))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[u_, s_] := N[((-s) * N[Log[N[(N[(1.0 / N[(N[(u * N[(N[(1.0 / N[(1.0 + N[Exp[N[((-Pi) / s), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - N[(1.0 / N[(1.0 + N[Exp[N[(Pi / s), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(1.0 / N[(1.0 + N[Exp[N[(Pi / s), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - 1.0), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[u_, s_] := Block[{t$95$0 = N[(1.0 + N[Exp[N[(Pi / s), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]}, Block[{t$95$1 = N[Exp[(-N[(Pi / s), $MachinePrecision])], $MachinePrecision]}, Block[{t$95$2 = N[(N[Power[N[(N[(u / N[(1.0 + t$95$1), $MachinePrecision]), $MachinePrecision] + N[(N[(1.0 - u), $MachinePrecision] / t$95$0), $MachinePrecision]), $MachinePrecision], -3.0], $MachinePrecision] + -1.0), $MachinePrecision]}, Block[{t$95$3 = N[(N[(N[(u + -1.0), $MachinePrecision] / t$95$0), $MachinePrecision] + N[(u / N[(-1.0 - t$95$1), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, N[((-s) * N[Log[N[(N[Power[t$95$2, 1/3], $MachinePrecision] * N[(N[Power[N[Power[t$95$2, 2.0], $MachinePrecision], 1/3], $MachinePrecision] / N[(N[Power[t$95$3, -2.0], $MachinePrecision] + N[(1.0 + N[(-1.0 / t$95$3), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(-s\right) \cdot \log \left(\frac{1}{u \cdot \left(\frac{1}{1 + e^{\frac{-\pi}{s}}} - \frac{1}{1 + e^{\frac{\pi}{s}}}\right) + \frac{1}{1 + e^{\frac{\pi}{s}}}} - 1\right)
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := 1 + e^{\frac{\pi}{s}}\\
+t_1 := e^{-\frac{\pi}{s}}\\
+t_2 := {\left(\frac{u}{1 + t_1} + \frac{1 - u}{t_0}\right)}^{-3} + -1\\
+t_3 := \frac{u + -1}{t_0} + \frac{u}{-1 - t_1}\\
+\left(-s\right) \cdot \log \left(\sqrt[3]{t_2} \cdot \frac{\sqrt[3]{{t_2}^{2}}}{{t_3}^{-2} + \left(1 + \frac{-1}{t_3}\right)}\right)
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">u</label><input type="text" class="input-submit" name="var-name-0" value="3.6765977684653886e-9"/></li><li><label for="var-name-1">s</label><input type="text" class="input-submit" name="var-name-1" value="3.349675349320524e-134"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 0.3">0.3</span></p><div class="math">\[\left(-s\right) \cdot \log \left(\frac{1}{u \cdot \left(\frac{1}{1 + e^{\frac{-\pi}{s}}} - \frac{1}{1 + e^{\frac{\pi}{s}}}\right) + \frac{1}{1 + e^{\frac{\pi}{s}}}} - 1\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.3">0.3</span></p><div class="math">\[\leadsto \color{blue}{\left(-s\right) \cdot \log \left(\frac{-1}{\frac{1}{-1 - e^{\frac{\pi}{s}}} - \left(\frac{u}{1 + e^{-\frac{\pi}{s}}} + \frac{u}{-1 - e^{\frac{\pi}{s}}}\right)} + -1\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.3">0.3</span></p><div class="math">\[\leadsto \left(-s\right) \cdot \log \color{blue}{\left(\frac{{\left(\frac{u}{1 + e^{-\frac{\pi}{s}}} + \frac{u - 1}{-1 - e^{\frac{\pi}{s}}}\right)}^{-3} + -1}{\left({\left(\frac{1 - u}{-1 - e^{\frac{\pi}{s}}} + \frac{u}{-1 - e^{-\frac{\pi}{s}}}\right)}^{-2} + \frac{-1}{\frac{1 - u}{-1 - e^{\frac{\pi}{s}}} + \frac{u}{-1 - e^{-\frac{\pi}{s}}}}\right) + 1}\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.3">0.4</span></p><div class="math">\[\leadsto \left(-s\right) \cdot \log \color{blue}{\left(\sqrt[3]{{\left(\frac{u}{1 + e^{-\frac{\pi}{s}}} + \frac{1 - u}{1 + e^{\frac{\pi}{s}}}\right)}^{-3} + -1} \cdot \frac{\sqrt[3]{{\left({\left(\frac{u}{1 + e^{-\frac{\pi}{s}}} + \frac{1 - u}{1 + e^{\frac{\pi}{s}}}\right)}^{-3} + -1\right)}^{2}}}{{\left(\frac{u + -1}{1 + e^{\frac{\pi}{s}}} + \frac{u}{-1 - e^{-\frac{\pi}{s}}}\right)}^{-2} + \left(1 + \frac{-1}{\frac{u + -1}{1 + e^{\frac{\pi}{s}}} + \frac{u}{-1 - e^{-\frac{\pi}{s}}}}\right)}\right)}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (u s)
+  :name "Sample trimmed logistic on [-pi, pi]"
+  :precision binary64
+  :pre (and (and (&lt;= 2.328306437e-10 u) (&lt;= u 1.0)) (and (&lt;= 0.0 s) (&lt;= s 1.0651631)))
+  (* (- s) (log (- (/ 1.0 (+ (* u (- (/ 1.0 (+ 1.0 (exp (/ (- PI) s)))) (/ 1.0 (+ 1.0 (exp (/ PI s)))))) (/ 1.0 (+ 1.0 (exp (/ PI s)))))) 1.0))))
+</code></pre></section></body></html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Rump's expression from Stadtherr's award speech</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 58.1 → 63.0">58.1 → 63.0</span></div><div>Time: <span class="number">373.0ms</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[x = 77617 \land y = 33096\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(\left(333.75 \cdot {y}^{6} + \left(x \cdot x\right) \cdot \left(\left(\left(\left(\left(\left(11 \cdot x\right) \cdot x\right) \cdot y\right) \cdot y - {y}^{6}\right) - 121 \cdot {y}^{4}\right) - 2\right)\right) + 5.5 \cdot {y}^{8}\right) + \frac{x}{2 \cdot y}
+\]</div><div class="arrow">↓</div><div class="program math">\[\mathsf{fma}\left(333.75, {y}^{6}, \mathsf{fma}\left(x \cdot x, y \cdot \left(\left(x \cdot x\right) \cdot \left(y \cdot 11\right)\right) - \mathsf{fma}\left({y}^{4}, \mathsf{fma}\left(y, y, 121\right), 2\right), \mathsf{fma}\left(5.5, {y}^{8}, \frac{x}{y \cdot 2}\right)\right)\right)
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y)
+ :precision binary64
+ (+
+  (+
+   (+
+    (* 333.75 (pow y 6.0))
+    (*
+     (* x x)
+     (-
+      (- (- (* (* (* (* 11.0 x) x) y) y) (pow y 6.0)) (* 121.0 (pow y 4.0)))
+      2.0)))
+   (* 5.5 (pow y 8.0)))
+  (/ x (* 2.0 y))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y)
+ :precision binary64
+ (fma
+  333.75
+  (pow y 6.0)
+  (fma
+   (* x x)
+   (- (* y (* (* x x) (* y 11.0))) (fma (pow y 4.0) (fma y y 121.0) 2.0))
+   (fma 5.5 (pow y 8.0) (/ x (* y 2.0))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y) {
+	return (((333.75 * pow(y, 6.0)) + ((x * x) * (((((((11.0 * x) * x) * y) * y) - pow(y, 6.0)) - (121.0 * pow(y, 4.0))) - 2.0))) + (5.5 * pow(y, 8.0))) + (x / (2.0 * y));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y) {
+	return fma(333.75, pow(y, 6.0), fma((x * x), ((y * ((x * x) * (y * 11.0))) - fma(pow(y, 4.0), fma(y, y, 121.0), 2.0)), fma(5.5, pow(y, 8.0), (x / (y * 2.0)))));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y)
+	return Float64(Float64(Float64(Float64(333.75 * (y ^ 6.0)) + Float64(Float64(x * x) * Float64(Float64(Float64(Float64(Float64(Float64(Float64(11.0 * x) * x) * y) * y) - (y ^ 6.0)) - Float64(121.0 * (y ^ 4.0))) - 2.0))) + Float64(5.5 * (y ^ 8.0))) + Float64(x / Float64(2.0 * y)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y)
+	return fma(333.75, (y ^ 6.0), fma(Float64(x * x), Float64(Float64(y * Float64(Float64(x * x) * Float64(y * 11.0))) - fma((y ^ 4.0), fma(y, y, 121.0), 2.0)), fma(5.5, (y ^ 8.0), Float64(x / Float64(y * 2.0)))))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_] := N[(N[(N[(N[(333.75 * N[Power[y, 6.0], $MachinePrecision]), $MachinePrecision] + N[(N[(x * x), $MachinePrecision] * N[(N[(N[(N[(N[(N[(N[(11.0 * x), $MachinePrecision] * x), $MachinePrecision] * y), $MachinePrecision] * y), $MachinePrecision] - N[Power[y, 6.0], $MachinePrecision]), $MachinePrecision] - N[(121.0 * N[Power[y, 4.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - 2.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(5.5 * N[Power[y, 8.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(x / N[(2.0 * y), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_] := N[(333.75 * N[Power[y, 6.0], $MachinePrecision] + N[(N[(x * x), $MachinePrecision] * N[(N[(y * N[(N[(x * x), $MachinePrecision] * N[(y * 11.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - N[(N[Power[y, 4.0], $MachinePrecision] * N[(y * y + 121.0), $MachinePrecision] + 2.0), $MachinePrecision]), $MachinePrecision] + N[(5.5 * N[Power[y, 8.0], $MachinePrecision] + N[(x / N[(y * 2.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(\left(333.75 \cdot {y}^{6} + \left(x \cdot x\right) \cdot \left(\left(\left(\left(\left(\left(11 \cdot x\right) \cdot x\right) \cdot y\right) \cdot y - {y}^{6}\right) - 121 \cdot {y}^{4}\right) - 2\right)\right) + 5.5 \cdot {y}^{8}\right) + \frac{x}{2 \cdot y}
+</pre><div class="arrow">↓</div><pre class="program">\mathsf{fma}\left(333.75, {y}^{6}, \mathsf{fma}\left(x \cdot x, y \cdot \left(\left(x \cdot x\right) \cdot \left(y \cdot 11\right)\right) - \mathsf{fma}\left({y}^{4}, \mathsf{fma}\left(y, y, 121\right), 2\right), \mathsf{fma}\left(5.5, {y}^{8}, \frac{x}{y \cdot 2}\right)\right)\right)
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 58.1">58.1</span></p><div class="math">\[\left(\left(333.75 \cdot {y}^{6} + \left(x \cdot x\right) \cdot \left(\left(\left(\left(\left(\left(11 \cdot x\right) \cdot x\right) \cdot y\right) \cdot y - {y}^{6}\right) - 121 \cdot {y}^{4}\right) - 2\right)\right) + 5.5 \cdot {y}^{8}\right) + \frac{x}{2 \cdot y}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 63.0">63.0</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(333.75, {y}^{6}, \mathsf{fma}\left(x \cdot x, y \cdot \left(\left(x \cdot x\right) \cdot \left(y \cdot 11\right)\right) - \mathsf{fma}\left({y}^{4}, \mathsf{fma}\left(y, y, 121\right), 2\right), \mathsf{fma}\left(5.5, {y}^{8}, \frac{x}{y \cdot 2}\right)\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Final simplification<span class="error" title="Internally 63.0">63.0</span></p><div class="math">\[\leadsto \mathsf{fma}\left(333.75, {y}^{6}, \mathsf{fma}\left(x \cdot x, y \cdot \left(\left(x \cdot x\right) \cdot \left(y \cdot 11\right)\right) - \mathsf{fma}\left({y}^{4}, \mathsf{fma}\left(y, y, 121\right), 2\right), \mathsf{fma}\left(5.5, {y}^{8}, \frac{x}{y \cdot 2}\right)\right)\right)
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x y)
+  :name "Rump's expression from Stadtherr's award speech"
+  :precision binary64
+  :pre (and (== x 77617.0) (== y 33096.0))
+  (+ (+ (+ (* 333.75 (pow y 6.0)) (* (* x x) (- (- (- (* (* (* (* 11.0 x) x) y) y) (pow y 6.0)) (* 121.0 (pow y 4.0))) 2.0))) (* 5.5 (pow y 8.0))) (/ x (* 2.0 y))))
+</code></pre></section></body></html>

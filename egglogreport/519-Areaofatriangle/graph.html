@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Exception for Area of a triangle</title><link rel="stylesheet" type="text/css" href="../report.css"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="../report.js"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div></div></nav><section id="user-error"><h2>Cannot sample enough valid points.<a href="https://herbie.uwplse.org/doc/1.6/faq.html#sample-valid-points"> (more)</a></h2></section><section id="program"><div id="precondition"><div class="program math">\[\left(\left(0 &lt; a \land a &lt; b + c\right) \land \left(0 &lt; b \land b &lt; a + c\right)\right) \land \left(0 &lt; c \land c &lt; a + b\right)\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Fortran</option><option>Java</option><option>Python</option><option>Julia</option><option>MATLAB</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\sqrt{\left(\left(\frac{\left(a + b\right) + c}{2} \cdot \left(\frac{\left(a + b\right) + c}{2} - a\right)\right) \cdot \left(\frac{\left(a + b\right) + c}{2} - b\right)\right) \cdot \left(\frac{\left(a + b\right) + c}{2} - c\right)}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (a b c)
+ :precision binary64
+ (sqrt
+  (*
+   (*
+    (* (/ (+ (+ a b) c) 2.0) (- (/ (+ (+ a b) c) 2.0) a))
+    (- (/ (+ (+ a b) c) 2.0) b))
+   (- (/ (+ (+ a b) c) 2.0) c))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double a, double b, double c) {
+	return sqrt(((((((a + b) + c) / 2.0) * ((((a + b) + c) / 2.0) - a)) * ((((a + b) + c) / 2.0) - b)) * ((((a + b) + c) / 2.0) - c)));
+}
+</pre></div><div class="implementation" data-language="Fortran"><pre class="program">real(8) function code(a, b, c)
+    real(8), intent (in) :: a
+    real(8), intent (in) :: b
+    real(8), intent (in) :: c
+    code = sqrt(((((((a + b) + c) / 2.0d0) * ((((a + b) + c) / 2.0d0) - a)) * ((((a + b) + c) / 2.0d0) - b)) * ((((a + b) + c) / 2.0d0) - c)))
+end function
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double a, double b, double c) {
+	return Math.sqrt(((((((a + b) + c) / 2.0) * ((((a + b) + c) / 2.0) - a)) * ((((a + b) + c) / 2.0) - b)) * ((((a + b) + c) / 2.0) - c)));
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(a, b, c):
+	return math.sqrt(((((((a + b) + c) / 2.0) * ((((a + b) + c) / 2.0) - a)) * ((((a + b) + c) / 2.0) - b)) * ((((a + b) + c) / 2.0) - c)))
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(a, b, c)
+	return sqrt(Float64(Float64(Float64(Float64(Float64(Float64(a + b) + c) / 2.0) * Float64(Float64(Float64(Float64(a + b) + c) / 2.0) - a)) * Float64(Float64(Float64(Float64(a + b) + c) / 2.0) - b)) * Float64(Float64(Float64(Float64(a + b) + c) / 2.0) - c)))
+end
+</pre></div><div class="implementation" data-language="MATLAB"><pre class="program">function tmp = code(a, b, c)
+	tmp = sqrt(((((((a + b) + c) / 2.0) * ((((a + b) + c) / 2.0) - a)) * ((((a + b) + c) / 2.0) - b)) * ((((a + b) + c) / 2.0) - c)));
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[a_, b_, c_] := N[Sqrt[N[(N[(N[(N[(N[(N[(a + b), $MachinePrecision] + c), $MachinePrecision] / 2.0), $MachinePrecision] * N[(N[(N[(N[(a + b), $MachinePrecision] + c), $MachinePrecision] / 2.0), $MachinePrecision] - a), $MachinePrecision]), $MachinePrecision] * N[(N[(N[(N[(a + b), $MachinePrecision] + c), $MachinePrecision] / 2.0), $MachinePrecision] - b), $MachinePrecision]), $MachinePrecision] * N[(N[(N[(N[(a + b), $MachinePrecision] + c), $MachinePrecision] / 2.0), $MachinePrecision] - c), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\sqrt{\left(\left(\frac{\left(a + b\right) + c}{2} \cdot \left(\frac{\left(a + b\right) + c}{2} - a\right)\right) \cdot \left(\frac{\left(a + b\right) + c}{2} - b\right)\right) \cdot \left(\frac{\left(a + b\right) + c}{2} - c\right)}
+</pre></div></section></body></html>

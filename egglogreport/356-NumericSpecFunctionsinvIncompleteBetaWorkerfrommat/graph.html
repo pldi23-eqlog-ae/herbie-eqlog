@@ -1,0 +1,68 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Numeric.SpecFunctions:invIncompleteBetaWorker from math-functions-0.1.5.2, I</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">4.1 → 2.3</span></div><div>Time: <span class="number">4.0s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{x}{x + y \cdot e^{2 \cdot \left(\frac{z \cdot \sqrt{t + a}}{t} - \left(b - c\right) \cdot \left(\left(a + \frac{5}{6}\right) - \frac{2}{t \cdot 3}\right)\right)}}
+\]</div><div class="arrow">↓</div><div class="program math">\[\frac{x}{\mathsf{fma}\left({\left(e \cdot e\right)}^{\left(\mathsf{fma}\left(z, \frac{\sqrt{t + a}}{t}, \left(c - b\right) \cdot \left(a - \left(\frac{0.6666666666666666}{t} + -0.8333333333333334\right)\right)\right)\right)}, y, x\right)}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a b c)
+ :precision binary64
+ (/
+  x
+  (+
+   x
+   (*
+    y
+    (exp
+     (*
+      2.0
+      (-
+       (/ (* z (sqrt (+ t a))) t)
+       (* (- b c) (- (+ a (/ 5.0 6.0)) (/ 2.0 (* t 3.0)))))))))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a b c)
+ :precision binary64
+ (/
+  x
+  (fma
+   (pow
+    (* E E)
+    (fma
+     z
+     (/ (sqrt (+ t a)) t)
+     (* (- c b) (- a (+ (/ 0.6666666666666666 t) -0.8333333333333334)))))
+   y
+   x)))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a, double b, double c) {
+	return x / (x + (y * exp((2.0 * (((z * sqrt((t + a))) / t) - ((b - c) * ((a + (5.0 / 6.0)) - (2.0 / (t * 3.0)))))))));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a, double b, double c) {
+	return x / fma(pow((((double) M_E) * ((double) M_E)), fma(z, (sqrt((t + a)) / t), ((c - b) * (a - ((0.6666666666666666 / t) + -0.8333333333333334))))), y, x);
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a, b, c)
+	return Float64(x / Float64(x + Float64(y * exp(Float64(2.0 * Float64(Float64(Float64(z * sqrt(Float64(t + a))) / t) - Float64(Float64(b - c) * Float64(Float64(a + Float64(5.0 / 6.0)) - Float64(2.0 / Float64(t * 3.0))))))))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a, b, c)
+	return Float64(x / fma((Float64(exp(1) * exp(1)) ^ fma(z, Float64(sqrt(Float64(t + a)) / t), Float64(Float64(c - b) * Float64(a - Float64(Float64(0.6666666666666666 / t) + -0.8333333333333334))))), y, x))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_, b_, c_] := N[(x / N[(x + N[(y * N[Exp[N[(2.0 * N[(N[(N[(z * N[Sqrt[N[(t + a), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] / t), $MachinePrecision] - N[(N[(b - c), $MachinePrecision] * N[(N[(a + N[(5.0 / 6.0), $MachinePrecision]), $MachinePrecision] - N[(2.0 / N[(t * 3.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_, b_, c_] := N[(x / N[(N[Power[N[(E * E), $MachinePrecision], N[(z * N[(N[Sqrt[N[(t + a), $MachinePrecision]], $MachinePrecision] / t), $MachinePrecision] + N[(N[(c - b), $MachinePrecision] * N[(a - N[(N[(0.6666666666666666 / t), $MachinePrecision] + -0.8333333333333334), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision] * y + x), $MachinePrecision]), $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{x}{x + y \cdot e^{2 \cdot \left(\frac{z \cdot \sqrt{t + a}}{t} - \left(b - c\right) \cdot \left(\left(a + \frac{5}{6}\right) - \frac{2}{t \cdot 3}\right)\right)}}
+</pre><div class="arrow">↓</div><pre class="program">\frac{x}{\mathsf{fma}\left({\left(e \cdot e\right)}^{\left(\mathsf{fma}\left(z, \frac{\sqrt{t + a}}{t}, \left(c - b\right) \cdot \left(a - \left(\frac{0.6666666666666666}{t} + -0.8333333333333334\right)\right)\right)\right)}, y, x\right)}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>4.1</td></tr><tr><th>Target</th><td>3.0</td></tr><tr><th>Herbie</th><td>2.3</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;t &lt; -2.118326644891581 \cdot 10^{-50}:\\
+\;\;\;\;\frac{x}{x + y \cdot e^{2 \cdot \left(\left(a \cdot c + 0.8333333333333334 \cdot c\right) - a \cdot b\right)}}\\
+
+\mathbf{elif}\;t &lt; 5.196588770651547 \cdot 10^{-123}:\\
+\;\;\;\;\frac{x}{x + y \cdot e^{2 \cdot \frac{\left(z \cdot \sqrt{t + a}\right) \cdot \left(\left(3 \cdot t\right) \cdot \left(a - \frac{5}{6}\right)\right) - \left(\left(\frac{5}{6} + a\right) \cdot \left(3 \cdot t\right) - 2\right) \cdot \left(\left(a - \frac{5}{6}\right) \cdot \left(\left(b - c\right) \cdot t\right)\right)}{\left(\left(t \cdot t\right) \cdot 3\right) \cdot \left(a - \frac{5}{6}\right)}}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{x}{x + y \cdot e^{2 \cdot \left(\frac{z \cdot \sqrt{t + a}}{t} - \left(b - c\right) \cdot \left(\left(a + \frac{5}{6}\right) - \frac{2}{t \cdot 3}\right)\right)}}\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 3.5">4.1</span></p><div class="math">\[\frac{x}{x + y \cdot e^{2 \cdot \left(\frac{z \cdot \sqrt{t + a}}{t} - \left(b - c\right) \cdot \left(\left(a + \frac{5}{6}\right) - \frac{2}{t \cdot 3}\right)\right)}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 2.0">2.3</span></p><div class="math">\[\leadsto \color{blue}{\frac{x}{\mathsf{fma}\left({\left(e \cdot e\right)}^{\left(\mathsf{fma}\left(z, \frac{\sqrt{t + a}}{t}, \left(c - b\right) \cdot \left(a - \left(\frac{0.6666666666666666}{t} + -0.8333333333333334\right)\right)\right)\right)}, y, x\right)}}
+\]</div><div class="math">Proof</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y z t a b c)
+  :name "Numeric.SpecFunctions:invIncompleteBetaWorker from math-functions-0.1.5.2, I"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; t -2.118326644891581e-50) (/ x (+ x (* y (exp (* 2.0 (- (+ (* a c) (* 0.8333333333333334 c)) (* a b))))))) (if (&lt; t 5.196588770651547e-123) (/ x (+ x (* y (exp (* 2.0 (/ (- (* (* z (sqrt (+ t a))) (* (* 3.0 t) (- a (/ 5.0 6.0)))) (* (- (* (+ (/ 5.0 6.0) a) (* 3.0 t)) 2.0) (* (- a (/ 5.0 6.0)) (* (- b c) t)))) (* (* (* t t) 3.0) (- a (/ 5.0 6.0))))))))) (/ x (+ x (* y (exp (* 2.0 (- (/ (* z (sqrt (+ t a))) t) (* (- b c) (- (+ a (/ 5.0 6.0)) (/ 2.0 (* t 3.0))))))))))))
+
+  (/ x (+ x (* y (exp (* 2.0 (- (/ (* z (sqrt (+ t a))) t) (* (- b c) (- (+ a (/ 5.0 6.0)) (/ 2.0 (* t 3.0)))))))))))
+</code></pre></section></body></html>

@@ -1,0 +1,197 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Rosa's DopplerBench</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">18.3 → 8.1</span></div><div>Time: <span class="number">2.3s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Fortran</option><option>Java</option><option>Python</option><option>Julia</option><option>MATLAB</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{\left(-t1\right) \cdot v}{\left(t1 + u\right) \cdot \left(t1 + u\right)}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := -\frac{v}{t1}\\
+t_2 := \left(-v\right) \cdot \left(t1 \cdot {\left(t1 + u\right)}^{-2}\right)\\
+\mathbf{if}\;t1 \leq -2.9893943816363404 \cdot 10^{+181}:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;t1 \leq -1 \cdot 10^{-195}:\\
+\;\;\;\;t_2\\
+
+\mathbf{elif}\;t1 \leq 10^{-224}:\\
+\;\;\;\;-\frac{\frac{t1 \cdot v}{u}}{u}\\
+
+\mathbf{elif}\;t1 \leq 4.35003362469482 \cdot 10^{+146}:\\
+\;\;\;\;t_2\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (u v t1) :precision binary64 (/ (* (- t1) v) (* (+ t1 u) (+ t1 u))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (u v t1)
+ :precision binary64
+ (let* ((t_1 (- (/ v t1))) (t_2 (* (- v) (* t1 (pow (+ t1 u) -2.0)))))
+   (if (&lt;= t1 -2.9893943816363404e+181)
+     t_1
+     (if (&lt;= t1 -1e-195)
+       t_2
+       (if (&lt;= t1 1e-224)
+         (- (/ (/ (* t1 v) u) u))
+         (if (&lt;= t1 4.35003362469482e+146) t_2 t_1))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double u, double v, double t1) {
+	return (-t1 * v) / ((t1 + u) * (t1 + u));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double u, double v, double t1) {
+	double t_1 = -(v / t1);
+	double t_2 = -v * (t1 * pow((t1 + u), -2.0));
+	double tmp;
+	if (t1 &lt;= -2.9893943816363404e+181) {
+		tmp = t_1;
+	} else if (t1 &lt;= -1e-195) {
+		tmp = t_2;
+	} else if (t1 &lt;= 1e-224) {
+		tmp = -(((t1 * v) / u) / u);
+	} else if (t1 &lt;= 4.35003362469482e+146) {
+		tmp = t_2;
+	} else {
+		tmp = t_1;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Fortran"><pre class="program">real(8) function code(u, v, t1)
+    real(8), intent (in) :: u
+    real(8), intent (in) :: v
+    real(8), intent (in) :: t1
+    code = (-t1 * v) / ((t1 + u) * (t1 + u))
+end function
+</pre><div class="arrow">↓</div><pre class="program">real(8) function code(u, v, t1)
+    real(8), intent (in) :: u
+    real(8), intent (in) :: v
+    real(8), intent (in) :: t1
+    real(8) :: t_1
+    real(8) :: t_2
+    real(8) :: tmp
+    t_1 = -(v / t1)
+    t_2 = -v * (t1 * ((t1 + u) ** (-2.0d0)))
+    if (t1 &lt;= (-2.9893943816363404d+181)) then
+        tmp = t_1
+    else if (t1 &lt;= (-1d-195)) then
+        tmp = t_2
+    else if (t1 &lt;= 1d-224) then
+        tmp = -(((t1 * v) / u) / u)
+    else if (t1 &lt;= 4.35003362469482d+146) then
+        tmp = t_2
+    else
+        tmp = t_1
+    end if
+    code = tmp
+end function
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double u, double v, double t1) {
+	return (-t1 * v) / ((t1 + u) * (t1 + u));
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double u, double v, double t1) {
+	double t_1 = -(v / t1);
+	double t_2 = -v * (t1 * Math.pow((t1 + u), -2.0));
+	double tmp;
+	if (t1 &lt;= -2.9893943816363404e+181) {
+		tmp = t_1;
+	} else if (t1 &lt;= -1e-195) {
+		tmp = t_2;
+	} else if (t1 &lt;= 1e-224) {
+		tmp = -(((t1 * v) / u) / u);
+	} else if (t1 &lt;= 4.35003362469482e+146) {
+		tmp = t_2;
+	} else {
+		tmp = t_1;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(u, v, t1):
+	return (-t1 * v) / ((t1 + u) * (t1 + u))
+</pre><div class="arrow">↓</div><pre class="program">def code(u, v, t1):
+	t_1 = -(v / t1)
+	t_2 = -v * (t1 * math.pow((t1 + u), -2.0))
+	tmp = 0
+	if t1 &lt;= -2.9893943816363404e+181:
+		tmp = t_1
+	elif t1 &lt;= -1e-195:
+		tmp = t_2
+	elif t1 &lt;= 1e-224:
+		tmp = -(((t1 * v) / u) / u)
+	elif t1 &lt;= 4.35003362469482e+146:
+		tmp = t_2
+	else:
+		tmp = t_1
+	return tmp
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(u, v, t1)
+	return Float64(Float64(Float64(-t1) * v) / Float64(Float64(t1 + u) * Float64(t1 + u)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(u, v, t1)
+	t_1 = Float64(-Float64(v / t1))
+	t_2 = Float64(Float64(-v) * Float64(t1 * (Float64(t1 + u) ^ -2.0)))
+	tmp = 0.0
+	if (t1 &lt;= -2.9893943816363404e+181)
+		tmp = t_1;
+	elseif (t1 &lt;= -1e-195)
+		tmp = t_2;
+	elseif (t1 &lt;= 1e-224)
+		tmp = Float64(-Float64(Float64(Float64(t1 * v) / u) / u));
+	elseif (t1 &lt;= 4.35003362469482e+146)
+		tmp = t_2;
+	else
+		tmp = t_1;
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="MATLAB"><pre class="program">function tmp = code(u, v, t1)
+	tmp = (-t1 * v) / ((t1 + u) * (t1 + u));
+end
+</pre><div class="arrow">↓</div><pre class="program">function tmp_2 = code(u, v, t1)
+	t_1 = -(v / t1);
+	t_2 = -v * (t1 * ((t1 + u) ^ -2.0));
+	tmp = 0.0;
+	if (t1 &lt;= -2.9893943816363404e+181)
+		tmp = t_1;
+	elseif (t1 &lt;= -1e-195)
+		tmp = t_2;
+	elseif (t1 &lt;= 1e-224)
+		tmp = -(((t1 * v) / u) / u);
+	elseif (t1 &lt;= 4.35003362469482e+146)
+		tmp = t_2;
+	else
+		tmp = t_1;
+	end
+	tmp_2 = tmp;
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[u_, v_, t1_] := N[(N[((-t1) * v), $MachinePrecision] / N[(N[(t1 + u), $MachinePrecision] * N[(t1 + u), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[u_, v_, t1_] := Block[{t$95$1 = (-N[(v / t1), $MachinePrecision])}, Block[{t$95$2 = N[((-v) * N[(t1 * N[Power[N[(t1 + u), $MachinePrecision], -2.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[t1, -2.9893943816363404e+181], t$95$1, If[LessEqual[t1, -1e-195], t$95$2, If[LessEqual[t1, 1e-224], (-N[(N[(N[(t1 * v), $MachinePrecision] / u), $MachinePrecision] / u), $MachinePrecision]), If[LessEqual[t1, 4.35003362469482e+146], t$95$2, t$95$1]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{\left(-t1\right) \cdot v}{\left(t1 + u\right) \cdot \left(t1 + u\right)}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := -\frac{v}{t1}\\
+t_2 := \left(-v\right) \cdot \left(t1 \cdot {\left(t1 + u\right)}^{-2}\right)\\
+\mathbf{if}\;t1 \leq -2.9893943816363404 \cdot 10^{+181}:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;t1 \leq -1 \cdot 10^{-195}:\\
+\;\;\;\;t_2\\
+
+\mathbf{elif}\;t1 \leq 10^{-224}:\\
+\;\;\;\;-\frac{\frac{t1 \cdot v}{u}}{u}\\
+
+\mathbf{elif}\;t1 \leq 4.35003362469482 \cdot 10^{+146}:\\
+\;\;\;\;t_2\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">u</label><input type="text" class="input-submit" name="var-name-0" value="1.2840207078103385e-64"/></li><li><label for="var-name-1">v</label><input type="text" class="input-submit" name="var-name-1" value="2.5508837808232882e+151"/></li><li><label for="var-name-2">t1</label><input type="text" class="input-submit" name="var-name-2" value="1.9450698515298137e+211"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> t1  &lt; -2.9893943816363404e181 or 4.35003362469482007e146 &lt;  t1 </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 39.8">36.8</span></p><div class="math">\[\frac{\left(-t1\right) \cdot v}{\left(t1 + u\right) \cdot \left(t1 + u\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 39.0">36.6</span></p><div class="math">\[\leadsto \color{blue}{\left(t1 \cdot v\right) \cdot \left(-{\left(t1 + u\right)}^{-2}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 38.1">35.1</span></p><div class="math">\[\leadsto \color{blue}{\left(-v\right) \cdot \left(t1 \cdot {\left(t1 + u\right)}^{-2}\right)}
+\]</div></li><li><p>Taylor expanded in t1 around inf <span class="error" title="Internally 8.2">5.4</span></p><div class="math">\[\leadsto \color{blue}{-1 \cdot \frac{v}{t1}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 8.2">5.4</span></p><div class="math">\[\leadsto \color{blue}{-\frac{v}{t1}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-2.9893943816363404e181 &lt;  t1  &lt; -1.0000000000000001e-195 or 1e-224 &lt;  t1  &lt; 4.35003362469482007e146</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 11.1">11.7</span></p><div class="math">\[\frac{\left(-t1\right) \cdot v}{\left(t1 + u\right) \cdot \left(t1 + u\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 10.5">11.6</span></p><div class="math">\[\leadsto \color{blue}{\left(t1 \cdot v\right) \cdot \left(-{\left(t1 + u\right)}^{-2}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 4.4">8.2</span></p><div class="math">\[\leadsto \color{blue}{\left(-v\right) \cdot \left(t1 \cdot {\left(t1 + u\right)}^{-2}\right)}
+\]</div></li></ol><h2><code>if <span class="condition">-1.0000000000000001e-195 &lt;  t1  &lt; 1e-224</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 9.6">15.3</span></p><div class="math">\[\frac{\left(-t1\right) \cdot v}{\left(t1 + u\right) \cdot \left(t1 + u\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 9.6">15.7</span></p><div class="math">\[\leadsto \color{blue}{\left(t1 \cdot v\right) \cdot \left(-{\left(t1 + u\right)}^{-2}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in t1 around 0 <span class="error" title="Internally 9.6">15.3</span></p><div class="math">\[\leadsto \color{blue}{-1 \cdot \frac{t1 \cdot v}{{u}^{2}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 3.9">11.8</span></p><div class="math">\[\leadsto \color{blue}{-\frac{\frac{t1 \cdot v}{u}}{u}}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (u v t1)
+  :name "Rosa's DopplerBench"
+  :precision binary64
+  (/ (* (- t1) v) (* (+ t1 u) (+ t1 u))))
+</code></pre></section></body></html>

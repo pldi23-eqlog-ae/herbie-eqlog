@@ -1,0 +1,101 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for VandenBroeck and Keller, Equation (23)</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">13.6 → 0.3</span></div><div>Time: <span class="number">5.6s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(-x \cdot \frac{1}{\tan B}\right) + \frac{F}{\sin B} \cdot {\left(\left(F \cdot F + 2\right) + 2 \cdot x\right)}^{\left(-\frac{1}{2}\right)}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \frac{\cos B \cdot x}{\sin B}\\
+\mathbf{if}\;F \leq -2.05 \cdot 10^{+18}:\\
+\;\;\;\;\frac{-1}{\sin B} - t_0\\
+
+\mathbf{elif}\;F \leq 4100000000000:\\
+\;\;\;\;\mathsf{fma}\left(\frac{F}{\sin B}, {\left(\mathsf{fma}\left(x, 2, \mathsf{fma}\left(F, F, 2\right)\right)\right)}^{-0.5}, \frac{-x}{\tan B}\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{1}{\sin B} - t_0\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (F B x)
+ :precision binary64
+ (+
+  (- (* x (/ 1.0 (tan B))))
+  (* (/ F (sin B)) (pow (+ (+ (* F F) 2.0) (* 2.0 x)) (- (/ 1.0 2.0))))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (F B x)
+ :precision binary64
+ (let* ((t_0 (/ (* (cos B) x) (sin B))))
+   (if (&lt;= F -2.05e+18)
+     (- (/ -1.0 (sin B)) t_0)
+     (if (&lt;= F 4100000000000.0)
+       (fma
+        (/ F (sin B))
+        (pow (fma x 2.0 (fma F F 2.0)) -0.5)
+        (/ (- x) (tan B)))
+       (- (/ 1.0 (sin B)) t_0)))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double F, double B, double x) {
+	return -(x * (1.0 / tan(B))) + ((F / sin(B)) * pow((((F * F) + 2.0) + (2.0 * x)), -(1.0 / 2.0)));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double F, double B, double x) {
+	double t_0 = (cos(B) * x) / sin(B);
+	double tmp;
+	if (F &lt;= -2.05e+18) {
+		tmp = (-1.0 / sin(B)) - t_0;
+	} else if (F &lt;= 4100000000000.0) {
+		tmp = fma((F / sin(B)), pow(fma(x, 2.0, fma(F, F, 2.0)), -0.5), (-x / tan(B)));
+	} else {
+		tmp = (1.0 / sin(B)) - t_0;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(F, B, x)
+	return Float64(Float64(-Float64(x * Float64(1.0 / tan(B)))) + Float64(Float64(F / sin(B)) * (Float64(Float64(Float64(F * F) + 2.0) + Float64(2.0 * x)) ^ Float64(-Float64(1.0 / 2.0)))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(F, B, x)
+	t_0 = Float64(Float64(cos(B) * x) / sin(B))
+	tmp = 0.0
+	if (F &lt;= -2.05e+18)
+		tmp = Float64(Float64(-1.0 / sin(B)) - t_0);
+	elseif (F &lt;= 4100000000000.0)
+		tmp = fma(Float64(F / sin(B)), (fma(x, 2.0, fma(F, F, 2.0)) ^ -0.5), Float64(Float64(-x) / tan(B)));
+	else
+		tmp = Float64(Float64(1.0 / sin(B)) - t_0);
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[F_, B_, x_] := N[((-N[(x * N[(1.0 / N[Tan[B], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]) + N[(N[(F / N[Sin[B], $MachinePrecision]), $MachinePrecision] * N[Power[N[(N[(N[(F * F), $MachinePrecision] + 2.0), $MachinePrecision] + N[(2.0 * x), $MachinePrecision]), $MachinePrecision], (-N[(1.0 / 2.0), $MachinePrecision])], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[F_, B_, x_] := Block[{t$95$0 = N[(N[(N[Cos[B], $MachinePrecision] * x), $MachinePrecision] / N[Sin[B], $MachinePrecision]), $MachinePrecision]}, If[LessEqual[F, -2.05e+18], N[(N[(-1.0 / N[Sin[B], $MachinePrecision]), $MachinePrecision] - t$95$0), $MachinePrecision], If[LessEqual[F, 4100000000000.0], N[(N[(F / N[Sin[B], $MachinePrecision]), $MachinePrecision] * N[Power[N[(x * 2.0 + N[(F * F + 2.0), $MachinePrecision]), $MachinePrecision], -0.5], $MachinePrecision] + N[((-x) / N[Tan[B], $MachinePrecision]), $MachinePrecision]), $MachinePrecision], N[(N[(1.0 / N[Sin[B], $MachinePrecision]), $MachinePrecision] - t$95$0), $MachinePrecision]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(-x \cdot \frac{1}{\tan B}\right) + \frac{F}{\sin B} \cdot {\left(\left(F \cdot F + 2\right) + 2 \cdot x\right)}^{\left(-\frac{1}{2}\right)}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \frac{\cos B \cdot x}{\sin B}\\
+\mathbf{if}\;F \leq -2.05 \cdot 10^{+18}:\\
+\;\;\;\;\frac{-1}{\sin B} - t_0\\
+
+\mathbf{elif}\;F \leq 4100000000000:\\
+\;\;\;\;\mathsf{fma}\left(\frac{F}{\sin B}, {\left(\mathsf{fma}\left(x, 2, \mathsf{fma}\left(F, F, 2\right)\right)\right)}^{-0.5}, \frac{-x}{\tan B}\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{1}{\sin B} - t_0\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> F  &lt; -2.05e18</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 23.5">26.6</span></p><div class="math">\[\left(-x \cdot \frac{1}{\tan B}\right) + \frac{F}{\sin B} \cdot {\left(\left(F \cdot F + 2\right) + 2 \cdot x\right)}^{\left(-\frac{1}{2}\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 23.4">26.6</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{F}{\sin B}, {\left(\mathsf{fma}\left(x, 2, \mathsf{fma}\left(F, F, 2\right)\right)\right)}^{-0.5}, \frac{-x}{\tan B}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in F around -inf <span class="error" title="Internally 0.1">0.2</span></p><div class="math">\[\leadsto \color{blue}{-1 \cdot \frac{\cos B \cdot x}{\sin B} - \frac{1}{\sin B}}
+\]</div></li></ol><h2><code>if <span class="condition">-2.05e18 &lt;  F  &lt; 4.1e12</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.3">0.5</span></p><div class="math">\[\left(-x \cdot \frac{1}{\tan B}\right) + \frac{F}{\sin B} \cdot {\left(\left(F \cdot F + 2\right) + 2 \cdot x\right)}^{\left(-\frac{1}{2}\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.2">0.4</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{F}{\sin B}, {\left(\mathsf{fma}\left(x, 2, \mathsf{fma}\left(F, F, 2\right)\right)\right)}^{-0.5}, \frac{-x}{\tan B}\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">4.1e12 &lt;  F </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 28.6">25.1</span></p><div class="math">\[\left(-x \cdot \frac{1}{\tan B}\right) + \frac{F}{\sin B} \cdot {\left(\left(F \cdot F + 2\right) + 2 \cdot x\right)}^{\left(-\frac{1}{2}\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 28.5">25.1</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{F}{\sin B}, {\left(\mathsf{fma}\left(x, 2, \mathsf{fma}\left(F, F, 2\right)\right)\right)}^{-0.5}, \frac{-x}{\tan B}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in F around inf <span class="error" title="Internally 0.2">0.2</span></p><div class="math">\[\leadsto \color{blue}{\frac{1}{\sin B} + -1 \cdot \frac{\cos B \cdot x}{\sin B}}
+\]</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 0.2">0.3</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;F \leq -2.05 \cdot 10^{+18}:\\
+\;\;\;\;\frac{-1}{\sin B} - \frac{\cos B \cdot x}{\sin B}\\
+
+\mathbf{elif}\;F \leq 4100000000000:\\
+\;\;\;\;\mathsf{fma}\left(\frac{F}{\sin B}, {\left(\mathsf{fma}\left(x, 2, \mathsf{fma}\left(F, F, 2\right)\right)\right)}^{-0.5}, \frac{-x}{\tan B}\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{1}{\sin B} - \frac{\cos B \cdot x}{\sin B}\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (F B x)
+  :name "VandenBroeck and Keller, Equation (23)"
+  :precision binary64
+  (+ (- (* x (/ 1.0 (tan B)))) (* (/ F (sin B)) (pow (+ (+ (* F F) 2.0) (* 2.0 x)) (- (/ 1.0 2.0))))))
+</code></pre></section></body></html>

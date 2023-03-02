@@ -1,0 +1,56 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Quotient of sum of exps</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 62.0">0.6 → 0.6</span></div><div>Time: <span class="number">1.4s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{e^{a}}{e^{a} + e^{b}}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := e^{b} + 1\\
+e^{a - \left(\mathsf{log1p}\left(e^{b}\right) + \mathsf{fma}\left(0.5, a \cdot \left(a \cdot \left(\frac{1}{t_0} + \frac{-1}{{t_0}^{2}}\right)\right), \frac{a}{t_0}\right)\right)}
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (a b) :precision binary64 (/ (exp a) (+ (exp a) (exp b))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (a b)
+ :precision binary64
+ (let* ((t_0 (+ (exp b) 1.0)))
+   (exp
+    (-
+     a
+     (+
+      (log1p (exp b))
+      (fma
+       0.5
+       (* a (* a (+ (/ 1.0 t_0) (/ -1.0 (pow t_0 2.0)))))
+       (/ a t_0)))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double a, double b) {
+	return exp(a) / (exp(a) + exp(b));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double a, double b) {
+	double t_0 = exp(b) + 1.0;
+	return exp((a - (log1p(exp(b)) + fma(0.5, (a * (a * ((1.0 / t_0) + (-1.0 / pow(t_0, 2.0))))), (a / t_0)))));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(a, b)
+	return Float64(exp(a) / Float64(exp(a) + exp(b)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(a, b)
+	t_0 = Float64(exp(b) + 1.0)
+	return exp(Float64(a - Float64(log1p(exp(b)) + fma(0.5, Float64(a * Float64(a * Float64(Float64(1.0 / t_0) + Float64(-1.0 / (t_0 ^ 2.0))))), Float64(a / t_0)))))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[a_, b_] := N[(N[Exp[a], $MachinePrecision] / N[(N[Exp[a], $MachinePrecision] + N[Exp[b], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[a_, b_] := Block[{t$95$0 = N[(N[Exp[b], $MachinePrecision] + 1.0), $MachinePrecision]}, N[Exp[N[(a - N[(N[Log[1 + N[Exp[b], $MachinePrecision]], $MachinePrecision] + N[(0.5 * N[(a * N[(a * N[(N[(1.0 / t$95$0), $MachinePrecision] + N[(-1.0 / N[Power[t$95$0, 2.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(a / t$95$0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{e^{a}}{e^{a} + e^{b}}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := e^{b} + 1\\
+e^{a - \left(\mathsf{log1p}\left(e^{b}\right) + \mathsf{fma}\left(0.5, a \cdot \left(a \cdot \left(\frac{1}{t_0} + \frac{-1}{{t_0}^{2}}\right)\right), \frac{a}{t_0}\right)\right)}
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>0.6</td></tr><tr><th>Target</th><td>0.0</td></tr><tr><th>Herbie</th><td>0.6</td></tr></table><div class="math">\[\frac{1}{1 + e^{b - a}}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 0.5">0.6</span></p><div class="math">\[\frac{e^{a}}{e^{a} + e^{b}}
+\]</div></li><li><p>Taylor expanded in a around 0 <span class="error" title="Internally 0.4">1.0</span></p><div class="math">\[\leadsto \frac{e^{a}}{\color{blue}{0.5 \cdot {a}^{2} + \left(1 + \left(a + e^{b}\right)\right)}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.4">1.0</span></p><div class="math">\[\leadsto \frac{e^{a}}{\color{blue}{1 + \mathsf{fma}\left(a, a \cdot 0.5, e^{b} + a\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.4">0.9</span></p><div class="math">\[\leadsto \color{blue}{e^{a - \mathsf{log1p}\left(\mathsf{fma}\left(a, a \cdot 0.5, a\right) + e^{b}\right)}}
+\]</div></li><li><p>Taylor expanded in a around 0 <span class="error" title="Internally 2.6">3.6</span></p><div class="math">\[\leadsto e^{a - \color{blue}{\left(0.5 \cdot \left({a}^{2} \cdot \left(\frac{1}{1 + e^{b}} - \frac{1}{{\left(1 + e^{b}\right)}^{2}}\right)\right) + \left(\frac{a}{1 + e^{b}} + \log \left(1 + e^{b}\right)\right)\right)}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.3">0.6</span></p><div class="math">\[\leadsto e^{a - \color{blue}{\left(\mathsf{log1p}\left(e^{b}\right) + \mathsf{fma}\left(0.5, a \cdot \left(a \cdot \left(\frac{1}{1 + e^{b}} + \frac{-1}{{\left(1 + e^{b}\right)}^{2}}\right)\right), \frac{a}{1 + e^{b}}\right)\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Final simplification<span class="error" title="Internally 0.3">0.6</span></p><div class="math">\[\leadsto e^{a - \left(\mathsf{log1p}\left(e^{b}\right) + \mathsf{fma}\left(0.5, a \cdot \left(a \cdot \left(\frac{1}{e^{b} + 1} + \frac{-1}{{\left(e^{b} + 1\right)}^{2}}\right)\right), \frac{a}{e^{b} + 1}\right)\right)}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (a b)
+  :name "Quotient of sum of exps"
+  :precision binary64
+
+  :herbie-target
+  (/ 1.0 (+ 1.0 (exp (- b a))))
+
+  (/ (exp a) (+ (exp a) (exp b))))
+</code></pre></section></body></html>

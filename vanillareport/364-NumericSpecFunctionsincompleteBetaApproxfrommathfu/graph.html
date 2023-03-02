@@ -1,0 +1,104 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Numeric.SpecFunctions:incompleteBetaApprox from math-functions-0.1.5.2, A</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">19.7 → 3.8</span></div><div>Time: <span class="number">2.2s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="preprocess"><div class="program math">\[ \begin{array}{c}[x, y] = \mathsf{sort}([x, y])\\ \end{array} \]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{x \cdot y}{\left(\left(x + y\right) \cdot \left(x + y\right)\right) \cdot \left(\left(x + y\right) + 1\right)}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+\mathbf{if}\;y \leq -45586094.03824935:\\
+\;\;\;\;\frac{\frac{y}{1 + x}}{x}\\
+
+\mathbf{elif}\;y \leq 3.932793136125569 \cdot 10^{+151}:\\
+\;\;\;\;x \cdot \frac{-1}{\frac{\left(-1 - y\right) - x}{\frac{1}{y + x} \cdot \frac{y}{y + x}}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\frac{x}{y}}{y} - x \cdot \frac{\mathsf{fma}\left(3, x, 1\right)}{{y}^{3}}\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y)
+ :precision binary64
+ (/ (* x y) (* (* (+ x y) (+ x y)) (+ (+ x y) 1.0))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y)
+ :precision binary64
+ (if (&lt;= y -45586094.03824935)
+   (/ (/ y (+ 1.0 x)) x)
+   (if (&lt;= y 3.932793136125569e+151)
+     (* x (/ -1.0 (/ (- (- -1.0 y) x) (* (/ 1.0 (+ y x)) (/ y (+ y x))))))
+     (- (/ (/ x y) y) (* x (/ (fma 3.0 x 1.0) (pow y 3.0)))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y) {
+	return (x * y) / (((x + y) * (x + y)) * ((x + y) + 1.0));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y) {
+	double tmp;
+	if (y &lt;= -45586094.03824935) {
+		tmp = (y / (1.0 + x)) / x;
+	} else if (y &lt;= 3.932793136125569e+151) {
+		tmp = x * (-1.0 / (((-1.0 - y) - x) / ((1.0 / (y + x)) * (y / (y + x)))));
+	} else {
+		tmp = ((x / y) / y) - (x * (fma(3.0, x, 1.0) / pow(y, 3.0)));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y)
+	return Float64(Float64(x * y) / Float64(Float64(Float64(x + y) * Float64(x + y)) * Float64(Float64(x + y) + 1.0)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y)
+	tmp = 0.0
+	if (y &lt;= -45586094.03824935)
+		tmp = Float64(Float64(y / Float64(1.0 + x)) / x);
+	elseif (y &lt;= 3.932793136125569e+151)
+		tmp = Float64(x * Float64(-1.0 / Float64(Float64(Float64(-1.0 - y) - x) / Float64(Float64(1.0 / Float64(y + x)) * Float64(y / Float64(y + x))))));
+	else
+		tmp = Float64(Float64(Float64(x / y) / y) - Float64(x * Float64(fma(3.0, x, 1.0) / (y ^ 3.0))));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_] := N[(N[(x * y), $MachinePrecision] / N[(N[(N[(x + y), $MachinePrecision] * N[(x + y), $MachinePrecision]), $MachinePrecision] * N[(N[(x + y), $MachinePrecision] + 1.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_] := If[LessEqual[y, -45586094.03824935], N[(N[(y / N[(1.0 + x), $MachinePrecision]), $MachinePrecision] / x), $MachinePrecision], If[LessEqual[y, 3.932793136125569e+151], N[(x * N[(-1.0 / N[(N[(N[(-1.0 - y), $MachinePrecision] - x), $MachinePrecision] / N[(N[(1.0 / N[(y + x), $MachinePrecision]), $MachinePrecision] * N[(y / N[(y + x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], N[(N[(N[(x / y), $MachinePrecision] / y), $MachinePrecision] - N[(x * N[(N[(3.0 * x + 1.0), $MachinePrecision] / N[Power[y, 3.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{x \cdot y}{\left(\left(x + y\right) \cdot \left(x + y\right)\right) \cdot \left(\left(x + y\right) + 1\right)}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+\mathbf{if}\;y \leq -45586094.03824935:\\
+\;\;\;\;\frac{\frac{y}{1 + x}}{x}\\
+
+\mathbf{elif}\;y \leq 3.932793136125569 \cdot 10^{+151}:\\
+\;\;\;\;x \cdot \frac{-1}{\frac{\left(-1 - y\right) - x}{\frac{1}{y + x} \cdot \frac{y}{y + x}}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\frac{x}{y}}{y} - x \cdot \frac{\mathsf{fma}\left(3, x, 1\right)}{{y}^{3}}\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>19.7</td></tr><tr><th>Target</th><td>0.1</td></tr><tr><th>Herbie</th><td>3.8</td></tr></table><div class="math">\[\frac{\frac{\frac{x}{\left(y + 1\right) + x}}{y + x}}{\frac{1}{\frac{y}{y + x}}}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> y  &lt; -45586094.0382493511</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 28.4">47.5</span></p><div class="math">\[\frac{x \cdot y}{\left(\left(x + y\right) \cdot \left(x + y\right)\right) \cdot \left(\left(x + y\right) + 1\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 15.0">26.8</span></p><div class="math">\[\leadsto \color{blue}{\frac{x}{\frac{\mathsf{fma}\left(x + y, x + y, {\left(x + y\right)}^{3}\right)}{y}}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 15.0">26.8</span></p><div class="math">\[\leadsto \frac{x}{\frac{\mathsf{fma}\left(x + y, x + y, \color{blue}{\sqrt[3]{{\left(x + y\right)}^{2}} \cdot \left(\sqrt[3]{x + y} \cdot {\left(x + y\right)}^{2}\right)}\right)}{y}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 15.0">26.8</span></p><div class="math">\[\leadsto \color{blue}{\left(-x\right) \cdot \frac{1}{\frac{-\left(\left(x + y\right) + 1\right) \cdot {\left(x + y\right)}^{2}}{y}}}
+\]</div></li><li><p>Taylor expanded in y around 0 <span class="error" title="Internally 45.5">18.8</span></p><div class="math">\[\leadsto \color{blue}{\frac{y}{\left(1 + x\right) \cdot x}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 45.8">4.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{\frac{y}{1 + x}}{x}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-45586094.0382493511 &lt;  y  &lt; 3.93279313612556892e151</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 14.7">15.9</span></p><div class="math">\[\frac{x \cdot y}{\left(\left(x + y\right) \cdot \left(x + y\right)\right) \cdot \left(\left(x + y\right) + 1\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 9.8">11.2</span></p><div class="math">\[\leadsto \color{blue}{\frac{x}{\frac{\mathsf{fma}\left(x + y, x + y, {\left(x + y\right)}^{3}\right)}{y}}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 9.8">11.2</span></p><div class="math">\[\leadsto \frac{x}{\frac{\mathsf{fma}\left(x + y, x + y, \color{blue}{\sqrt[3]{{\left(x + y\right)}^{2}} \cdot \left(\sqrt[3]{x + y} \cdot {\left(x + y\right)}^{2}\right)}\right)}{y}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 9.8">11.2</span></p><div class="math">\[\leadsto \color{blue}{\left(-x\right) \cdot \frac{1}{\frac{-\left(\left(x + y\right) + 1\right) \cdot {\left(x + y\right)}^{2}}{y}}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 8.2">9.1</span></p><div class="math">\[\leadsto \left(-x\right) \cdot \frac{1}{\color{blue}{-\frac{x + \left(y + 1\right)}{\frac{y}{{\left(x + y\right)}^{2}}}}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 2.3">3.4</span></p><div class="math">\[\leadsto \left(-x\right) \cdot \frac{1}{-\frac{x + \left(y + 1\right)}{\color{blue}{\frac{1}{y + x} \cdot \frac{y}{y + x}}}}
+\]</div></li></ol><h2><code>if <span class="condition">3.93279313612556892e151 &lt;  y </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 30.3">24.5</span></p><div class="math">\[\frac{x \cdot y}{\left(\left(x + y\right) \cdot \left(x + y\right)\right) \cdot \left(\left(x + y\right) + 1\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 11.7">10.3</span></p><div class="math">\[\leadsto \color{blue}{\frac{x}{\frac{\mathsf{fma}\left(x + y, x + y, {\left(x + y\right)}^{3}\right)}{y}}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in y around inf <span class="error" title="Internally 25.6">17.1</span></p><div class="math">\[\leadsto \color{blue}{\frac{x}{{y}^{2}} + -1 \cdot \frac{\left(2 \cdot x + \left(1 + x\right)\right) \cdot x}{{y}^{3}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 12.5">5.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{\frac{x}{y}}{y} - \frac{\mathsf{fma}\left(3, x, 1\right)}{{y}^{3}} \cdot x}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 14.7">3.8</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;y \leq -45586094.03824935:\\
+\;\;\;\;\frac{\frac{y}{1 + x}}{x}\\
+
+\mathbf{elif}\;y \leq 3.932793136125569 \cdot 10^{+151}:\\
+\;\;\;\;x \cdot \frac{-1}{\frac{\left(-1 - y\right) - x}{\frac{1}{y + x} \cdot \frac{y}{y + x}}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\frac{x}{y}}{y} - x \cdot \frac{\mathsf{fma}\left(3, x, 1\right)}{{y}^{3}}\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x y)
+  :name "Numeric.SpecFunctions:incompleteBetaApprox from math-functions-0.1.5.2, A"
+  :precision binary64
+
+  :herbie-target
+  (/ (/ (/ x (+ (+ y 1.0) x)) (+ y x)) (/ 1.0 (/ y (+ y x))))
+
+  (/ (* x y) (* (* (+ x y) (+ x y)) (+ (+ x y) 1.0))))
+</code></pre></section></body></html>

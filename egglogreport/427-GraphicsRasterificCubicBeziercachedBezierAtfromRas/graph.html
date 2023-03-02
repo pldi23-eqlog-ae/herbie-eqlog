@@ -1,0 +1,103 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Graphics.Rasterific.CubicBezier:cachedBezierAt from Rasterific-0.6.1</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">2.3 → 0.4</span></div><div>Time: <span class="number">2.0s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(\left(x + y \cdot z\right) + t \cdot a\right) + \left(a \cdot z\right) \cdot b
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := \left(a \cdot z\right) \cdot b\\
+t_2 := \left(x + y \cdot z\right) + t \cdot a\\
+\mathbf{if}\;b \leq -1.0178059652661675 \cdot 10^{-13}:\\
+\;\;\;\;t_2 + t_1\\
+
+\mathbf{elif}\;b \leq 2.646728315384553 \cdot 10^{+58}:\\
+\;\;\;\;\mathsf{fma}\left(z, y, \mathsf{fma}\left(t, a, x\right)\right) + \left(z \cdot b\right) \cdot a\\
+
+\mathbf{else}:\\
+\;\;\;\;t_2 + {\left(\sqrt[3]{t_1}\right)}^{3}\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a b)
+ :precision binary64
+ (+ (+ (+ x (* y z)) (* t a)) (* (* a z) b)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a b)
+ :precision binary64
+ (let* ((t_1 (* (* a z) b)) (t_2 (+ (+ x (* y z)) (* t a))))
+   (if (&lt;= b -1.0178059652661675e-13)
+     (+ t_2 t_1)
+     (if (&lt;= b 2.646728315384553e+58)
+       (+ (fma z y (fma t a x)) (* (* z b) a))
+       (+ t_2 (pow (cbrt t_1) 3.0))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a, double b) {
+	return ((x + (y * z)) + (t * a)) + ((a * z) * b);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a, double b) {
+	double t_1 = (a * z) * b;
+	double t_2 = (x + (y * z)) + (t * a);
+	double tmp;
+	if (b &lt;= -1.0178059652661675e-13) {
+		tmp = t_2 + t_1;
+	} else if (b &lt;= 2.646728315384553e+58) {
+		tmp = fma(z, y, fma(t, a, x)) + ((z * b) * a);
+	} else {
+		tmp = t_2 + pow(cbrt(t_1), 3.0);
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a, b)
+	return Float64(Float64(Float64(x + Float64(y * z)) + Float64(t * a)) + Float64(Float64(a * z) * b))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a, b)
+	t_1 = Float64(Float64(a * z) * b)
+	t_2 = Float64(Float64(x + Float64(y * z)) + Float64(t * a))
+	tmp = 0.0
+	if (b &lt;= -1.0178059652661675e-13)
+		tmp = Float64(t_2 + t_1);
+	elseif (b &lt;= 2.646728315384553e+58)
+		tmp = Float64(fma(z, y, fma(t, a, x)) + Float64(Float64(z * b) * a));
+	else
+		tmp = Float64(t_2 + (cbrt(t_1) ^ 3.0));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_, b_] := N[(N[(N[(x + N[(y * z), $MachinePrecision]), $MachinePrecision] + N[(t * a), $MachinePrecision]), $MachinePrecision] + N[(N[(a * z), $MachinePrecision] * b), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_, b_] := Block[{t$95$1 = N[(N[(a * z), $MachinePrecision] * b), $MachinePrecision]}, Block[{t$95$2 = N[(N[(x + N[(y * z), $MachinePrecision]), $MachinePrecision] + N[(t * a), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[b, -1.0178059652661675e-13], N[(t$95$2 + t$95$1), $MachinePrecision], If[LessEqual[b, 2.646728315384553e+58], N[(N[(z * y + N[(t * a + x), $MachinePrecision]), $MachinePrecision] + N[(N[(z * b), $MachinePrecision] * a), $MachinePrecision]), $MachinePrecision], N[(t$95$2 + N[Power[N[Power[t$95$1, 1/3], $MachinePrecision], 3.0], $MachinePrecision]), $MachinePrecision]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(\left(x + y \cdot z\right) + t \cdot a\right) + \left(a \cdot z\right) \cdot b
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := \left(a \cdot z\right) \cdot b\\
+t_2 := \left(x + y \cdot z\right) + t \cdot a\\
+\mathbf{if}\;b \leq -1.0178059652661675 \cdot 10^{-13}:\\
+\;\;\;\;t_2 + t_1\\
+
+\mathbf{elif}\;b \leq 2.646728315384553 \cdot 10^{+58}:\\
+\;\;\;\;\mathsf{fma}\left(z, y, \mathsf{fma}\left(t, a, x\right)\right) + \left(z \cdot b\right) \cdot a\\
+
+\mathbf{else}:\\
+\;\;\;\;t_2 + {\left(\sqrt[3]{t_1}\right)}^{3}\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>2.3</td></tr><tr><th>Target</th><td>0.3</td></tr><tr><th>Herbie</th><td>0.4</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;z &lt; -11820553527347888000:\\
+\;\;\;\;z \cdot \left(b \cdot a + y\right) + \left(x + t \cdot a\right)\\
+
+\mathbf{elif}\;z &lt; 4.7589743188364287 \cdot 10^{-122}:\\
+\;\;\;\;\left(b \cdot z + t\right) \cdot a + \left(z \cdot y + x\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;z \cdot \left(b \cdot a + y\right) + \left(x + t \cdot a\right)\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> b  &lt; -1.0178059652661675e-13</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 1.0">0.7</span></p><div class="math">\[\left(\left(x + y \cdot z\right) + t \cdot a\right) + \left(a \cdot z\right) \cdot b
+\]</div></li></ol><h2><code>if <span class="condition">-1.0178059652661675e-13 &lt;  b  &lt; 2.6467283153845531e58</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 3.5">3.4</span></p><div class="math">\[\left(\left(x + y \cdot z\right) + t \cdot a\right) + \left(a \cdot z\right) \cdot b
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.0">0.1</span></p><div class="math">\[\leadsto \left(\left(x + y \cdot z\right) + t \cdot a\right) + \color{blue}{\left(b \cdot a\right) \cdot z}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.0">0.1</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(z, y, \mathsf{fma}\left(t, a, x\right)\right)} + \left(b \cdot a\right) \cdot z
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.0">0.1</span></p><div class="math">\[\leadsto \mathsf{fma}\left(z, y, \mathsf{fma}\left(t, a, x\right)\right) + \color{blue}{\left(z \cdot b\right) \cdot a}
+\]</div></li></ol><h2><code>if <span class="condition">2.6467283153845531e58 &lt;  b </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.1">0.8</span></p><div class="math">\[\left(\left(x + y \cdot z\right) + t \cdot a\right) + \left(a \cdot z\right) \cdot b
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.0">0.9</span></p><div class="math">\[\leadsto \left(\left(x + y \cdot z\right) + t \cdot a\right) + \color{blue}{{\left(\sqrt[3]{\left(a \cdot z\right) \cdot b}\right)}^{3}}
+\]</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y z t a b)
+  :name "Graphics.Rasterific.CubicBezier:cachedBezierAt from Rasterific-0.6.1"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; z -11820553527347888000.0) (+ (* z (+ (* b a) y)) (+ x (* t a))) (if (&lt; z 4.7589743188364287e-122) (+ (* (+ (* b z) t) a) (+ (* z y) x)) (+ (* z (+ (* b a) y)) (+ x (* t a)))))
+
+  (+ (+ (+ x (* y z)) (* t a)) (* (* a z) b)))
+</code></pre></section></body></html>

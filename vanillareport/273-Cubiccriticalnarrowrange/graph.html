@@ -1,0 +1,88 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Cubic critical, narrow range</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 62.0 → 50.9">28.4 → 5.3</span></div><div>Time: <span class="number">2.3s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[\left(\left(1.0536712127723509 \cdot 10^{-8} &lt; a \land a &lt; 94906265.62425156\right) \land \left(1.0536712127723509 \cdot 10^{-8} &lt; b \land b &lt; 94906265.62425156\right)\right) \land \left(1.0536712127723509 \cdot 10^{-8} &lt; c \land c &lt; 94906265.62425156\right)\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{\left(-b\right) + \sqrt{b \cdot b - \left(3 \cdot a\right) \cdot c}}{3 \cdot a}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+\mathbf{if}\;\frac{\sqrt{b \cdot b - \left(3 \cdot a\right) \cdot c} - b}{3 \cdot a} \leq -200:\\
+\;\;\;\;\frac{\sqrt{b \cdot b + \mathsf{fma}\left(c, a \cdot -3, \mathsf{fma}\left(c, a \cdot -3, 3 \cdot \left(a \cdot c\right)\right)\right)} - b}{3 \cdot a}\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(-0.5, \frac{c}{b}, \mathsf{fma}\left(-1.0546875, \frac{{a}^{3}}{{b}^{7}} \cdot {c}^{4}, \left(a \cdot \left(c \cdot c\right)\right) \cdot \left(\frac{-0.375}{{b}^{3}} + \frac{c \cdot -0.5625}{\frac{{b}^{5}}{a}}\right)\right)\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (a b c)
+ :precision binary64
+ (/ (+ (- b) (sqrt (- (* b b) (* (* 3.0 a) c)))) (* 3.0 a)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (a b c)
+ :precision binary64
+ (if (&lt;= (/ (- (sqrt (- (* b b) (* (* 3.0 a) c))) b) (* 3.0 a)) -200.0)
+   (/
+    (-
+     (sqrt (+ (* b b) (fma c (* a -3.0) (fma c (* a -3.0) (* 3.0 (* a c))))))
+     b)
+    (* 3.0 a))
+   (fma
+    -0.5
+    (/ c b)
+    (fma
+     -1.0546875
+     (* (/ (pow a 3.0) (pow b 7.0)) (pow c 4.0))
+     (*
+      (* a (* c c))
+      (+ (/ -0.375 (pow b 3.0)) (/ (* c -0.5625) (/ (pow b 5.0) a))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double a, double b, double c) {
+	return (-b + sqrt(((b * b) - ((3.0 * a) * c)))) / (3.0 * a);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double a, double b, double c) {
+	double tmp;
+	if (((sqrt(((b * b) - ((3.0 * a) * c))) - b) / (3.0 * a)) &lt;= -200.0) {
+		tmp = (sqrt(((b * b) + fma(c, (a * -3.0), fma(c, (a * -3.0), (3.0 * (a * c)))))) - b) / (3.0 * a);
+	} else {
+		tmp = fma(-0.5, (c / b), fma(-1.0546875, ((pow(a, 3.0) / pow(b, 7.0)) * pow(c, 4.0)), ((a * (c * c)) * ((-0.375 / pow(b, 3.0)) + ((c * -0.5625) / (pow(b, 5.0) / a))))));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(a, b, c)
+	return Float64(Float64(Float64(-b) + sqrt(Float64(Float64(b * b) - Float64(Float64(3.0 * a) * c)))) / Float64(3.0 * a))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(a, b, c)
+	tmp = 0.0
+	if (Float64(Float64(sqrt(Float64(Float64(b * b) - Float64(Float64(3.0 * a) * c))) - b) / Float64(3.0 * a)) &lt;= -200.0)
+		tmp = Float64(Float64(sqrt(Float64(Float64(b * b) + fma(c, Float64(a * -3.0), fma(c, Float64(a * -3.0), Float64(3.0 * Float64(a * c)))))) - b) / Float64(3.0 * a));
+	else
+		tmp = fma(-0.5, Float64(c / b), fma(-1.0546875, Float64(Float64((a ^ 3.0) / (b ^ 7.0)) * (c ^ 4.0)), Float64(Float64(a * Float64(c * c)) * Float64(Float64(-0.375 / (b ^ 3.0)) + Float64(Float64(c * -0.5625) / Float64((b ^ 5.0) / a))))));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[a_, b_, c_] := N[(N[((-b) + N[Sqrt[N[(N[(b * b), $MachinePrecision] - N[(N[(3.0 * a), $MachinePrecision] * c), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] / N[(3.0 * a), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[a_, b_, c_] := If[LessEqual[N[(N[(N[Sqrt[N[(N[(b * b), $MachinePrecision] - N[(N[(3.0 * a), $MachinePrecision] * c), $MachinePrecision]), $MachinePrecision]], $MachinePrecision] - b), $MachinePrecision] / N[(3.0 * a), $MachinePrecision]), $MachinePrecision], -200.0], N[(N[(N[Sqrt[N[(N[(b * b), $MachinePrecision] + N[(c * N[(a * -3.0), $MachinePrecision] + N[(c * N[(a * -3.0), $MachinePrecision] + N[(3.0 * N[(a * c), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision] - b), $MachinePrecision] / N[(3.0 * a), $MachinePrecision]), $MachinePrecision], N[(-0.5 * N[(c / b), $MachinePrecision] + N[(-1.0546875 * N[(N[(N[Power[a, 3.0], $MachinePrecision] / N[Power[b, 7.0], $MachinePrecision]), $MachinePrecision] * N[Power[c, 4.0], $MachinePrecision]), $MachinePrecision] + N[(N[(a * N[(c * c), $MachinePrecision]), $MachinePrecision] * N[(N[(-0.375 / N[Power[b, 3.0], $MachinePrecision]), $MachinePrecision] + N[(N[(c * -0.5625), $MachinePrecision] / N[(N[Power[b, 5.0], $MachinePrecision] / a), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{\left(-b\right) + \sqrt{b \cdot b - \left(3 \cdot a\right) \cdot c}}{3 \cdot a}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+\mathbf{if}\;\frac{\sqrt{b \cdot b - \left(3 \cdot a\right) \cdot c} - b}{3 \cdot a} \leq -200:\\
+\;\;\;\;\frac{\sqrt{b \cdot b + \mathsf{fma}\left(c, a \cdot -3, \mathsf{fma}\left(c, a \cdot -3, 3 \cdot \left(a \cdot c\right)\right)\right)} - b}{3 \cdot a}\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(-0.5, \frac{c}{b}, \mathsf{fma}\left(-1.0546875, \frac{{a}^{3}}{{b}^{7}} \cdot {c}^{4}, \left(a \cdot \left(c \cdot c\right)\right) \cdot \left(\frac{-0.375}{{b}^{3}} + \frac{c \cdot -0.5625}{\frac{{b}^{5}}{a}}\right)\right)\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> (/.f64 (+.f64 (neg.f64 b) (sqrt.f64 (-.f64 (*.f64 b b) (*.f64 (*.f64 3 a) c)))) (*.f64 3 a))  &lt; -200</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 2.9">7.6</span></p><div class="math">\[\frac{\left(-b\right) + \sqrt{b \cdot b - \left(3 \cdot a\right) \cdot c}}{3 \cdot a}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 2.9">7.6</span></p><div class="math">\[\leadsto \frac{\left(-b\right) + \sqrt{\color{blue}{b \cdot b + \mathsf{fma}\left(c, a \cdot -3, \mathsf{fma}\left(c, a \cdot -3, 3 \cdot \left(a \cdot c\right)\right)\right)}}}{3 \cdot a}
+\]</div></li></ol><h2><code>if <span class="condition">-200 &lt;  (/.f64 (+.f64 (neg.f64 b) (sqrt.f64 (-.f64 (*.f64 b b) (*.f64 (*.f64 3 a) c)))) (*.f64 3 a)) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 30.8">29.5</span></p><div class="math">\[\frac{\left(-b\right) + \sqrt{b \cdot b - \left(3 \cdot a\right) \cdot c}}{3 \cdot a}
+\]</div></li><li><p>Taylor expanded in a around 0 <span class="error" title="Internally 4.3">5.5</span></p><div class="math">\[\leadsto \frac{\color{blue}{-1.125 \cdot \frac{{c}^{2} \cdot {a}^{2}}{{b}^{3}} + \left(-1.5 \cdot \frac{c \cdot a}{b} + \left(-0.5 \cdot \frac{{a}^{4} \cdot \left(5.0625 \cdot \frac{{c}^{4}}{{b}^{6}} + {\left(-1.125 \cdot \frac{{c}^{2}}{{b}^{3}}\right)}^{2}\right)}{b} + -1.6875 \cdot \frac{{c}^{3} \cdot {a}^{3}}{{b}^{5}}\right)\right)}}{3 \cdot a}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 4.1">5.3</span></p><div class="math">\[\leadsto \frac{\color{blue}{\mathsf{fma}\left(-1.125, \frac{c \cdot c}{\frac{{b}^{3}}{a}} \cdot a, \mathsf{fma}\left(-0.5, \left(\frac{{c}^{4}}{{b}^{6}} \cdot 6.328125\right) \cdot \frac{{a}^{4}}{b}, \mathsf{fma}\left(-1.6875, \frac{{a}^{3}}{{b}^{5}} \cdot {c}^{3}, \frac{c}{b} \cdot \left(-1.5 \cdot a\right)\right)\right)\right)}}{3 \cdot a}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in c around 0 <span class="error" title="Internally 4.1">5.2</span></p><div class="math">\[\leadsto \color{blue}{-0.5625 \cdot \frac{{c}^{3} \cdot {a}^{2}}{{b}^{5}} + \left(-0.5 \cdot \frac{c}{b} + \left(-0.375 \cdot \frac{{c}^{2} \cdot a}{{b}^{3}} + -1.0546875 \cdot \frac{{c}^{4} \cdot {a}^{3}}{{b}^{7}}\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 4.0">5.2</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(-0.5, \frac{c}{b}, \mathsf{fma}\left(-1.0546875, \frac{{a}^{3}}{{b}^{7}} \cdot {c}^{4}, \left(a \cdot \left(c \cdot c\right)\right) \cdot \left(\frac{-0.375}{{b}^{3}} + \frac{c \cdot -0.5625}{\frac{{b}^{5}}{a}}\right)\right)\right)}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 4.0">5.3</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;\frac{\sqrt{b \cdot b - \left(3 \cdot a\right) \cdot c} - b}{3 \cdot a} \leq -200:\\
+\;\;\;\;\frac{\sqrt{b \cdot b + \mathsf{fma}\left(c, a \cdot -3, \mathsf{fma}\left(c, a \cdot -3, 3 \cdot \left(a \cdot c\right)\right)\right)} - b}{3 \cdot a}\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(-0.5, \frac{c}{b}, \mathsf{fma}\left(-1.0546875, \frac{{a}^{3}}{{b}^{7}} \cdot {c}^{4}, \left(a \cdot \left(c \cdot c\right)\right) \cdot \left(\frac{-0.375}{{b}^{3}} + \frac{c \cdot -0.5625}{\frac{{b}^{5}}{a}}\right)\right)\right)\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (a b c)
+  :name "Cubic critical, narrow range"
+  :precision binary64
+  :pre (and (and (and (&lt; 1.0536712127723509e-8 a) (&lt; a 94906265.62425156)) (and (&lt; 1.0536712127723509e-8 b) (&lt; b 94906265.62425156))) (and (&lt; 1.0536712127723509e-8 c) (&lt; c 94906265.62425156)))
+  (/ (+ (- b) (sqrt (- (* b b) (* (* 3.0 a) c)))) (* 3.0 a)))
+</code></pre></section></body></html>

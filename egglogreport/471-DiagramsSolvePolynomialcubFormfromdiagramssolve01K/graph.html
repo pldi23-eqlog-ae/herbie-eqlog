@@ -1,0 +1,53 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Diagrams.Solve.Polynomial:cubForm  from diagrams-solve-0.1, K</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">20.4 → 17.0</span></div><div>Time: <span class="number">4.3s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(2 \cdot \sqrt{x}\right) \cdot \cos \left(y - \frac{z \cdot t}{3}\right) - \frac{a}{b \cdot 3}
+\]</div><div class="arrow">↓</div><div class="program math">\[\mathsf{fma}\left(\sqrt[3]{\sqrt{x \cdot 4} \cdot \cos y}, \sqrt[3]{4 \cdot \left({\cos y}^{2} \cdot x\right)}, \frac{\frac{a}{-3}}{b}\right)
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a b)
+ :precision binary64
+ (- (* (* 2.0 (sqrt x)) (cos (- y (/ (* z t) 3.0)))) (/ a (* b 3.0))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a b)
+ :precision binary64
+ (fma
+  (cbrt (* (sqrt (* x 4.0)) (cos y)))
+  (cbrt (* 4.0 (* (pow (cos y) 2.0) x)))
+  (/ (/ a -3.0) b)))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a, double b) {
+	return ((2.0 * sqrt(x)) * cos((y - ((z * t) / 3.0)))) - (a / (b * 3.0));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a, double b) {
+	return fma(cbrt((sqrt((x * 4.0)) * cos(y))), cbrt((4.0 * (pow(cos(y), 2.0) * x))), ((a / -3.0) / b));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a, b)
+	return Float64(Float64(Float64(2.0 * sqrt(x)) * cos(Float64(y - Float64(Float64(z * t) / 3.0)))) - Float64(a / Float64(b * 3.0)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a, b)
+	return fma(cbrt(Float64(sqrt(Float64(x * 4.0)) * cos(y))), cbrt(Float64(4.0 * Float64((cos(y) ^ 2.0) * x))), Float64(Float64(a / -3.0) / b))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_, b_] := N[(N[(N[(2.0 * N[Sqrt[x], $MachinePrecision]), $MachinePrecision] * N[Cos[N[(y - N[(N[(z * t), $MachinePrecision] / 3.0), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] - N[(a / N[(b * 3.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_, b_] := N[(N[Power[N[(N[Sqrt[N[(x * 4.0), $MachinePrecision]], $MachinePrecision] * N[Cos[y], $MachinePrecision]), $MachinePrecision], 1/3], $MachinePrecision] * N[Power[N[(4.0 * N[(N[Power[N[Cos[y], $MachinePrecision], 2.0], $MachinePrecision] * x), $MachinePrecision]), $MachinePrecision], 1/3], $MachinePrecision] + N[(N[(a / -3.0), $MachinePrecision] / b), $MachinePrecision]), $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(2 \cdot \sqrt{x}\right) \cdot \cos \left(y - \frac{z \cdot t}{3}\right) - \frac{a}{b \cdot 3}
+</pre><div class="arrow">↓</div><pre class="program">\mathsf{fma}\left(\sqrt[3]{\sqrt{x \cdot 4} \cdot \cos y}, \sqrt[3]{4 \cdot \left({\cos y}^{2} \cdot x\right)}, \frac{\frac{a}{-3}}{b}\right)
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>20.4</td></tr><tr><th>Target</th><td>18.5</td></tr><tr><th>Herbie</th><td>17.0</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;z &lt; -1.3793337487235141 \cdot 10^{+129}:\\
+\;\;\;\;\left(2 \cdot \sqrt{x}\right) \cdot \cos \left(\frac{1}{y} - \frac{\frac{0.3333333333333333}{z}}{t}\right) - \frac{\frac{a}{3}}{b}\\
+
+\mathbf{elif}\;z &lt; 3.516290613555987 \cdot 10^{+106}:\\
+\;\;\;\;\left(\sqrt{x} \cdot 2\right) \cdot \cos \left(y - \frac{t}{3} \cdot z\right) - \frac{\frac{a}{3}}{b}\\
+
+\mathbf{else}:\\
+\;\;\;\;\cos \left(y - \frac{\frac{0.3333333333333333}{z}}{t}\right) \cdot \left(2 \cdot \sqrt{x}\right) - \frac{\frac{a}{b}}{3}\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 21.6">20.4</span></p><div class="math">\[\left(2 \cdot \sqrt{x}\right) \cdot \cos \left(y - \frac{z \cdot t}{3}\right) - \frac{a}{b \cdot 3}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 21.4">20.5</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(a, \frac{-0.3333333333333333}{b}, \sqrt{x \cdot 4} \cdot \cos \left(\mathsf{fma}\left(z \cdot t, -0.3333333333333333, y\right)\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in z around 0 <span class="error" title="Internally 18.5">17.0</span></p><div class="math">\[\leadsto \mathsf{fma}\left(a, \frac{-0.3333333333333333}{b}, \color{blue}{2 \cdot \left(\cos y \cdot \sqrt{x}\right)}\right)
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 18.6">17.1</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\sqrt[3]{\sqrt{x \cdot 4} \cdot \cos y}, \sqrt[3]{4 \cdot \left({\cos y}^{2} \cdot x\right)}, \frac{a \cdot -0.3333333333333333}{b}\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 18.5">17.0</span></p><div class="math">\[\leadsto \mathsf{fma}\left(\sqrt[3]{\sqrt{x \cdot 4} \cdot \cos y}, \sqrt[3]{4 \cdot \left({\cos y}^{2} \cdot x\right)}, \frac{\color{blue}{\frac{a}{-3}}}{b}\right)
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y z t a b)
+  :name "Diagrams.Solve.Polynomial:cubForm  from diagrams-solve-0.1, K"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; z -1.3793337487235141e+129) (- (* (* 2.0 (sqrt x)) (cos (- (/ 1.0 y) (/ (/ 0.3333333333333333 z) t)))) (/ (/ a 3.0) b)) (if (&lt; z 3.516290613555987e+106) (- (* (* (sqrt x) 2.0) (cos (- y (* (/ t 3.0) z)))) (/ (/ a 3.0) b)) (- (* (cos (- y (/ (/ 0.3333333333333333 z) t))) (* 2.0 (sqrt x))) (/ (/ a b) 3.0))))
+
+  (- (* (* 2.0 (sqrt x)) (cos (- y (/ (* z t) 3.0)))) (/ a (* b 3.0))))
+</code></pre></section></body></html>

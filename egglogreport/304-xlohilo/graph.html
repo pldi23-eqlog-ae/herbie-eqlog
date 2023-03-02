@@ -1,0 +1,60 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for (/ (- x lo) (- hi lo))</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 53.5">62.0 → 52.0</span></div><div>Time: <span class="number">1.2s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[lo &lt; -1 \cdot 10^{+308} \land hi &gt; 10^{+308}\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Fortran</option><option>Java</option><option>Python</option><option>Julia</option><option>MATLAB</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{x - lo}{hi - lo}
+\]</div><div class="arrow">↓</div><div class="program math">\[-\frac{lo}{hi}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (lo hi x) :precision binary64 (/ (- x lo) (- hi lo)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (lo hi x) :precision binary64 (- (/ lo hi)))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double lo, double hi, double x) {
+	return (x - lo) / (hi - lo);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double lo, double hi, double x) {
+	return -(lo / hi);
+}
+</pre></div><div class="implementation" data-language="Fortran"><pre class="program">real(8) function code(lo, hi, x)
+    real(8), intent (in) :: lo
+    real(8), intent (in) :: hi
+    real(8), intent (in) :: x
+    code = (x - lo) / (hi - lo)
+end function
+</pre><div class="arrow">↓</div><pre class="program">real(8) function code(lo, hi, x)
+    real(8), intent (in) :: lo
+    real(8), intent (in) :: hi
+    real(8), intent (in) :: x
+    code = -(lo / hi)
+end function
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double lo, double hi, double x) {
+	return (x - lo) / (hi - lo);
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double lo, double hi, double x) {
+	return -(lo / hi);
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(lo, hi, x):
+	return (x - lo) / (hi - lo)
+</pre><div class="arrow">↓</div><pre class="program">def code(lo, hi, x):
+	return -(lo / hi)
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(lo, hi, x)
+	return Float64(Float64(x - lo) / Float64(hi - lo))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(lo, hi, x)
+	return Float64(-Float64(lo / hi))
+end
+</pre></div><div class="implementation" data-language="MATLAB"><pre class="program">function tmp = code(lo, hi, x)
+	tmp = (x - lo) / (hi - lo);
+end
+</pre><div class="arrow">↓</div><pre class="program">function tmp = code(lo, hi, x)
+	tmp = -(lo / hi);
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[lo_, hi_, x_] := N[(N[(x - lo), $MachinePrecision] / N[(hi - lo), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[lo_, hi_, x_] := (-N[(lo / hi), $MachinePrecision])
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{x - lo}{hi - lo}
+</pre><div class="arrow">↓</div><pre class="program">-\frac{lo}{hi}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">lo</label><input type="text" class="input-submit" name="var-name-0" value="-1.1899877827067687e+308"/></li><li><label for="var-name-1">hi</label><input type="text" class="input-submit" name="var-name-1" value="1.524008186925241e+308"/></li><li><label for="var-name-2">x</label><input type="text" class="input-submit" name="var-name-2" value="1.401365938557988e+255"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 62.0">62.0</span></p><div class="math">\[\frac{x - lo}{hi - lo}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 62.0">62.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{lo - x}{lo - hi}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in lo around 0 <span class="error" title="Internally 52.0">52.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{x}{hi} + -1 \cdot \left(lo \cdot \left(\frac{1}{hi} + -1 \cdot \frac{x}{{hi}^{2}}\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 52.0">52.0</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(-lo, \frac{1}{hi} - \frac{x}{hi \cdot hi}, \frac{x}{hi}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in x around 0 <span class="error" title="Internally 52.0">52.0</span></p><div class="math">\[\leadsto \color{blue}{-1 \cdot \frac{lo}{hi}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 52.0">52.0</span></p><div class="math">\[\leadsto \color{blue}{-\frac{lo}{hi}}
+\]</div><div class="math">Proof</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (lo hi x)
+  :name "(/ (- x lo) (- hi lo))"
+  :precision binary64
+  :pre (and (&lt; lo -1e+308) (&gt; hi 1e+308))
+  (/ (- x lo) (- hi lo)))
+</code></pre></section></body></html>

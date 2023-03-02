@@ -1,0 +1,93 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Diagrams.ThreeD.Shapes:frustum from diagrams-lib-1.3.0.3, A</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">6.4 → 1.4</span></div><div>Time: <span class="number">4.3s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[2 \cdot \left(\left(x \cdot y + z \cdot t\right) - \left(\left(a + b \cdot c\right) \cdot c\right) \cdot i\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := -\mathsf{fma}\left(x, y, z \cdot t\right)\\
+\mathbf{if}\;i \leq -1.2346218592112333 \cdot 10^{-163}:\\
+\;\;\;\;-2 \cdot \mathsf{fma}\left(\mathsf{fma}\left(c, b, a\right), c \cdot i, t_1\right)\\
+
+\mathbf{elif}\;i \leq 6.627614071967799 \cdot 10^{-213}:\\
+\;\;\;\;-2 \cdot \mathsf{fma}\left(i \cdot a + c \cdot \left(i \cdot b\right), c, t_1\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;-2 \cdot \mathsf{fma}\left(\mathsf{fma}\left(c, b, a\right), c \cdot i, -\mathsf{fma}\left(t, z, x \cdot y\right)\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a b c i)
+ :precision binary64
+ (* 2.0 (- (+ (* x y) (* z t)) (* (* (+ a (* b c)) c) i))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a b c i)
+ :precision binary64
+ (let* ((t_1 (- (fma x y (* z t)))))
+   (if (&lt;= i -1.2346218592112333e-163)
+     (* -2.0 (fma (fma c b a) (* c i) t_1))
+     (if (&lt;= i 6.627614071967799e-213)
+       (* -2.0 (fma (+ (* i a) (* c (* i b))) c t_1))
+       (* -2.0 (fma (fma c b a) (* c i) (- (fma t z (* x y)))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a, double b, double c, double i) {
+	return 2.0 * (((x * y) + (z * t)) - (((a + (b * c)) * c) * i));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a, double b, double c, double i) {
+	double t_1 = -fma(x, y, (z * t));
+	double tmp;
+	if (i &lt;= -1.2346218592112333e-163) {
+		tmp = -2.0 * fma(fma(c, b, a), (c * i), t_1);
+	} else if (i &lt;= 6.627614071967799e-213) {
+		tmp = -2.0 * fma(((i * a) + (c * (i * b))), c, t_1);
+	} else {
+		tmp = -2.0 * fma(fma(c, b, a), (c * i), -fma(t, z, (x * y)));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a, b, c, i)
+	return Float64(2.0 * Float64(Float64(Float64(x * y) + Float64(z * t)) - Float64(Float64(Float64(a + Float64(b * c)) * c) * i)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a, b, c, i)
+	t_1 = Float64(-fma(x, y, Float64(z * t)))
+	tmp = 0.0
+	if (i &lt;= -1.2346218592112333e-163)
+		tmp = Float64(-2.0 * fma(fma(c, b, a), Float64(c * i), t_1));
+	elseif (i &lt;= 6.627614071967799e-213)
+		tmp = Float64(-2.0 * fma(Float64(Float64(i * a) + Float64(c * Float64(i * b))), c, t_1));
+	else
+		tmp = Float64(-2.0 * fma(fma(c, b, a), Float64(c * i), Float64(-fma(t, z, Float64(x * y)))));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_, b_, c_, i_] := N[(2.0 * N[(N[(N[(x * y), $MachinePrecision] + N[(z * t), $MachinePrecision]), $MachinePrecision] - N[(N[(N[(a + N[(b * c), $MachinePrecision]), $MachinePrecision] * c), $MachinePrecision] * i), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_, b_, c_, i_] := Block[{t$95$1 = (-N[(x * y + N[(z * t), $MachinePrecision]), $MachinePrecision])}, If[LessEqual[i, -1.2346218592112333e-163], N[(-2.0 * N[(N[(c * b + a), $MachinePrecision] * N[(c * i), $MachinePrecision] + t$95$1), $MachinePrecision]), $MachinePrecision], If[LessEqual[i, 6.627614071967799e-213], N[(-2.0 * N[(N[(N[(i * a), $MachinePrecision] + N[(c * N[(i * b), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * c + t$95$1), $MachinePrecision]), $MachinePrecision], N[(-2.0 * N[(N[(c * b + a), $MachinePrecision] * N[(c * i), $MachinePrecision] + (-N[(t * z + N[(x * y), $MachinePrecision]), $MachinePrecision])), $MachinePrecision]), $MachinePrecision]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">2 \cdot \left(\left(x \cdot y + z \cdot t\right) - \left(\left(a + b \cdot c\right) \cdot c\right) \cdot i\right)
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := -\mathsf{fma}\left(x, y, z \cdot t\right)\\
+\mathbf{if}\;i \leq -1.2346218592112333 \cdot 10^{-163}:\\
+\;\;\;\;-2 \cdot \mathsf{fma}\left(\mathsf{fma}\left(c, b, a\right), c \cdot i, t_1\right)\\
+
+\mathbf{elif}\;i \leq 6.627614071967799 \cdot 10^{-213}:\\
+\;\;\;\;-2 \cdot \mathsf{fma}\left(i \cdot a + c \cdot \left(i \cdot b\right), c, t_1\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;-2 \cdot \mathsf{fma}\left(\mathsf{fma}\left(c, b, a\right), c \cdot i, -\mathsf{fma}\left(t, z, x \cdot y\right)\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>6.4</td></tr><tr><th>Target</th><td>1.8</td></tr><tr><th>Herbie</th><td>1.4</td></tr></table><div class="math">\[2 \cdot \left(\left(x \cdot y + z \cdot t\right) - \left(a + b \cdot c\right) \cdot \left(c \cdot i\right)\right)
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> i  &lt; -1.2346218592112333e-163</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 3.6">3.7</span></p><div class="math">\[2 \cdot \left(\left(x \cdot y + z \cdot t\right) - \left(\left(a + b \cdot c\right) \cdot c\right) \cdot i\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 3.5">3.7</span></p><div class="math">\[\leadsto \color{blue}{-2 \cdot \mathsf{fma}\left(\mathsf{fma}\left(c, b, a\right) \cdot c, i, -\mathsf{fma}\left(x, y, z \cdot t\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.5">1.0</span></p><div class="math">\[\leadsto -2 \cdot \color{blue}{\mathsf{fma}\left(\mathsf{fma}\left(c, b, a\right), c \cdot i, -\mathsf{fma}\left(x, y, z \cdot t\right)\right)}
+\]</div></li></ol><h2><code>if <span class="condition">-1.2346218592112333e-163 &lt;  i  &lt; 6.6276140719677989e-213</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 20.1">13.4</span></p><div class="math">\[2 \cdot \left(\left(x \cdot y + z \cdot t\right) - \left(\left(a + b \cdot c\right) \cdot c\right) \cdot i\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 20.1">13.4</span></p><div class="math">\[\leadsto \color{blue}{-2 \cdot \mathsf{fma}\left(\mathsf{fma}\left(c, b, a\right) \cdot c, i, -\mathsf{fma}\left(x, y, z \cdot t\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 6.4">3.5</span></p><div class="math">\[\leadsto -2 \cdot \color{blue}{\mathsf{fma}\left(\mathsf{fma}\left(c, b, a\right), c \cdot i, -\mathsf{fma}\left(x, y, z \cdot t\right)\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 6.4">3.0</span></p><div class="math">\[\leadsto -2 \cdot \color{blue}{\mathsf{fma}\left(\mathsf{fma}\left(c, b, a\right) \cdot i, c, -\mathsf{fma}\left(x, y, z \cdot t\right)\right)}
+\]</div></li><li><p>Taylor expanded in c around inf <span class="error" title="Internally 0.8">2.2</span></p><div class="math">\[\leadsto -2 \cdot \mathsf{fma}\left(\color{blue}{i \cdot a + c \cdot \left(i \cdot b\right)}, c, -\mathsf{fma}\left(x, y, z \cdot t\right)\right)
+\]</div></li></ol><h2><code>if <span class="condition">6.6276140719677989e-213 &lt;  i </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 2.5">4.1</span></p><div class="math">\[2 \cdot \left(\left(x \cdot y + z \cdot t\right) - \left(\left(a + b \cdot c\right) \cdot c\right) \cdot i\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 2.5">4.1</span></p><div class="math">\[\leadsto \color{blue}{-2 \cdot \mathsf{fma}\left(\mathsf{fma}\left(c, b, a\right) \cdot c, i, -\mathsf{fma}\left(x, y, z \cdot t\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.1">1.3</span></p><div class="math">\[\leadsto -2 \cdot \color{blue}{\mathsf{fma}\left(\mathsf{fma}\left(c, b, a\right), c \cdot i, -\mathsf{fma}\left(x, y, z \cdot t\right)\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.1">1.3</span></p><div class="math">\[\leadsto -2 \cdot \mathsf{fma}\left(\mathsf{fma}\left(c, b, a\right), c \cdot i, -\color{blue}{\mathsf{fma}\left(t, z, x \cdot y\right)}\right)
+\]</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y z t a b c i)
+  :name "Diagrams.ThreeD.Shapes:frustum from diagrams-lib-1.3.0.3, A"
+  :precision binary64
+
+  :herbie-target
+  (* 2.0 (- (+ (* x y) (* z t)) (* (+ a (* b c)) (* c i))))
+
+  (* 2.0 (- (+ (* x y) (* z t)) (* (* (+ a (* b c)) c) i))))
+</code></pre></section></body></html>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Diagrams.Solve.Polynomial:cubForm  from diagrams-solve-0.1, E</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">5.5 → 0.9</span></div><div>Time: <span class="number">4.9s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(\left(\left(\left(\left(\left(x \cdot 18\right) \cdot y\right) \cdot z\right) \cdot t - \left(a \cdot 4\right) \cdot t\right) + b \cdot c\right) - \left(x \cdot 4\right) \cdot i\right) - \left(j \cdot 27\right) \cdot k
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := -27 \cdot \left(j \cdot k\right)\\
+t_2 := \mathsf{fma}\left(b, c, \mathsf{fma}\left(\mathsf{fma}\left(18, y \cdot \left(t \cdot z\right), -4 \cdot i\right), x, -4 \cdot \left(a \cdot t\right)\right)\right)\\
+t_3 := \left(\left(\left(\left(\left(x \cdot 18\right) \cdot y\right) \cdot z\right) \cdot t - \left(a \cdot 4\right) \cdot t\right) + b \cdot c\right) - \left(x \cdot 4\right) \cdot i\\
+\mathbf{if}\;t_3 \leq -\infty:\\
+\;\;\;\;t_1 + t_2\\
+
+\mathbf{elif}\;t_3 \leq 10^{+291}:\\
+\;\;\;\;t_1 + \mathsf{fma}\left(t, \mathsf{fma}\left(a, -4, \left(z \cdot \left(y \cdot x\right)\right) \cdot 18\right), \mathsf{fma}\left(c, b, \left(-4 \cdot x\right) \cdot i\right)\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\left(-27 \cdot k\right) \cdot j + t_2\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a b c i j k)
+ :precision binary64
+ (-
+  (-
+   (+ (- (* (* (* (* x 18.0) y) z) t) (* (* a 4.0) t)) (* b c))
+   (* (* x 4.0) i))
+  (* (* j 27.0) k)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a b c i j k)
+ :precision binary64
+ (let* ((t_1 (* -27.0 (* j k)))
+        (t_2
+         (fma
+          b
+          c
+          (fma (fma 18.0 (* y (* t z)) (* -4.0 i)) x (* -4.0 (* a t)))))
+        (t_3
+         (-
+          (+ (- (* (* (* (* x 18.0) y) z) t) (* (* a 4.0) t)) (* b c))
+          (* (* x 4.0) i))))
+   (if (&lt;= t_3 (- INFINITY))
+     (+ t_1 t_2)
+     (if (&lt;= t_3 1e+291)
+       (+
+        t_1
+        (fma t (fma a -4.0 (* (* z (* y x)) 18.0)) (fma c b (* (* -4.0 x) i))))
+       (+ (* (* -27.0 k) j) t_2)))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a, double b, double c, double i, double j, double k) {
+	return (((((((x * 18.0) * y) * z) * t) - ((a * 4.0) * t)) + (b * c)) - ((x * 4.0) * i)) - ((j * 27.0) * k);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a, double b, double c, double i, double j, double k) {
+	double t_1 = -27.0 * (j * k);
+	double t_2 = fma(b, c, fma(fma(18.0, (y * (t * z)), (-4.0 * i)), x, (-4.0 * (a * t))));
+	double t_3 = ((((((x * 18.0) * y) * z) * t) - ((a * 4.0) * t)) + (b * c)) - ((x * 4.0) * i);
+	double tmp;
+	if (t_3 &lt;= -((double) INFINITY)) {
+		tmp = t_1 + t_2;
+	} else if (t_3 &lt;= 1e+291) {
+		tmp = t_1 + fma(t, fma(a, -4.0, ((z * (y * x)) * 18.0)), fma(c, b, ((-4.0 * x) * i)));
+	} else {
+		tmp = ((-27.0 * k) * j) + t_2;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a, b, c, i, j, k)
+	return Float64(Float64(Float64(Float64(Float64(Float64(Float64(Float64(x * 18.0) * y) * z) * t) - Float64(Float64(a * 4.0) * t)) + Float64(b * c)) - Float64(Float64(x * 4.0) * i)) - Float64(Float64(j * 27.0) * k))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a, b, c, i, j, k)
+	t_1 = Float64(-27.0 * Float64(j * k))
+	t_2 = fma(b, c, fma(fma(18.0, Float64(y * Float64(t * z)), Float64(-4.0 * i)), x, Float64(-4.0 * Float64(a * t))))
+	t_3 = Float64(Float64(Float64(Float64(Float64(Float64(Float64(x * 18.0) * y) * z) * t) - Float64(Float64(a * 4.0) * t)) + Float64(b * c)) - Float64(Float64(x * 4.0) * i))
+	tmp = 0.0
+	if (t_3 &lt;= Float64(-Inf))
+		tmp = Float64(t_1 + t_2);
+	elseif (t_3 &lt;= 1e+291)
+		tmp = Float64(t_1 + fma(t, fma(a, -4.0, Float64(Float64(z * Float64(y * x)) * 18.0)), fma(c, b, Float64(Float64(-4.0 * x) * i))));
+	else
+		tmp = Float64(Float64(Float64(-27.0 * k) * j) + t_2);
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_, b_, c_, i_, j_, k_] := N[(N[(N[(N[(N[(N[(N[(N[(x * 18.0), $MachinePrecision] * y), $MachinePrecision] * z), $MachinePrecision] * t), $MachinePrecision] - N[(N[(a * 4.0), $MachinePrecision] * t), $MachinePrecision]), $MachinePrecision] + N[(b * c), $MachinePrecision]), $MachinePrecision] - N[(N[(x * 4.0), $MachinePrecision] * i), $MachinePrecision]), $MachinePrecision] - N[(N[(j * 27.0), $MachinePrecision] * k), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_, b_, c_, i_, j_, k_] := Block[{t$95$1 = N[(-27.0 * N[(j * k), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$2 = N[(b * c + N[(N[(18.0 * N[(y * N[(t * z), $MachinePrecision]), $MachinePrecision] + N[(-4.0 * i), $MachinePrecision]), $MachinePrecision] * x + N[(-4.0 * N[(a * t), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$3 = N[(N[(N[(N[(N[(N[(N[(x * 18.0), $MachinePrecision] * y), $MachinePrecision] * z), $MachinePrecision] * t), $MachinePrecision] - N[(N[(a * 4.0), $MachinePrecision] * t), $MachinePrecision]), $MachinePrecision] + N[(b * c), $MachinePrecision]), $MachinePrecision] - N[(N[(x * 4.0), $MachinePrecision] * i), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[t$95$3, (-Infinity)], N[(t$95$1 + t$95$2), $MachinePrecision], If[LessEqual[t$95$3, 1e+291], N[(t$95$1 + N[(t * N[(a * -4.0 + N[(N[(z * N[(y * x), $MachinePrecision]), $MachinePrecision] * 18.0), $MachinePrecision]), $MachinePrecision] + N[(c * b + N[(N[(-4.0 * x), $MachinePrecision] * i), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], N[(N[(N[(-27.0 * k), $MachinePrecision] * j), $MachinePrecision] + t$95$2), $MachinePrecision]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(\left(\left(\left(\left(\left(x \cdot 18\right) \cdot y\right) \cdot z\right) \cdot t - \left(a \cdot 4\right) \cdot t\right) + b \cdot c\right) - \left(x \cdot 4\right) \cdot i\right) - \left(j \cdot 27\right) \cdot k
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := -27 \cdot \left(j \cdot k\right)\\
+t_2 := \mathsf{fma}\left(b, c, \mathsf{fma}\left(\mathsf{fma}\left(18, y \cdot \left(t \cdot z\right), -4 \cdot i\right), x, -4 \cdot \left(a \cdot t\right)\right)\right)\\
+t_3 := \left(\left(\left(\left(\left(x \cdot 18\right) \cdot y\right) \cdot z\right) \cdot t - \left(a \cdot 4\right) \cdot t\right) + b \cdot c\right) - \left(x \cdot 4\right) \cdot i\\
+\mathbf{if}\;t_3 \leq -\infty:\\
+\;\;\;\;t_1 + t_2\\
+
+\mathbf{elif}\;t_3 \leq 10^{+291}:\\
+\;\;\;\;t_1 + \mathsf{fma}\left(t, \mathsf{fma}\left(a, -4, \left(z \cdot \left(y \cdot x\right)\right) \cdot 18\right), \mathsf{fma}\left(c, b, \left(-4 \cdot x\right) \cdot i\right)\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\left(-27 \cdot k\right) \cdot j + t_2\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>5.5</td></tr><tr><th>Target</th><td>1.6</td></tr><tr><th>Herbie</th><td>0.9</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;t &lt; -1.6210815397541398 \cdot 10^{-69}:\\
+\;\;\;\;\left(\left(18 \cdot t\right) \cdot \left(\left(x \cdot y\right) \cdot z\right) - \left(a \cdot t + i \cdot x\right) \cdot 4\right) - \left(\left(k \cdot j\right) \cdot 27 - c \cdot b\right)\\
+
+\mathbf{elif}\;t &lt; 165.68027943805222:\\
+\;\;\;\;\left(\left(18 \cdot y\right) \cdot \left(x \cdot \left(z \cdot t\right)\right) - \left(a \cdot t + i \cdot x\right) \cdot 4\right) + \left(c \cdot b - 27 \cdot \left(k \cdot j\right)\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\left(\left(18 \cdot t\right) \cdot \left(\left(x \cdot y\right) \cdot z\right) - \left(a \cdot t + i \cdot x\right) \cdot 4\right) - \left(\left(k \cdot j\right) \cdot 27 - c \cdot b\right)\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> (-.f64 (+.f64 (-.f64 (*.f64 (*.f64 (*.f64 (*.f64 x 18) y) z) t) (*.f64 (*.f64 a 4) t)) (*.f64 b c)) (*.f64 (*.f64 x 4) i))  &lt; -inf.0</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\left(\left(\left(\left(\left(\left(x \cdot 18\right) \cdot y\right) \cdot z\right) \cdot t - \left(a \cdot 4\right) \cdot t\right) + b \cdot c\right) - \left(x \cdot 4\right) \cdot i\right) - \left(j \cdot 27\right) \cdot k
+\]</div></li><li><p>Simplified<span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\leadsto \color{blue}{-27 \cdot \left(j \cdot k\right) + \mathsf{fma}\left(t, \mathsf{fma}\left(z, \left(y \cdot x\right) \cdot 18, -4 \cdot a\right), \mathsf{fma}\left(c, b, \left(-4 \cdot x\right) \cdot i\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\leadsto -27 \cdot \left(j \cdot k\right) + \mathsf{fma}\left(t, \color{blue}{\mathsf{fma}\left(a, -4, \left(z \cdot \left(y \cdot x\right)\right) \cdot 18\right)}, \mathsf{fma}\left(c, b, \left(-4 \cdot x\right) \cdot i\right)\right)
+\]</div></li><li><p>Taylor expanded in x around 0 <span class="error" title="Internally 0">4.7</span></p><div class="math">\[\leadsto -27 \cdot \left(j \cdot k\right) + \color{blue}{\left(c \cdot b + \left(\left(18 \cdot \left(y \cdot \left(t \cdot z\right)\right) + -4 \cdot i\right) \cdot x + -4 \cdot \left(a \cdot t\right)\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0">4.7</span></p><div class="math">\[\leadsto -27 \cdot \left(j \cdot k\right) + \color{blue}{\mathsf{fma}\left(b, c, \mathsf{fma}\left(\mathsf{fma}\left(18, y \cdot \left(t \cdot z\right), -4 \cdot i\right), x, -4 \cdot \left(a \cdot t\right)\right)\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-inf.0 &lt;  (-.f64 (+.f64 (-.f64 (*.f64 (*.f64 (*.f64 (*.f64 x 18) y) z) t) (*.f64 (*.f64 a 4) t)) (*.f64 b c)) (*.f64 (*.f64 x 4) i))  &lt; 9.9999999999999996e290</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.4">0.4</span></p><div class="math">\[\left(\left(\left(\left(\left(\left(x \cdot 18\right) \cdot y\right) \cdot z\right) \cdot t - \left(a \cdot 4\right) \cdot t\right) + b \cdot c\right) - \left(x \cdot 4\right) \cdot i\right) - \left(j \cdot 27\right) \cdot k
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.1">0.3</span></p><div class="math">\[\leadsto \color{blue}{-27 \cdot \left(j \cdot k\right) + \mathsf{fma}\left(t, \mathsf{fma}\left(z, \left(y \cdot x\right) \cdot 18, -4 \cdot a\right), \mathsf{fma}\left(c, b, \left(-4 \cdot x\right) \cdot i\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.1">0.3</span></p><div class="math">\[\leadsto -27 \cdot \left(j \cdot k\right) + \mathsf{fma}\left(t, \color{blue}{\mathsf{fma}\left(a, -4, \left(z \cdot \left(y \cdot x\right)\right) \cdot 18\right)}, \mathsf{fma}\left(c, b, \left(-4 \cdot x\right) \cdot i\right)\right)
+\]</div></li></ol><h2><code>if <span class="condition">9.9999999999999996e290 &lt;  (-.f64 (+.f64 (-.f64 (*.f64 (*.f64 (*.f64 (*.f64 x 18) y) z) t) (*.f64 (*.f64 a 4) t)) (*.f64 b c)) (*.f64 (*.f64 x 4) i)) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 34.5">38.2</span></p><div class="math">\[\left(\left(\left(\left(\left(\left(x \cdot 18\right) \cdot y\right) \cdot z\right) \cdot t - \left(a \cdot 4\right) \cdot t\right) + b \cdot c\right) - \left(x \cdot 4\right) \cdot i\right) - \left(j \cdot 27\right) \cdot k
+\]</div></li><li><p>Simplified<span class="error" title="Internally 34.5">38.0</span></p><div class="math">\[\leadsto \color{blue}{-27 \cdot \left(j \cdot k\right) + \mathsf{fma}\left(t, \mathsf{fma}\left(z, \left(y \cdot x\right) \cdot 18, -4 \cdot a\right), \mathsf{fma}\left(c, b, \left(-4 \cdot x\right) \cdot i\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 34.5">38.0</span></p><div class="math">\[\leadsto -27 \cdot \left(j \cdot k\right) + \mathsf{fma}\left(t, \color{blue}{\mathsf{fma}\left(a, -4, \left(z \cdot \left(y \cdot x\right)\right) \cdot 18\right)}, \mathsf{fma}\left(c, b, \left(-4 \cdot x\right) \cdot i\right)\right)
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 34.5">38.0</span></p><div class="math">\[\leadsto \color{blue}{\left(-27 \cdot k\right) \cdot j} + \mathsf{fma}\left(t, \mathsf{fma}\left(a, -4, \left(z \cdot \left(y \cdot x\right)\right) \cdot 18\right), \mathsf{fma}\left(c, b, \left(-4 \cdot x\right) \cdot i\right)\right)
+\]</div></li><li><p>Taylor expanded in x around 0 <span class="error" title="Internally 5.2">7.2</span></p><div class="math">\[\leadsto \left(-27 \cdot k\right) \cdot j + \color{blue}{\left(c \cdot b + \left(\left(18 \cdot \left(y \cdot \left(t \cdot z\right)\right) + -4 \cdot i\right) \cdot x + -4 \cdot \left(a \cdot t\right)\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 5.2">7.2</span></p><div class="math">\[\leadsto \left(-27 \cdot k\right) \cdot j + \color{blue}{\mathsf{fma}\left(b, c, \mathsf{fma}\left(\mathsf{fma}\left(18, y \cdot \left(t \cdot z\right), -4 \cdot i\right), x, -4 \cdot \left(a \cdot t\right)\right)\right)}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y z t a b c i j k)
+  :name "Diagrams.Solve.Polynomial:cubForm  from diagrams-solve-0.1, E"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; t -1.6210815397541398e-69) (- (- (* (* 18.0 t) (* (* x y) z)) (* (+ (* a t) (* i x)) 4.0)) (- (* (* k j) 27.0) (* c b))) (if (&lt; t 165.68027943805222) (+ (- (* (* 18.0 y) (* x (* z t))) (* (+ (* a t) (* i x)) 4.0)) (- (* c b) (* 27.0 (* k j)))) (- (- (* (* 18.0 t) (* (* x y) z)) (* (+ (* a t) (* i x)) 4.0)) (- (* (* k j) 27.0) (* c b)))))
+
+  (- (- (+ (- (* (* (* (* x 18.0) y) z) t) (* (* a 4.0) t)) (* b c)) (* (* x 4.0) i)) (* (* j 27.0) k)))
+</code></pre></section></body></html>

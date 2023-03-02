@@ -1,0 +1,51 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for System.Random.MWC.Distributions:blocks from mwc-random-0.13.3.2</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 0 → 0">0 → 0</span></div><div>Time: <span class="number">297.0ms</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Fortran</option><option>Java</option><option>Python</option><option>Julia</option><option>MATLAB</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(x \cdot 0.5\right) \cdot x
+\]</div><div class="arrow">↓</div><div class="program math">\[x \cdot \left(x \cdot 0.5\right)
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x) :precision binary64 (* (* x 0.5) x))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x) :precision binary64 (* x (* x 0.5)))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x) {
+	return (x * 0.5) * x;
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x) {
+	return x * (x * 0.5);
+}
+</pre></div><div class="implementation" data-language="Fortran"><pre class="program">real(8) function code(x)
+    real(8), intent (in) :: x
+    code = (x * 0.5d0) * x
+end function
+</pre><div class="arrow">↓</div><pre class="program">real(8) function code(x)
+    real(8), intent (in) :: x
+    code = x * (x * 0.5d0)
+end function
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double x) {
+	return (x * 0.5) * x;
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double x) {
+	return x * (x * 0.5);
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(x):
+	return (x * 0.5) * x
+</pre><div class="arrow">↓</div><pre class="program">def code(x):
+	return x * (x * 0.5)
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x)
+	return Float64(Float64(x * 0.5) * x)
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x)
+	return Float64(x * Float64(x * 0.5))
+end
+</pre></div><div class="implementation" data-language="MATLAB"><pre class="program">function tmp = code(x)
+	tmp = (x * 0.5) * x;
+end
+</pre><div class="arrow">↓</div><pre class="program">function tmp = code(x)
+	tmp = x * (x * 0.5);
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_] := N[(N[(x * 0.5), $MachinePrecision] * x), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_] := N[(x * N[(x * 0.5), $MachinePrecision]), $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(x \cdot 0.5\right) \cdot x
+</pre><div class="arrow">↓</div><pre class="program">x \cdot \left(x \cdot 0.5\right)
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">x</label><input type="text" class="input-submit" name="var-name-0" value="2.3815831355077536e-34"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 0">0</span></p><div class="math">\[\left(x \cdot 0.5\right) \cdot x
+\]</div></li><li><p>Final simplification<span class="error" title="Internally 0">0</span></p><div class="math">\[\leadsto x \cdot \left(x \cdot 0.5\right)
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x)
+  :name "System.Random.MWC.Distributions:blocks from mwc-random-0.13.3.2"
+  :precision binary64
+  (* (* x 0.5) x))
+</code></pre></section></body></html>

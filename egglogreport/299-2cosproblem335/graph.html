@@ -1,0 +1,99 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for 2cos (problem 3.3.5)</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 63.0 → 64.0">39.3 → 0.7</span></div><div>Time: <span class="number">3.9s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\cos \left(x + \varepsilon\right) - \cos x
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := 0.5 \cdot \cos \left(\varepsilon + \varepsilon\right)\\
+t_1 := \sin x \cdot \sin \varepsilon\\
+\mathbf{if}\;x \leq -1.7433029154870626 \cdot 10^{-13}:\\
+\;\;\;\;\mathsf{fma}\left(\sqrt[3]{\cos \varepsilon}, \sqrt[3]{\frac{{0.5}^{3} + {t_0}^{3}}{0.5 \cdot 0.5 + \left(t_0 \cdot t_0 - 0.5 \cdot t_0\right)}} \cdot \cos x, -\cos x\right) - t_1\\
+
+\mathbf{elif}\;x \leq 2.386200410518542 \cdot 10^{-73}:\\
+\;\;\;\;\sin \left(\varepsilon \cdot 0.5\right) \cdot \left(-2 \cdot \sin \left(\left(\left(x + \varepsilon\right) + x\right) \cdot 0.5\right)\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(\cos x, \cos \varepsilon + -1, -t_1\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x eps) :precision binary64 (- (cos (+ x eps)) (cos x)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x eps)
+ :precision binary64
+ (let* ((t_0 (* 0.5 (cos (+ eps eps)))) (t_1 (* (sin x) (sin eps))))
+   (if (&lt;= x -1.7433029154870626e-13)
+     (-
+      (fma
+       (cbrt (cos eps))
+       (*
+        (cbrt
+         (/
+          (+ (pow 0.5 3.0) (pow t_0 3.0))
+          (+ (* 0.5 0.5) (- (* t_0 t_0) (* 0.5 t_0)))))
+        (cos x))
+       (- (cos x)))
+      t_1)
+     (if (&lt;= x 2.386200410518542e-73)
+       (* (sin (* eps 0.5)) (* -2.0 (sin (* (+ (+ x eps) x) 0.5))))
+       (fma (cos x) (+ (cos eps) -1.0) (- t_1))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double eps) {
+	return cos((x + eps)) - cos(x);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double eps) {
+	double t_0 = 0.5 * cos((eps + eps));
+	double t_1 = sin(x) * sin(eps);
+	double tmp;
+	if (x &lt;= -1.7433029154870626e-13) {
+		tmp = fma(cbrt(cos(eps)), (cbrt(((pow(0.5, 3.0) + pow(t_0, 3.0)) / ((0.5 * 0.5) + ((t_0 * t_0) - (0.5 * t_0))))) * cos(x)), -cos(x)) - t_1;
+	} else if (x &lt;= 2.386200410518542e-73) {
+		tmp = sin((eps * 0.5)) * (-2.0 * sin((((x + eps) + x) * 0.5)));
+	} else {
+		tmp = fma(cos(x), (cos(eps) + -1.0), -t_1);
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, eps)
+	return Float64(cos(Float64(x + eps)) - cos(x))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, eps)
+	t_0 = Float64(0.5 * cos(Float64(eps + eps)))
+	t_1 = Float64(sin(x) * sin(eps))
+	tmp = 0.0
+	if (x &lt;= -1.7433029154870626e-13)
+		tmp = Float64(fma(cbrt(cos(eps)), Float64(cbrt(Float64(Float64((0.5 ^ 3.0) + (t_0 ^ 3.0)) / Float64(Float64(0.5 * 0.5) + Float64(Float64(t_0 * t_0) - Float64(0.5 * t_0))))) * cos(x)), Float64(-cos(x))) - t_1);
+	elseif (x &lt;= 2.386200410518542e-73)
+		tmp = Float64(sin(Float64(eps * 0.5)) * Float64(-2.0 * sin(Float64(Float64(Float64(x + eps) + x) * 0.5))));
+	else
+		tmp = fma(cos(x), Float64(cos(eps) + -1.0), Float64(-t_1));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, eps_] := N[(N[Cos[N[(x + eps), $MachinePrecision]], $MachinePrecision] - N[Cos[x], $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, eps_] := Block[{t$95$0 = N[(0.5 * N[Cos[N[(eps + eps), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]}, Block[{t$95$1 = N[(N[Sin[x], $MachinePrecision] * N[Sin[eps], $MachinePrecision]), $MachinePrecision]}, If[LessEqual[x, -1.7433029154870626e-13], N[(N[(N[Power[N[Cos[eps], $MachinePrecision], 1/3], $MachinePrecision] * N[(N[Power[N[(N[(N[Power[0.5, 3.0], $MachinePrecision] + N[Power[t$95$0, 3.0], $MachinePrecision]), $MachinePrecision] / N[(N[(0.5 * 0.5), $MachinePrecision] + N[(N[(t$95$0 * t$95$0), $MachinePrecision] - N[(0.5 * t$95$0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], 1/3], $MachinePrecision] * N[Cos[x], $MachinePrecision]), $MachinePrecision] + (-N[Cos[x], $MachinePrecision])), $MachinePrecision] - t$95$1), $MachinePrecision], If[LessEqual[x, 2.386200410518542e-73], N[(N[Sin[N[(eps * 0.5), $MachinePrecision]], $MachinePrecision] * N[(-2.0 * N[Sin[N[(N[(N[(x + eps), $MachinePrecision] + x), $MachinePrecision] * 0.5), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision], N[(N[Cos[x], $MachinePrecision] * N[(N[Cos[eps], $MachinePrecision] + -1.0), $MachinePrecision] + (-t$95$1)), $MachinePrecision]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\cos \left(x + \varepsilon\right) - \cos x
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := 0.5 \cdot \cos \left(\varepsilon + \varepsilon\right)\\
+t_1 := \sin x \cdot \sin \varepsilon\\
+\mathbf{if}\;x \leq -1.7433029154870626 \cdot 10^{-13}:\\
+\;\;\;\;\mathsf{fma}\left(\sqrt[3]{\cos \varepsilon}, \sqrt[3]{\frac{{0.5}^{3} + {t_0}^{3}}{0.5 \cdot 0.5 + \left(t_0 \cdot t_0 - 0.5 \cdot t_0\right)}} \cdot \cos x, -\cos x\right) - t_1\\
+
+\mathbf{elif}\;x \leq 2.386200410518542 \cdot 10^{-73}:\\
+\;\;\;\;\sin \left(\varepsilon \cdot 0.5\right) \cdot \left(-2 \cdot \sin \left(\left(\left(x + \varepsilon\right) + x\right) \cdot 0.5\right)\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(\cos x, \cos \varepsilon + -1, -t_1\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> x  &lt; -1.74330291548706255e-13</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 57.7">58.5</span></p><div class="math">\[\cos \left(x + \varepsilon\right) - \cos x
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.5">0.8</span></p><div class="math">\[\leadsto \color{blue}{\left(\left(-\cos x\right) + \cos x \cdot \cos \varepsilon\right) - \sin x \cdot \sin \varepsilon}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.4">0.8</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\sqrt[3]{\cos \varepsilon}, \sqrt[3]{{\cos \varepsilon}^{2}} \cdot \cos x, -\cos x\right)} - \sin x \cdot \sin \varepsilon
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.4">0.9</span></p><div class="math">\[\leadsto \mathsf{fma}\left(\sqrt[3]{\cos \varepsilon}, \sqrt[3]{\color{blue}{\frac{{0.5}^{3} + {\left(0.5 \cdot \cos \left(\varepsilon + \varepsilon\right)\right)}^{3}}{0.5 \cdot 0.5 + \left(\left(0.5 \cdot \cos \left(\varepsilon + \varepsilon\right)\right) \cdot \left(0.5 \cdot \cos \left(\varepsilon + \varepsilon\right)\right) - 0.5 \cdot \left(0.5 \cdot \cos \left(\varepsilon + \varepsilon\right)\right)\right)}}} \cdot \cos x, -\cos x\right) - \sin x \cdot \sin \varepsilon
+\]</div></li></ol><h2><code>if <span class="condition">-1.74330291548706255e-13 &lt;  x  &lt; 2.386200410518542e-73</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 16.0">17.8</span></p><div class="math">\[\cos \left(x + \varepsilon\right) - \cos x
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.3">0.3</span></p><div class="math">\[\leadsto \color{blue}{\sin \left(\varepsilon \cdot 0.5\right) \cdot \left(-2 \cdot \sin \left(\left(\left(x + \varepsilon\right) + x\right) \cdot 0.5\right)\right)}
+\]</div></li></ol><h2><code>if <span class="condition">2.386200410518542e-73 &lt;  x </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 52.7">53.5</span></p><div class="math">\[\cos \left(x + \varepsilon\right) - \cos x
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.6">1.3</span></p><div class="math">\[\leadsto \color{blue}{\left(\left(-\cos x\right) + \cos x \cdot \cos \varepsilon\right) - \sin x \cdot \sin \varepsilon}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.6">1.3</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\sqrt[3]{\cos \varepsilon}, \sqrt[3]{{\cos \varepsilon}^{2}} \cdot \cos x, -\cos x\right)} - \sin x \cdot \sin \varepsilon
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.5">1.2</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\sin x, -\sin \varepsilon, \cos x \cdot \left(\cos \varepsilon + -1\right)\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.5">1.2</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\cos x, \cos \varepsilon + -1, -\sin x \cdot \sin \varepsilon\right)}
+\]</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x eps)
+  :name "2cos (problem 3.3.5)"
+  :precision binary64
+  (- (cos (+ x eps)) (cos x)))
+</code></pre></section></body></html>

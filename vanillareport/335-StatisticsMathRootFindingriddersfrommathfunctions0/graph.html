@@ -1,0 +1,172 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Statistics.Math.RootFinding:ridders from math-functions-0.1.5.2</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">24.4 → 7.1</span></div><div>Time: <span class="number">2.8s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="preprocess"><div class="program math">\[ \begin{array}{c}[x, y] = \mathsf{sort}([x, y])\\ \end{array} \]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Fortran</option><option>Java</option><option>Python</option><option>Julia</option><option>MATLAB</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{\left(x \cdot y\right) \cdot z}{\sqrt{z \cdot z - t \cdot a}}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+\mathbf{if}\;z \leq -2.3465727487740706 \cdot 10^{+125}:\\
+\;\;\;\;x \cdot \left(-y\right)\\
+
+\mathbf{elif}\;z \leq 3.035675077955773 \cdot 10^{+68}:\\
+\;\;\;\;x \cdot \frac{z \cdot y}{\sqrt{z \cdot z - t \cdot a}}\\
+
+\mathbf{else}:\\
+\;\;\;\;x \cdot y\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a)
+ :precision binary64
+ (/ (* (* x y) z) (sqrt (- (* z z) (* t a)))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a)
+ :precision binary64
+ (if (&lt;= z -2.3465727487740706e+125)
+   (* x (- y))
+   (if (&lt;= z 3.035675077955773e+68)
+     (* x (/ (* z y) (sqrt (- (* z z) (* t a)))))
+     (* x y))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a) {
+	return ((x * y) * z) / sqrt(((z * z) - (t * a)));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a) {
+	double tmp;
+	if (z &lt;= -2.3465727487740706e+125) {
+		tmp = x * -y;
+	} else if (z &lt;= 3.035675077955773e+68) {
+		tmp = x * ((z * y) / sqrt(((z * z) - (t * a))));
+	} else {
+		tmp = x * y;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Fortran"><pre class="program">real(8) function code(x, y, z, t, a)
+    real(8), intent (in) :: x
+    real(8), intent (in) :: y
+    real(8), intent (in) :: z
+    real(8), intent (in) :: t
+    real(8), intent (in) :: a
+    code = ((x * y) * z) / sqrt(((z * z) - (t * a)))
+end function
+</pre><div class="arrow">↓</div><pre class="program">real(8) function code(x, y, z, t, a)
+    real(8), intent (in) :: x
+    real(8), intent (in) :: y
+    real(8), intent (in) :: z
+    real(8), intent (in) :: t
+    real(8), intent (in) :: a
+    real(8) :: tmp
+    if (z &lt;= (-2.3465727487740706d+125)) then
+        tmp = x * -y
+    else if (z &lt;= 3.035675077955773d+68) then
+        tmp = x * ((z * y) / sqrt(((z * z) - (t * a))))
+    else
+        tmp = x * y
+    end if
+    code = tmp
+end function
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double x, double y, double z, double t, double a) {
+	return ((x * y) * z) / Math.sqrt(((z * z) - (t * a)));
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double x, double y, double z, double t, double a) {
+	double tmp;
+	if (z &lt;= -2.3465727487740706e+125) {
+		tmp = x * -y;
+	} else if (z &lt;= 3.035675077955773e+68) {
+		tmp = x * ((z * y) / Math.sqrt(((z * z) - (t * a))));
+	} else {
+		tmp = x * y;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(x, y, z, t, a):
+	return ((x * y) * z) / math.sqrt(((z * z) - (t * a)))
+</pre><div class="arrow">↓</div><pre class="program">def code(x, y, z, t, a):
+	tmp = 0
+	if z &lt;= -2.3465727487740706e+125:
+		tmp = x * -y
+	elif z &lt;= 3.035675077955773e+68:
+		tmp = x * ((z * y) / math.sqrt(((z * z) - (t * a))))
+	else:
+		tmp = x * y
+	return tmp
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a)
+	return Float64(Float64(Float64(x * y) * z) / sqrt(Float64(Float64(z * z) - Float64(t * a))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a)
+	tmp = 0.0
+	if (z &lt;= -2.3465727487740706e+125)
+		tmp = Float64(x * Float64(-y));
+	elseif (z &lt;= 3.035675077955773e+68)
+		tmp = Float64(x * Float64(Float64(z * y) / sqrt(Float64(Float64(z * z) - Float64(t * a)))));
+	else
+		tmp = Float64(x * y);
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="MATLAB"><pre class="program">function tmp = code(x, y, z, t, a)
+	tmp = ((x * y) * z) / sqrt(((z * z) - (t * a)));
+end
+</pre><div class="arrow">↓</div><pre class="program">function tmp_2 = code(x, y, z, t, a)
+	tmp = 0.0;
+	if (z &lt;= -2.3465727487740706e+125)
+		tmp = x * -y;
+	elseif (z &lt;= 3.035675077955773e+68)
+		tmp = x * ((z * y) / sqrt(((z * z) - (t * a))));
+	else
+		tmp = x * y;
+	end
+	tmp_2 = tmp;
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_] := N[(N[(N[(x * y), $MachinePrecision] * z), $MachinePrecision] / N[Sqrt[N[(N[(z * z), $MachinePrecision] - N[(t * a), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_] := If[LessEqual[z, -2.3465727487740706e+125], N[(x * (-y)), $MachinePrecision], If[LessEqual[z, 3.035675077955773e+68], N[(x * N[(N[(z * y), $MachinePrecision] / N[Sqrt[N[(N[(z * z), $MachinePrecision] - N[(t * a), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision], N[(x * y), $MachinePrecision]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{\left(x \cdot y\right) \cdot z}{\sqrt{z \cdot z - t \cdot a}}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+\mathbf{if}\;z \leq -2.3465727487740706 \cdot 10^{+125}:\\
+\;\;\;\;x \cdot \left(-y\right)\\
+
+\mathbf{elif}\;z \leq 3.035675077955773 \cdot 10^{+68}:\\
+\;\;\;\;x \cdot \frac{z \cdot y}{\sqrt{z \cdot z - t \cdot a}}\\
+
+\mathbf{else}:\\
+\;\;\;\;x \cdot y\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">x</label><input type="text" class="input-submit" name="var-name-0" value="1.457348336050516e-214"/></li><li><label for="var-name-1">y</label><input type="text" class="input-submit" name="var-name-1" value="-4.849403555709102e+68"/></li><li><label for="var-name-2">z</label><input type="text" class="input-submit" name="var-name-2" value="-2.224049997307204e+138"/></li><li><label for="var-name-3">t</label><input type="text" class="input-submit" name="var-name-3" value="-5.486163404415593e-58"/></li><li><label for="var-name-4">a</label><input type="text" class="input-submit" name="var-name-4" value="6.3264939098786574e+181"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>24.4</td></tr><tr><th>Target</th><td>7.5</td></tr><tr><th>Herbie</th><td>7.1</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;z &lt; -3.1921305903852764 \cdot 10^{+46}:\\
+\;\;\;\;-y \cdot x\\
+
+\mathbf{elif}\;z &lt; 5.976268120920894 \cdot 10^{+90}:\\
+\;\;\;\;\frac{x \cdot z}{\frac{\sqrt{z \cdot z - a \cdot t}}{y}}\\
+
+\mathbf{else}:\\
+\;\;\;\;y \cdot x\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> z  &lt; -2.34657274877407058e125</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 42.8">46.4</span></p><div class="math">\[\frac{\left(x \cdot y\right) \cdot z}{\sqrt{z \cdot z - t \cdot a}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 44.0">46.8</span></p><div class="math">\[\leadsto \color{blue}{x \cdot \frac{y \cdot z}{\sqrt{z \cdot z - t \cdot a}}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in z around -inf <span class="error" title="Internally 1.2">1.5</span></p><div class="math">\[\leadsto x \cdot \color{blue}{\left(-1 \cdot y\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 1.2">1.5</span></p><div class="math">\[\leadsto x \cdot \color{blue}{\left(-y\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-2.34657274877407058e125 &lt;  z  &lt; 3.035675077955773e68</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 12.8">11.1</span></p><div class="math">\[\frac{\left(x \cdot y\right) \cdot z}{\sqrt{z \cdot z - t \cdot a}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 10.5">10.8</span></p><div class="math">\[\leadsto \color{blue}{x \cdot \frac{y \cdot z}{\sqrt{z \cdot z - t \cdot a}}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">3.035675077955773e68 &lt;  z </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 36.4">39.3</span></p><div class="math">\[\frac{\left(x \cdot y\right) \cdot z}{\sqrt{z \cdot z - t \cdot a}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 36.5">39.5</span></p><div class="math">\[\leadsto \color{blue}{x \cdot \frac{y \cdot z}{\sqrt{z \cdot z - t \cdot a}}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in y around 0 <span class="error" title="Internally 36.6">39.6</span></p><div class="math">\[\leadsto x \cdot \color{blue}{\left(\sqrt{\frac{1}{{z}^{2} - a \cdot t}} \cdot \left(y \cdot z\right)\right)}
+\]</div></li><li><p>Taylor expanded in z around inf <span class="error" title="Internally 1.2">2.8</span></p><div class="math">\[\leadsto \color{blue}{y \cdot x}
+\]</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 6.8">7.1</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;z \leq -2.3465727487740706 \cdot 10^{+125}:\\
+\;\;\;\;x \cdot \left(-y\right)\\
+
+\mathbf{elif}\;z \leq 3.035675077955773 \cdot 10^{+68}:\\
+\;\;\;\;x \cdot \frac{z \cdot y}{\sqrt{z \cdot z - t \cdot a}}\\
+
+\mathbf{else}:\\
+\;\;\;\;x \cdot y\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x y z t a)
+  :name "Statistics.Math.RootFinding:ridders from math-functions-0.1.5.2"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; z -3.1921305903852764e+46) (- (* y x)) (if (&lt; z 5.976268120920894e+90) (/ (* x z) (/ (sqrt (- (* z z) (* a t))) y)) (* y x)))
+
+  (/ (* (* x y) z) (sqrt (- (* z z) (* t a)))))
+</code></pre></section></body></html>

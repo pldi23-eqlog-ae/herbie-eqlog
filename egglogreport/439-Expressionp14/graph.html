@@ -1,0 +1,34 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Expression, p14</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 1.0 → 1.0">0.0 → 0.0</span></div><div>Time: <span class="number">1.8s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[\left(\left(\left(56789 \leq a \land a \leq 98765\right) \land \left(0 \leq b \land b \leq 1\right)\right) \land \left(0 \leq c \land c \leq 0.0016773\right)\right) \land \left(0 \leq d \land d \leq 0.0016773\right)\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[a \cdot \left(\left(b + c\right) + d\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\mathsf{fma}\left(a, b, \mathsf{fma}\left(a, c, a \cdot d\right)\right)
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (a b c d) :precision binary64 (* a (+ (+ b c) d)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (a b c d) :precision binary64 (fma a b (fma a c (* a d))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double a, double b, double c, double d) {
+	return a * ((b + c) + d);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double a, double b, double c, double d) {
+	return fma(a, b, fma(a, c, (a * d)));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(a, b, c, d)
+	return Float64(a * Float64(Float64(b + c) + d))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(a, b, c, d)
+	return fma(a, b, fma(a, c, Float64(a * d)))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[a_, b_, c_, d_] := N[(a * N[(N[(b + c), $MachinePrecision] + d), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[a_, b_, c_, d_] := N[(a * b + N[(a * c + N[(a * d), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">a \cdot \left(\left(b + c\right) + d\right)
+</pre><div class="arrow">↓</div><pre class="program">\mathsf{fma}\left(a, b, \mathsf{fma}\left(a, c, a \cdot d\right)\right)
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>0.0</td></tr><tr><th>Target</th><td>0.0</td></tr><tr><th>Herbie</th><td>0.0</td></tr></table><div class="math">\[a \cdot b + a \cdot \left(c + d\right)
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 0.0">0.0</span></p><div class="math">\[a \cdot \left(\left(b + c\right) + d\right)
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.0">0.0</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(a, b, a \cdot \left(c + d\right)\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.0">0.0</span></p><div class="math">\[\leadsto \mathsf{fma}\left(a, b, \color{blue}{\mathsf{fma}\left(a, c, a \cdot d\right)}\right)
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (a b c d)
+  :name "Expression, p14"
+  :precision binary64
+  :pre (and (and (and (and (&lt;= 56789.0 a) (&lt;= a 98765.0)) (and (&lt;= 0.0 b) (&lt;= b 1.0))) (and (&lt;= 0.0 c) (&lt;= c 0.0016773))) (and (&lt;= 0.0 d) (&lt;= d 0.0016773)))
+
+  :herbie-target
+  (+ (* a b) (* a (+ c d)))
+
+  (* a (+ (+ b c) d)))
+</code></pre></section></body></html>

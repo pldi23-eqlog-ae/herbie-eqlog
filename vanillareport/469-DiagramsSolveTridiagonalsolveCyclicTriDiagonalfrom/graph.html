@@ -1,0 +1,198 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Diagrams.Solve.Tridiagonal:solveCyclicTriDiagonal from diagrams-solve-0.1, A</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">6.1 → 2.8</span></div><div>Time: <span class="number">1.1s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="preprocess"><div class="program math">\[ \begin{array}{c}[x, y] = \mathsf{sort}([x, y])\\ \end{array} \]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Fortran</option><option>Java</option><option>Python</option><option>Julia</option><option>MATLAB</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{x \cdot y}{z}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \frac{x \cdot y}{z}\\
+\mathbf{if}\;x \cdot y \leq -2 \cdot 10^{+304}:\\
+\;\;\;\;x \cdot \frac{y}{z}\\
+
+\mathbf{elif}\;x \cdot y \leq -5 \cdot 10^{-71}:\\
+\;\;\;\;t_0\\
+
+\mathbf{elif}\;x \cdot y \leq 2 \cdot 10^{-118}:\\
+\;\;\;\;y \cdot \frac{x}{z}\\
+
+\mathbf{else}:\\
+\;\;\;\;t_0\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z) :precision binary64 (/ (* x y) z))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z)
+ :precision binary64
+ (let* ((t_0 (/ (* x y) z)))
+   (if (&lt;= (* x y) -2e+304)
+     (* x (/ y z))
+     (if (&lt;= (* x y) -5e-71) t_0 (if (&lt;= (* x y) 2e-118) (* y (/ x z)) t_0)))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z) {
+	return (x * y) / z;
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z) {
+	double t_0 = (x * y) / z;
+	double tmp;
+	if ((x * y) &lt;= -2e+304) {
+		tmp = x * (y / z);
+	} else if ((x * y) &lt;= -5e-71) {
+		tmp = t_0;
+	} else if ((x * y) &lt;= 2e-118) {
+		tmp = y * (x / z);
+	} else {
+		tmp = t_0;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Fortran"><pre class="program">real(8) function code(x, y, z)
+    real(8), intent (in) :: x
+    real(8), intent (in) :: y
+    real(8), intent (in) :: z
+    code = (x * y) / z
+end function
+</pre><div class="arrow">↓</div><pre class="program">real(8) function code(x, y, z)
+    real(8), intent (in) :: x
+    real(8), intent (in) :: y
+    real(8), intent (in) :: z
+    real(8) :: t_0
+    real(8) :: tmp
+    t_0 = (x * y) / z
+    if ((x * y) &lt;= (-2d+304)) then
+        tmp = x * (y / z)
+    else if ((x * y) &lt;= (-5d-71)) then
+        tmp = t_0
+    else if ((x * y) &lt;= 2d-118) then
+        tmp = y * (x / z)
+    else
+        tmp = t_0
+    end if
+    code = tmp
+end function
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double x, double y, double z) {
+	return (x * y) / z;
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double x, double y, double z) {
+	double t_0 = (x * y) / z;
+	double tmp;
+	if ((x * y) &lt;= -2e+304) {
+		tmp = x * (y / z);
+	} else if ((x * y) &lt;= -5e-71) {
+		tmp = t_0;
+	} else if ((x * y) &lt;= 2e-118) {
+		tmp = y * (x / z);
+	} else {
+		tmp = t_0;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(x, y, z):
+	return (x * y) / z
+</pre><div class="arrow">↓</div><pre class="program">def code(x, y, z):
+	t_0 = (x * y) / z
+	tmp = 0
+	if (x * y) &lt;= -2e+304:
+		tmp = x * (y / z)
+	elif (x * y) &lt;= -5e-71:
+		tmp = t_0
+	elif (x * y) &lt;= 2e-118:
+		tmp = y * (x / z)
+	else:
+		tmp = t_0
+	return tmp
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z)
+	return Float64(Float64(x * y) / z)
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z)
+	t_0 = Float64(Float64(x * y) / z)
+	tmp = 0.0
+	if (Float64(x * y) &lt;= -2e+304)
+		tmp = Float64(x * Float64(y / z));
+	elseif (Float64(x * y) &lt;= -5e-71)
+		tmp = t_0;
+	elseif (Float64(x * y) &lt;= 2e-118)
+		tmp = Float64(y * Float64(x / z));
+	else
+		tmp = t_0;
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="MATLAB"><pre class="program">function tmp = code(x, y, z)
+	tmp = (x * y) / z;
+end
+</pre><div class="arrow">↓</div><pre class="program">function tmp_2 = code(x, y, z)
+	t_0 = (x * y) / z;
+	tmp = 0.0;
+	if ((x * y) &lt;= -2e+304)
+		tmp = x * (y / z);
+	elseif ((x * y) &lt;= -5e-71)
+		tmp = t_0;
+	elseif ((x * y) &lt;= 2e-118)
+		tmp = y * (x / z);
+	else
+		tmp = t_0;
+	end
+	tmp_2 = tmp;
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_] := N[(N[(x * y), $MachinePrecision] / z), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_] := Block[{t$95$0 = N[(N[(x * y), $MachinePrecision] / z), $MachinePrecision]}, If[LessEqual[N[(x * y), $MachinePrecision], -2e+304], N[(x * N[(y / z), $MachinePrecision]), $MachinePrecision], If[LessEqual[N[(x * y), $MachinePrecision], -5e-71], t$95$0, If[LessEqual[N[(x * y), $MachinePrecision], 2e-118], N[(y * N[(x / z), $MachinePrecision]), $MachinePrecision], t$95$0]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{x \cdot y}{z}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \frac{x \cdot y}{z}\\
+\mathbf{if}\;x \cdot y \leq -2 \cdot 10^{+304}:\\
+\;\;\;\;x \cdot \frac{y}{z}\\
+
+\mathbf{elif}\;x \cdot y \leq -5 \cdot 10^{-71}:\\
+\;\;\;\;t_0\\
+
+\mathbf{elif}\;x \cdot y \leq 2 \cdot 10^{-118}:\\
+\;\;\;\;y \cdot \frac{x}{z}\\
+
+\mathbf{else}:\\
+\;\;\;\;t_0\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">x</label><input type="text" class="input-submit" name="var-name-0" value="-9.02260575298504e-263"/></li><li><label for="var-name-1">y</label><input type="text" class="input-submit" name="var-name-1" value="5.39743772774323e+223"/></li><li><label for="var-name-2">z</label><input type="text" class="input-submit" name="var-name-2" value="-1.1477548770787473e+280"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>6.1</td></tr><tr><th>Target</th><td>6.4</td></tr><tr><th>Herbie</th><td>2.8</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;z &lt; -4.262230790519429 \cdot 10^{-138}:\\
+\;\;\;\;\frac{x \cdot y}{z}\\
+
+\mathbf{elif}\;z &lt; 1.7042130660650472 \cdot 10^{-164}:\\
+\;\;\;\;\frac{x}{\frac{z}{y}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{x}{z} \cdot y\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> (*.f64 x y)  &lt; -1.9999999999999999e304</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 55.0">61.5</span></p><div class="math">\[\frac{x \cdot y}{z}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.1">0.3</span></p><div class="math">\[\leadsto \color{blue}{x \cdot \frac{y}{z}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-1.9999999999999999e304 &lt;  (*.f64 x y)  &lt; -4.99999999999999998e-71 or 1.99999999999999997e-118 &lt;  (*.f64 x y) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 1.1">3.2</span></p><div class="math">\[\frac{x \cdot y}{z}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 12.2">9.2</span></p><div class="math">\[\leadsto \color{blue}{x \cdot \frac{y}{z}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 11.7">9.1</span></p><div class="math">\[\leadsto \color{blue}{\frac{x}{\frac{z}{y}}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 12.1">9.6</span></p><div class="math">\[\leadsto \color{blue}{\frac{{\left(\sqrt[3]{x}\right)}^{2}}{1} \cdot \frac{\sqrt[3]{x}}{\frac{z}{y}}}
+\]</div></li><li><p>Taylor expanded in x around 0 <span class="error" title="Internally 1.1">3.2</span></p><div class="math">\[\leadsto \color{blue}{\frac{y \cdot x}{z}}
+\]</div></li></ol><h2><code>if <span class="condition">-4.99999999999999998e-71 &lt;  (*.f64 x y)  &lt; 1.99999999999999997e-118</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 8.9">6.1</span></p><div class="math">\[\frac{x \cdot y}{z}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.5">2.5</span></p><div class="math">\[\leadsto \color{blue}{x \cdot \frac{y}{z}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.6">2.5</span></p><div class="math">\[\leadsto \color{blue}{\frac{x}{\frac{z}{y}}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 1.0">2.8</span></p><div class="math">\[\leadsto \color{blue}{\frac{{\left(\sqrt[3]{x}\right)}^{2}}{1} \cdot \frac{\sqrt[3]{x}}{\frac{z}{y}}}
+\]</div></li><li><p>Taylor expanded in x around 0 <span class="error" title="Internally 8.9">6.1</span></p><div class="math">\[\leadsto \color{blue}{\frac{y \cdot x}{z}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.1">2.6</span></p><div class="math">\[\leadsto \color{blue}{y \cdot \frac{x}{z}}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 0.7">2.8</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;x \cdot y \leq -2 \cdot 10^{+304}:\\
+\;\;\;\;x \cdot \frac{y}{z}\\
+
+\mathbf{elif}\;x \cdot y \leq -5 \cdot 10^{-71}:\\
+\;\;\;\;\frac{x \cdot y}{z}\\
+
+\mathbf{elif}\;x \cdot y \leq 2 \cdot 10^{-118}:\\
+\;\;\;\;y \cdot \frac{x}{z}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{x \cdot y}{z}\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x y z)
+  :name "Diagrams.Solve.Tridiagonal:solveCyclicTriDiagonal from diagrams-solve-0.1, A"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; z -4.262230790519429e-138) (/ (* x y) z) (if (&lt; z 1.7042130660650472e-164) (/ x (/ z y)) (* (/ x z) y)))
+
+  (/ (* x y) z))
+</code></pre></section></body></html>

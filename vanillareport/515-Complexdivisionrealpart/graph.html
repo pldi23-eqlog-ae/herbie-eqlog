@@ -1,0 +1,207 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Complex division, real part</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">26.3 → 12.0</span></div><div>Time: <span class="number">2.0s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{a \cdot c + b \cdot d}{c \cdot c + d \cdot d}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \mathsf{fma}\left(c, c, d \cdot d\right)\\
+t_1 := \mathsf{fma}\left(\frac{c}{t_0}, a, b \cdot \frac{d}{t_0}\right)\\
+t_2 := \mathsf{fma}\left(\frac{c}{d}, a, b\right)\\
+\mathbf{if}\;d \leq -1.327275917793868 \cdot 10^{+105}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{c}{d}, \frac{a}{d}, \frac{b}{d}\right)\\
+
+\mathbf{elif}\;d \leq -1 \cdot 10^{-145}:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;d \leq 1.809803726156943 \cdot 10^{-112}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{b}{c}, \frac{d}{c}, \frac{a}{c}\right)\\
+
+\mathbf{elif}\;d \leq 9.289846252076942 \cdot 10^{-42}:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;d \leq 0.10945452738496389:\\
+\;\;\;\;\frac{a}{c} + b \cdot \frac{\frac{d}{c}}{c}\\
+
+\mathbf{elif}\;d \leq 3.1198454695800192 \cdot 10^{+128}:\\
+\;\;\;\;{\left(\frac{\mathsf{hypot}\left(c, d\right)}{\frac{\mathsf{fma}\left(a, c, d \cdot b\right)}{\mathsf{hypot}\left(c, d\right)}}\right)}^{-1}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{0.5 \cdot \left(\left(\frac{c}{d} \cdot \frac{c}{d}\right) \cdot t_2\right) - t_2}{-\mathsf{hypot}\left(c, d\right)}\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (a b c d)
+ :precision binary64
+ (/ (+ (* a c) (* b d)) (+ (* c c) (* d d))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (a b c d)
+ :precision binary64
+ (let* ((t_0 (fma c c (* d d)))
+        (t_1 (fma (/ c t_0) a (* b (/ d t_0))))
+        (t_2 (fma (/ c d) a b)))
+   (if (&lt;= d -1.327275917793868e+105)
+     (fma (/ c d) (/ a d) (/ b d))
+     (if (&lt;= d -1e-145)
+       t_1
+       (if (&lt;= d 1.809803726156943e-112)
+         (fma (/ b c) (/ d c) (/ a c))
+         (if (&lt;= d 9.289846252076942e-42)
+           t_1
+           (if (&lt;= d 0.10945452738496389)
+             (+ (/ a c) (* b (/ (/ d c) c)))
+             (if (&lt;= d 3.1198454695800192e+128)
+               (pow (/ (hypot c d) (/ (fma a c (* d b)) (hypot c d))) -1.0)
+               (/
+                (- (* 0.5 (* (* (/ c d) (/ c d)) t_2)) t_2)
+                (- (hypot c d)))))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double a, double b, double c, double d) {
+	return ((a * c) + (b * d)) / ((c * c) + (d * d));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double a, double b, double c, double d) {
+	double t_0 = fma(c, c, (d * d));
+	double t_1 = fma((c / t_0), a, (b * (d / t_0)));
+	double t_2 = fma((c / d), a, b);
+	double tmp;
+	if (d &lt;= -1.327275917793868e+105) {
+		tmp = fma((c / d), (a / d), (b / d));
+	} else if (d &lt;= -1e-145) {
+		tmp = t_1;
+	} else if (d &lt;= 1.809803726156943e-112) {
+		tmp = fma((b / c), (d / c), (a / c));
+	} else if (d &lt;= 9.289846252076942e-42) {
+		tmp = t_1;
+	} else if (d &lt;= 0.10945452738496389) {
+		tmp = (a / c) + (b * ((d / c) / c));
+	} else if (d &lt;= 3.1198454695800192e+128) {
+		tmp = pow((hypot(c, d) / (fma(a, c, (d * b)) / hypot(c, d))), -1.0);
+	} else {
+		tmp = ((0.5 * (((c / d) * (c / d)) * t_2)) - t_2) / -hypot(c, d);
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(a, b, c, d)
+	return Float64(Float64(Float64(a * c) + Float64(b * d)) / Float64(Float64(c * c) + Float64(d * d)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(a, b, c, d)
+	t_0 = fma(c, c, Float64(d * d))
+	t_1 = fma(Float64(c / t_0), a, Float64(b * Float64(d / t_0)))
+	t_2 = fma(Float64(c / d), a, b)
+	tmp = 0.0
+	if (d &lt;= -1.327275917793868e+105)
+		tmp = fma(Float64(c / d), Float64(a / d), Float64(b / d));
+	elseif (d &lt;= -1e-145)
+		tmp = t_1;
+	elseif (d &lt;= 1.809803726156943e-112)
+		tmp = fma(Float64(b / c), Float64(d / c), Float64(a / c));
+	elseif (d &lt;= 9.289846252076942e-42)
+		tmp = t_1;
+	elseif (d &lt;= 0.10945452738496389)
+		tmp = Float64(Float64(a / c) + Float64(b * Float64(Float64(d / c) / c)));
+	elseif (d &lt;= 3.1198454695800192e+128)
+		tmp = Float64(hypot(c, d) / Float64(fma(a, c, Float64(d * b)) / hypot(c, d))) ^ -1.0;
+	else
+		tmp = Float64(Float64(Float64(0.5 * Float64(Float64(Float64(c / d) * Float64(c / d)) * t_2)) - t_2) / Float64(-hypot(c, d)));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[a_, b_, c_, d_] := N[(N[(N[(a * c), $MachinePrecision] + N[(b * d), $MachinePrecision]), $MachinePrecision] / N[(N[(c * c), $MachinePrecision] + N[(d * d), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[a_, b_, c_, d_] := Block[{t$95$0 = N[(c * c + N[(d * d), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$1 = N[(N[(c / t$95$0), $MachinePrecision] * a + N[(b * N[(d / t$95$0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$2 = N[(N[(c / d), $MachinePrecision] * a + b), $MachinePrecision]}, If[LessEqual[d, -1.327275917793868e+105], N[(N[(c / d), $MachinePrecision] * N[(a / d), $MachinePrecision] + N[(b / d), $MachinePrecision]), $MachinePrecision], If[LessEqual[d, -1e-145], t$95$1, If[LessEqual[d, 1.809803726156943e-112], N[(N[(b / c), $MachinePrecision] * N[(d / c), $MachinePrecision] + N[(a / c), $MachinePrecision]), $MachinePrecision], If[LessEqual[d, 9.289846252076942e-42], t$95$1, If[LessEqual[d, 0.10945452738496389], N[(N[(a / c), $MachinePrecision] + N[(b * N[(N[(d / c), $MachinePrecision] / c), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], If[LessEqual[d, 3.1198454695800192e+128], N[Power[N[(N[Sqrt[c ^ 2 + d ^ 2], $MachinePrecision] / N[(N[(a * c + N[(d * b), $MachinePrecision]), $MachinePrecision] / N[Sqrt[c ^ 2 + d ^ 2], $MachinePrecision]), $MachinePrecision]), $MachinePrecision], -1.0], $MachinePrecision], N[(N[(N[(0.5 * N[(N[(N[(c / d), $MachinePrecision] * N[(c / d), $MachinePrecision]), $MachinePrecision] * t$95$2), $MachinePrecision]), $MachinePrecision] - t$95$2), $MachinePrecision] / (-N[Sqrt[c ^ 2 + d ^ 2], $MachinePrecision])), $MachinePrecision]]]]]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{a \cdot c + b \cdot d}{c \cdot c + d \cdot d}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \mathsf{fma}\left(c, c, d \cdot d\right)\\
+t_1 := \mathsf{fma}\left(\frac{c}{t_0}, a, b \cdot \frac{d}{t_0}\right)\\
+t_2 := \mathsf{fma}\left(\frac{c}{d}, a, b\right)\\
+\mathbf{if}\;d \leq -1.327275917793868 \cdot 10^{+105}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{c}{d}, \frac{a}{d}, \frac{b}{d}\right)\\
+
+\mathbf{elif}\;d \leq -1 \cdot 10^{-145}:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;d \leq 1.809803726156943 \cdot 10^{-112}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{b}{c}, \frac{d}{c}, \frac{a}{c}\right)\\
+
+\mathbf{elif}\;d \leq 9.289846252076942 \cdot 10^{-42}:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;d \leq 0.10945452738496389:\\
+\;\;\;\;\frac{a}{c} + b \cdot \frac{\frac{d}{c}}{c}\\
+
+\mathbf{elif}\;d \leq 3.1198454695800192 \cdot 10^{+128}:\\
+\;\;\;\;{\left(\frac{\mathsf{hypot}\left(c, d\right)}{\frac{\mathsf{fma}\left(a, c, d \cdot b\right)}{\mathsf{hypot}\left(c, d\right)}}\right)}^{-1}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{0.5 \cdot \left(\left(\frac{c}{d} \cdot \frac{c}{d}\right) \cdot t_2\right) - t_2}{-\mathsf{hypot}\left(c, d\right)}\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>26.3</td></tr><tr><th>Target</th><td>0.4</td></tr><tr><th>Herbie</th><td>12.0</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;\left|d\right| &lt; \left|c\right|:\\
+\;\;\;\;\frac{a + b \cdot \frac{d}{c}}{c + d \cdot \frac{d}{c}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{b + a \cdot \frac{c}{d}}{d + c \cdot \frac{c}{d}}\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 6 regimes</li><li><h2><code>if <span class="condition"> d  &lt; -1.327275917793868e105</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 24.6">39.7</span></p><div class="math">\[\frac{a \cdot c + b \cdot d}{c \cdot c + d \cdot d}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 24.6">39.7</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left(a, c, b \cdot d\right)}{\mathsf{fma}\left(c, c, d \cdot d\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 13.7">26.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{1}{\mathsf{hypot}\left(c, d\right)} \cdot \frac{\mathsf{fma}\left(a, c, b \cdot d\right)}{\mathsf{hypot}\left(c, d\right)}}
+\]</div></li><li><p>Taylor expanded in c around 0 <span class="error" title="Internally 8.6">17.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{b}{d} + \frac{c \cdot a}{{d}^{2}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 4.9">10.8</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{c}{d}, \frac{a}{d}, \frac{b}{d}\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-1.327275917793868e105 &lt;  d  &lt; -9.99999999999999915e-146 or 1.809803726156943e-112 &lt;  d  &lt; 9.28984625207694187e-42</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 16.1">15.8</span></p><div class="math">\[\frac{a \cdot c + b \cdot d}{c \cdot c + d \cdot d}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 16.1">15.8</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left(a, c, b \cdot d\right)}{\mathsf{fma}\left(c, c, d \cdot d\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 12.2">10.7</span></p><div class="math">\[\leadsto \color{blue}{\frac{1}{\mathsf{hypot}\left(c, d\right)} \cdot \frac{\mathsf{fma}\left(a, c, b \cdot d\right)}{\mathsf{hypot}\left(c, d\right)}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 12.3">10.6</span></p><div class="math">\[\leadsto \color{blue}{\frac{\frac{1}{\mathsf{hypot}\left(c, d\right)} \cdot \left(-\mathsf{fma}\left(a, c, b \cdot d\right)\right)}{-\mathsf{hypot}\left(c, d\right)}}
+\]</div></li><li><p>Taylor expanded in a around 0 <span class="error" title="Internally 16.1">15.8</span></p><div class="math">\[\leadsto \color{blue}{\frac{d \cdot b}{{d}^{2} + {c}^{2}} + \frac{c \cdot a}{{d}^{2} + {c}^{2}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 8.0">12.7</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{c}{\mathsf{fma}\left(c, c, d \cdot d\right)}, a, b \cdot \frac{d}{\mathsf{fma}\left(c, c, d \cdot d\right)}\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-9.99999999999999915e-146 &lt;  d  &lt; 1.809803726156943e-112</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 31.3">22.3</span></p><div class="math">\[\frac{a \cdot c + b \cdot d}{c \cdot c + d \cdot d}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 31.3">22.3</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left(a, c, b \cdot d\right)}{\mathsf{fma}\left(c, c, d \cdot d\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 18.2">12.8</span></p><div class="math">\[\leadsto \color{blue}{\frac{1}{\mathsf{hypot}\left(c, d\right)} \cdot \frac{\mathsf{fma}\left(a, c, b \cdot d\right)}{\mathsf{hypot}\left(c, d\right)}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 18.3">12.7</span></p><div class="math">\[\leadsto \color{blue}{\frac{\frac{1}{\mathsf{hypot}\left(c, d\right)} \cdot \left(-\mathsf{fma}\left(a, c, b \cdot d\right)\right)}{-\mathsf{hypot}\left(c, d\right)}}
+\]</div></li><li><p>Taylor expanded in c around inf <span class="error" title="Internally 11.0">11.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{a}{c} + \frac{d \cdot b}{{c}^{2}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 6.6">9.0</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{b}{c}, \frac{d}{c}, \frac{a}{c}\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">9.28984625207694187e-42 &lt;  d  &lt; 0.10945452738496389</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 36.0">13.5</span></p><div class="math">\[\frac{a \cdot c + b \cdot d}{c \cdot c + d \cdot d}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 36.0">13.5</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left(a, c, b \cdot d\right)}{\mathsf{fma}\left(c, c, d \cdot d\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 27.4">9.2</span></p><div class="math">\[\leadsto \color{blue}{\frac{1}{\mathsf{hypot}\left(c, d\right)} \cdot \frac{\mathsf{fma}\left(a, c, b \cdot d\right)}{\mathsf{hypot}\left(c, d\right)}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 27.4">9.2</span></p><div class="math">\[\leadsto \color{blue}{\frac{\frac{1}{\mathsf{hypot}\left(c, d\right)} \cdot \left(-\mathsf{fma}\left(a, c, b \cdot d\right)\right)}{-\mathsf{hypot}\left(c, d\right)}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 27.7">9.2</span></p><div class="math">\[\leadsto \frac{\color{blue}{\frac{-1}{\frac{\mathsf{hypot}\left(c, d\right)}{\mathsf{fma}\left(c, a, d \cdot b\right)}}}}{-\mathsf{hypot}\left(c, d\right)}
+\]</div></li><li><p>Taylor expanded in c around inf <span class="error" title="Internally 0">29.6</span></p><div class="math">\[\leadsto \color{blue}{\frac{a}{c} + \frac{d \cdot b}{{c}^{2}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0">29.6</span></p><div class="math">\[\leadsto \color{blue}{\frac{a}{c} + \frac{\frac{d}{c}}{c} \cdot b}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">0.10945452738496389 &lt;  d  &lt; 3.1198454695800192e128</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 9.2">21.4</span></p><div class="math">\[\frac{a \cdot c + b \cdot d}{c \cdot c + d \cdot d}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 9.2">21.4</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left(a, c, b \cdot d\right)}{\mathsf{fma}\left(c, c, d \cdot d\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 5.0">16.4</span></p><div class="math">\[\leadsto \color{blue}{\frac{1}{\mathsf{hypot}\left(c, d\right)} \cdot \frac{\mathsf{fma}\left(a, c, b \cdot d\right)}{\mathsf{hypot}\left(c, d\right)}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 4.9">16.7</span></p><div class="math">\[\leadsto \color{blue}{{\left(\frac{\mathsf{hypot}\left(c, d\right)}{\frac{\mathsf{fma}\left(a, c, b \cdot d\right)}{\mathsf{hypot}\left(c, d\right)}}\right)}^{-1}}
+\]</div></li></ol><h2><code>if <span class="condition">3.1198454695800192e128 &lt;  d </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 39.7">41.6</span></p><div class="math">\[\frac{a \cdot c + b \cdot d}{c \cdot c + d \cdot d}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 39.7">41.6</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left(a, c, b \cdot d\right)}{\mathsf{fma}\left(c, c, d \cdot d\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 25.7">26.7</span></p><div class="math">\[\leadsto \color{blue}{\frac{1}{\mathsf{hypot}\left(c, d\right)} \cdot \frac{\mathsf{fma}\left(a, c, b \cdot d\right)}{\mathsf{hypot}\left(c, d\right)}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 25.7">26.7</span></p><div class="math">\[\leadsto \color{blue}{\frac{\frac{1}{\mathsf{hypot}\left(c, d\right)} \cdot \left(-\mathsf{fma}\left(a, c, b \cdot d\right)\right)}{-\mathsf{hypot}\left(c, d\right)}}
+\]</div></li><li><p>Taylor expanded in c around 0 <span class="error" title="Internally 18.5">25.9</span></p><div class="math">\[\leadsto \frac{\color{blue}{0.5 \cdot \frac{{c}^{3} \cdot a}{{d}^{3}} + \left(0.5 \cdot \frac{{c}^{2} \cdot b}{{d}^{2}} + \left(-1 \cdot b + -1 \cdot \frac{c \cdot a}{d}\right)\right)}}{-\mathsf{hypot}\left(c, d\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 7.1">9.9</span></p><div class="math">\[\leadsto \frac{\color{blue}{0.5 \cdot \left(\left(\frac{c}{d} \cdot \frac{c}{d}\right) \cdot \mathsf{fma}\left(\frac{c}{d}, a, b\right)\right) - \mathsf{fma}\left(\frac{c}{d}, a, b\right)}}{-\mathsf{hypot}\left(c, d\right)}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 6 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 6.4">12.0</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;d \leq -1.327275917793868 \cdot 10^{+105}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{c}{d}, \frac{a}{d}, \frac{b}{d}\right)\\
+
+\mathbf{elif}\;d \leq -1 \cdot 10^{-145}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{c}{\mathsf{fma}\left(c, c, d \cdot d\right)}, a, b \cdot \frac{d}{\mathsf{fma}\left(c, c, d \cdot d\right)}\right)\\
+
+\mathbf{elif}\;d \leq 1.809803726156943 \cdot 10^{-112}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{b}{c}, \frac{d}{c}, \frac{a}{c}\right)\\
+
+\mathbf{elif}\;d \leq 9.289846252076942 \cdot 10^{-42}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{c}{\mathsf{fma}\left(c, c, d \cdot d\right)}, a, b \cdot \frac{d}{\mathsf{fma}\left(c, c, d \cdot d\right)}\right)\\
+
+\mathbf{elif}\;d \leq 0.10945452738496389:\\
+\;\;\;\;\frac{a}{c} + b \cdot \frac{\frac{d}{c}}{c}\\
+
+\mathbf{elif}\;d \leq 3.1198454695800192 \cdot 10^{+128}:\\
+\;\;\;\;{\left(\frac{\mathsf{hypot}\left(c, d\right)}{\frac{\mathsf{fma}\left(a, c, d \cdot b\right)}{\mathsf{hypot}\left(c, d\right)}}\right)}^{-1}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{0.5 \cdot \left(\left(\frac{c}{d} \cdot \frac{c}{d}\right) \cdot \mathsf{fma}\left(\frac{c}{d}, a, b\right)\right) - \mathsf{fma}\left(\frac{c}{d}, a, b\right)}{-\mathsf{hypot}\left(c, d\right)}\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (a b c d)
+  :name "Complex division, real part"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; (fabs d) (fabs c)) (/ (+ a (* b (/ d c))) (+ c (* d (/ d c)))) (/ (+ b (* a (/ c d))) (+ d (* c (/ c d)))))
+
+  (/ (+ (* a c) (* b d)) (+ (* c c) (* d d))))
+</code></pre></section></body></html>

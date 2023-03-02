@@ -1,0 +1,62 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for math.cos on complex, imaginary part</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 62.1">43.6 → 0.8</span></div><div>Time: <span class="number">4.0s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(0.5 \cdot \sin re\right) \cdot \left(e^{-im} - e^{im}\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := 0.5 \cdot \sin re\\
+t_0 \cdot \mathsf{fma}\left({im}^{7}, -0.0003968253968253968, im \cdot -2\right) + t_0 \cdot \mathsf{fma}\left(-0.016666666666666666, {im}^{5}, -0.3333333333333333 \cdot {im}^{3}\right)
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (re im)
+ :precision binary64
+ (* (* 0.5 (sin re)) (- (exp (- im)) (exp im))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (re im)
+ :precision binary64
+ (let* ((t_0 (* 0.5 (sin re))))
+   (+
+    (* t_0 (fma (pow im 7.0) -0.0003968253968253968 (* im -2.0)))
+    (*
+     t_0
+     (fma
+      -0.016666666666666666
+      (pow im 5.0)
+      (* -0.3333333333333333 (pow im 3.0)))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double re, double im) {
+	return (0.5 * sin(re)) * (exp(-im) - exp(im));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double re, double im) {
+	double t_0 = 0.5 * sin(re);
+	return (t_0 * fma(pow(im, 7.0), -0.0003968253968253968, (im * -2.0))) + (t_0 * fma(-0.016666666666666666, pow(im, 5.0), (-0.3333333333333333 * pow(im, 3.0))));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(re, im)
+	return Float64(Float64(0.5 * sin(re)) * Float64(exp(Float64(-im)) - exp(im)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(re, im)
+	t_0 = Float64(0.5 * sin(re))
+	return Float64(Float64(t_0 * fma((im ^ 7.0), -0.0003968253968253968, Float64(im * -2.0))) + Float64(t_0 * fma(-0.016666666666666666, (im ^ 5.0), Float64(-0.3333333333333333 * (im ^ 3.0)))))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[re_, im_] := N[(N[(0.5 * N[Sin[re], $MachinePrecision]), $MachinePrecision] * N[(N[Exp[(-im)], $MachinePrecision] - N[Exp[im], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[re_, im_] := Block[{t$95$0 = N[(0.5 * N[Sin[re], $MachinePrecision]), $MachinePrecision]}, N[(N[(t$95$0 * N[(N[Power[im, 7.0], $MachinePrecision] * -0.0003968253968253968 + N[(im * -2.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(t$95$0 * N[(-0.016666666666666666 * N[Power[im, 5.0], $MachinePrecision] + N[(-0.3333333333333333 * N[Power[im, 3.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(0.5 \cdot \sin re\right) \cdot \left(e^{-im} - e^{im}\right)
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := 0.5 \cdot \sin re\\
+t_0 \cdot \mathsf{fma}\left({im}^{7}, -0.0003968253968253968, im \cdot -2\right) + t_0 \cdot \mathsf{fma}\left(-0.016666666666666666, {im}^{5}, -0.3333333333333333 \cdot {im}^{3}\right)
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>43.6</td></tr><tr><th>Target</th><td>0.3</td></tr><tr><th>Herbie</th><td>0.8</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;\left|im\right| &lt; 1:\\
+\;\;\;\;-\sin re \cdot \left(\left(im + \left(\left(0.16666666666666666 \cdot im\right) \cdot im\right) \cdot im\right) + \left(\left(\left(\left(0.008333333333333333 \cdot im\right) \cdot im\right) \cdot im\right) \cdot im\right) \cdot im\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\left(0.5 \cdot \sin re\right) \cdot \left(e^{-im} - e^{im}\right)\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 43.7">43.6</span></p><div class="math">\[\left(0.5 \cdot \sin re\right) \cdot \left(e^{-im} - e^{im}\right)
+\]</div></li><li><p>Taylor expanded in im around 0 <span class="error" title="Internally 0.6">0.8</span></p><div class="math">\[\leadsto \left(0.5 \cdot \sin re\right) \cdot \color{blue}{\left(-0.0003968253968253968 \cdot {im}^{7} + \left(-2 \cdot im + \left(-0.016666666666666666 \cdot {im}^{5} + -0.3333333333333333 \cdot {im}^{3}\right)\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.6">0.8</span></p><div class="math">\[\leadsto \left(0.5 \cdot \sin re\right) \cdot \color{blue}{\mathsf{fma}\left(-0.0003968253968253968, {im}^{7}, \mathsf{fma}\left(im, -2, \mathsf{fma}\left(-0.016666666666666666, {im}^{5}, -0.3333333333333333 \cdot {im}^{3}\right)\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.6">0.8</span></p><div class="math">\[\leadsto \color{blue}{\left(0.5 \cdot \sin re\right) \cdot \mathsf{fma}\left({im}^{7}, -0.0003968253968253968, im \cdot -2\right) + \left(0.5 \cdot \sin re\right) \cdot \mathsf{fma}\left(-0.016666666666666666, {im}^{5}, -0.3333333333333333 \cdot {im}^{3}\right)}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (re im)
+  :name "math.cos on complex, imaginary part"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; (fabs im) 1.0) (- (* (sin re) (+ (+ im (* (* (* 0.16666666666666666 im) im) im)) (* (* (* (* (* 0.008333333333333333 im) im) im) im) im)))) (* (* 0.5 (sin re)) (- (exp (- im)) (exp im))))
+
+  (* (* 0.5 (sin re)) (- (exp (- im)) (exp im))))
+</code></pre></section></body></html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Toniolo and Linder, Equation (2)</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 61.0 → 64.0">10.0 → 2.8</span></div><div>Time: <span class="number">4.5s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\sin^{-1} \left(\sqrt{\frac{1 - {\left(\frac{Om}{Omc}\right)}^{2}}{1 + 2 \cdot {\left(\frac{t}{\ell}\right)}^{2}}}\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+\mathbf{if}\;\frac{t}{\ell} \leq -2 \cdot 10^{+145}:\\
+\;\;\;\;\sin^{-1} \left(\sqrt{1 - \frac{Om \cdot Om}{Omc \cdot Omc}} \cdot \left(\frac{\left(-\ell\right) \cdot \sqrt{0.5}}{t} + 0.125 \cdot {\left(\frac{\frac{\ell}{\sqrt[3]{\sqrt{0.5}}}}{t}\right)}^{3}\right)\right)\\
+
+\mathbf{elif}\;\frac{t}{\ell} \leq 2 \cdot 10^{+128}:\\
+\;\;\;\;\sin^{-1} \left(\sqrt{\frac{1 - {\left(\frac{Om}{Omc}\right)}^{2}}{\mathsf{fma}\left(2, {\left(\frac{t}{\ell}\right)}^{2}, 1\right)}}\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\sin^{-1} \left(\frac{\sqrt{0.5} \cdot \ell}{t} \cdot \sqrt{1 - \frac{{Om}^{2}}{{Omc}^{2}}}\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (t l Om Omc)
+ :precision binary64
+ (asin
+  (sqrt (/ (- 1.0 (pow (/ Om Omc) 2.0)) (+ 1.0 (* 2.0 (pow (/ t l) 2.0)))))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (t l Om Omc)
+ :precision binary64
+ (if (&lt;= (/ t l) -2e+145)
+   (asin
+    (*
+     (sqrt (- 1.0 (/ (* Om Om) (* Omc Omc))))
+     (+
+      (/ (* (- l) (sqrt 0.5)) t)
+      (* 0.125 (pow (/ (/ l (cbrt (sqrt 0.5))) t) 3.0)))))
+   (if (&lt;= (/ t l) 2e+128)
+     (asin
+      (sqrt (/ (- 1.0 (pow (/ Om Omc) 2.0)) (fma 2.0 (pow (/ t l) 2.0) 1.0))))
+     (asin
+      (*
+       (/ (* (sqrt 0.5) l) t)
+       (sqrt (- 1.0 (/ (pow Om 2.0) (pow Omc 2.0)))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double t, double l, double Om, double Omc) {
+	return asin(sqrt(((1.0 - pow((Om / Omc), 2.0)) / (1.0 + (2.0 * pow((t / l), 2.0))))));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double t, double l, double Om, double Omc) {
+	double tmp;
+	if ((t / l) &lt;= -2e+145) {
+		tmp = asin((sqrt((1.0 - ((Om * Om) / (Omc * Omc)))) * (((-l * sqrt(0.5)) / t) + (0.125 * pow(((l / cbrt(sqrt(0.5))) / t), 3.0)))));
+	} else if ((t / l) &lt;= 2e+128) {
+		tmp = asin(sqrt(((1.0 - pow((Om / Omc), 2.0)) / fma(2.0, pow((t / l), 2.0), 1.0))));
+	} else {
+		tmp = asin((((sqrt(0.5) * l) / t) * sqrt((1.0 - (pow(Om, 2.0) / pow(Omc, 2.0))))));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(t, l, Om, Omc)
+	return asin(sqrt(Float64(Float64(1.0 - (Float64(Om / Omc) ^ 2.0)) / Float64(1.0 + Float64(2.0 * (Float64(t / l) ^ 2.0))))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(t, l, Om, Omc)
+	tmp = 0.0
+	if (Float64(t / l) &lt;= -2e+145)
+		tmp = asin(Float64(sqrt(Float64(1.0 - Float64(Float64(Om * Om) / Float64(Omc * Omc)))) * Float64(Float64(Float64(Float64(-l) * sqrt(0.5)) / t) + Float64(0.125 * (Float64(Float64(l / cbrt(sqrt(0.5))) / t) ^ 3.0)))));
+	elseif (Float64(t / l) &lt;= 2e+128)
+		tmp = asin(sqrt(Float64(Float64(1.0 - (Float64(Om / Omc) ^ 2.0)) / fma(2.0, (Float64(t / l) ^ 2.0), 1.0))));
+	else
+		tmp = asin(Float64(Float64(Float64(sqrt(0.5) * l) / t) * sqrt(Float64(1.0 - Float64((Om ^ 2.0) / (Omc ^ 2.0))))));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[t_, l_, Om_, Omc_] := N[ArcSin[N[Sqrt[N[(N[(1.0 - N[Power[N[(Om / Omc), $MachinePrecision], 2.0], $MachinePrecision]), $MachinePrecision] / N[(1.0 + N[(2.0 * N[Power[N[(t / l), $MachinePrecision], 2.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]], $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[t_, l_, Om_, Omc_] := If[LessEqual[N[(t / l), $MachinePrecision], -2e+145], N[ArcSin[N[(N[Sqrt[N[(1.0 - N[(N[(Om * Om), $MachinePrecision] / N[(Omc * Omc), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision] * N[(N[(N[((-l) * N[Sqrt[0.5], $MachinePrecision]), $MachinePrecision] / t), $MachinePrecision] + N[(0.125 * N[Power[N[(N[(l / N[Power[N[Sqrt[0.5], $MachinePrecision], 1/3], $MachinePrecision]), $MachinePrecision] / t), $MachinePrecision], 3.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision], If[LessEqual[N[(t / l), $MachinePrecision], 2e+128], N[ArcSin[N[Sqrt[N[(N[(1.0 - N[Power[N[(Om / Omc), $MachinePrecision], 2.0], $MachinePrecision]), $MachinePrecision] / N[(2.0 * N[Power[N[(t / l), $MachinePrecision], 2.0], $MachinePrecision] + 1.0), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]], $MachinePrecision], N[ArcSin[N[(N[(N[(N[Sqrt[0.5], $MachinePrecision] * l), $MachinePrecision] / t), $MachinePrecision] * N[Sqrt[N[(1.0 - N[(N[Power[Om, 2.0], $MachinePrecision] / N[Power[Omc, 2.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]], $MachinePrecision]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\sin^{-1} \left(\sqrt{\frac{1 - {\left(\frac{Om}{Omc}\right)}^{2}}{1 + 2 \cdot {\left(\frac{t}{\ell}\right)}^{2}}}\right)
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+\mathbf{if}\;\frac{t}{\ell} \leq -2 \cdot 10^{+145}:\\
+\;\;\;\;\sin^{-1} \left(\sqrt{1 - \frac{Om \cdot Om}{Omc \cdot Omc}} \cdot \left(\frac{\left(-\ell\right) \cdot \sqrt{0.5}}{t} + 0.125 \cdot {\left(\frac{\frac{\ell}{\sqrt[3]{\sqrt{0.5}}}}{t}\right)}^{3}\right)\right)\\
+
+\mathbf{elif}\;\frac{t}{\ell} \leq 2 \cdot 10^{+128}:\\
+\;\;\;\;\sin^{-1} \left(\sqrt{\frac{1 - {\left(\frac{Om}{Omc}\right)}^{2}}{\mathsf{fma}\left(2, {\left(\frac{t}{\ell}\right)}^{2}, 1\right)}}\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\sin^{-1} \left(\frac{\sqrt{0.5} \cdot \ell}{t} \cdot \sqrt{1 - \frac{{Om}^{2}}{{Omc}^{2}}}\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> (/.f64 t l)  &lt; -2e145</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 28.9">33.9</span></p><div class="math">\[\sin^{-1} \left(\sqrt{\frac{1 - {\left(\frac{Om}{Omc}\right)}^{2}}{1 + 2 \cdot {\left(\frac{t}{\ell}\right)}^{2}}}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 28.9">33.9</span></p><div class="math">\[\leadsto \color{blue}{\sin^{-1} \left(\sqrt{\frac{1 - {\left(\frac{Om}{Omc}\right)}^{2}}{\mathsf{fma}\left(2, {\left(\frac{t}{\ell}\right)}^{2}, 1\right)}}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in t around -inf <span class="error" title="Internally 10.5">8.7</span></p><div class="math">\[\leadsto \sin^{-1} \color{blue}{\left(0.125 \cdot \left(\frac{{\ell}^{3}}{\sqrt{0.5} \cdot {t}^{3}} \cdot \sqrt{1 - \frac{{Om}^{2}}{{Omc}^{2}}}\right) + -1 \cdot \left(\frac{\sqrt{0.5} \cdot \ell}{t} \cdot \sqrt{1 - \frac{{Om}^{2}}{{Omc}^{2}}}\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 8.5">7.0</span></p><div class="math">\[\leadsto \sin^{-1} \color{blue}{\left(\sqrt{1 - \frac{Om \cdot Om}{Omc \cdot Omc}} \cdot \left(\frac{\left(-\ell\right) \cdot \sqrt{0.5}}{t} + 0.125 \cdot {\left(\frac{\frac{\ell}{\sqrt[3]{\sqrt{0.5}}}}{t}\right)}^{3}\right)\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-2e145 &lt;  (/.f64 t l)  &lt; 2.0000000000000002e128</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.8">0.9</span></p><div class="math">\[\sin^{-1} \left(\sqrt{\frac{1 - {\left(\frac{Om}{Omc}\right)}^{2}}{1 + 2 \cdot {\left(\frac{t}{\ell}\right)}^{2}}}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.8">0.9</span></p><div class="math">\[\leadsto \color{blue}{\sin^{-1} \left(\sqrt{\frac{1 - {\left(\frac{Om}{Omc}\right)}^{2}}{\mathsf{fma}\left(2, {\left(\frac{t}{\ell}\right)}^{2}, 1\right)}}\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">2.0000000000000002e128 &lt;  (/.f64 t l) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 38.7">30.5</span></p><div class="math">\[\sin^{-1} \left(\sqrt{\frac{1 - {\left(\frac{Om}{Omc}\right)}^{2}}{1 + 2 \cdot {\left(\frac{t}{\ell}\right)}^{2}}}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 38.7">30.5</span></p><div class="math">\[\leadsto \color{blue}{\sin^{-1} \left(\sqrt{\frac{1 - {\left(\frac{Om}{Omc}\right)}^{2}}{\mathsf{fma}\left(2, {\left(\frac{t}{\ell}\right)}^{2}, 1\right)}}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in t around inf <span class="error" title="Internally 8.9">8.0</span></p><div class="math">\[\leadsto \sin^{-1} \color{blue}{\left(\frac{\sqrt{0.5} \cdot \ell}{t} \cdot \sqrt{1 - \frac{{Om}^{2}}{{Omc}^{2}}}\right)}
+\]</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (t l Om Omc)
+  :name "Toniolo and Linder, Equation (2)"
+  :precision binary64
+  (asin (sqrt (/ (- 1.0 (pow (/ Om Omc) 2.0)) (+ 1.0 (* 2.0 (pow (/ t l) 2.0)))))))
+</code></pre></section></body></html>

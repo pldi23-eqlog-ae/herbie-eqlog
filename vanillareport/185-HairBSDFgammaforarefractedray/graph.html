@@ -1,0 +1,42 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for HairBSDF, gamma for a refracted ray</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 52.5">7.1 → 0.4</span></div><div>Time: <span class="number">2.9s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[\left(\left(-1 \leq sinTheta_O \land sinTheta_O \leq 1\right) \land \left(-1 \leq h \land h \leq 1\right)\right) \land \left(0 \leq eta \land eta \leq 10\right)\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\sin^{-1} \left(\frac{h}{\sqrt{eta \cdot eta - \frac{sinTheta_O \cdot sinTheta_O}{\sqrt{1 - sinTheta_O \cdot sinTheta_O}}}}\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\sin^{-1} \left(\frac{h}{\mathsf{fma}\left(-0.5, sinTheta_O \cdot \frac{sinTheta_O}{eta}, eta\right)}\right)
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (sinTheta_O h eta)
+ :precision binary64
+ (asin
+  (/
+   h
+   (sqrt
+    (-
+     (* eta eta)
+     (/
+      (* sinTheta_O sinTheta_O)
+      (sqrt (- 1.0 (* sinTheta_O sinTheta_O)))))))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (sinTheta_O h eta)
+ :precision binary64
+ (asin (/ h (fma -0.5 (* sinTheta_O (/ sinTheta_O eta)) eta))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double sinTheta_O, double h, double eta) {
+	return asin((h / sqrt(((eta * eta) - ((sinTheta_O * sinTheta_O) / sqrt((1.0 - (sinTheta_O * sinTheta_O))))))));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double sinTheta_O, double h, double eta) {
+	return asin((h / fma(-0.5, (sinTheta_O * (sinTheta_O / eta)), eta)));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(sinTheta_O, h, eta)
+	return asin(Float64(h / sqrt(Float64(Float64(eta * eta) - Float64(Float64(sinTheta_O * sinTheta_O) / sqrt(Float64(1.0 - Float64(sinTheta_O * sinTheta_O))))))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(sinTheta_O, h, eta)
+	return asin(Float64(h / fma(-0.5, Float64(sinTheta_O * Float64(sinTheta_O / eta)), eta)))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[sinTheta$95$O_, h_, eta_] := N[ArcSin[N[(h / N[Sqrt[N[(N[(eta * eta), $MachinePrecision] - N[(N[(sinTheta$95$O * sinTheta$95$O), $MachinePrecision] / N[Sqrt[N[(1.0 - N[(sinTheta$95$O * sinTheta$95$O), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]], $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[sinTheta$95$O_, h_, eta_] := N[ArcSin[N[(h / N[(-0.5 * N[(sinTheta$95$O * N[(sinTheta$95$O / eta), $MachinePrecision]), $MachinePrecision] + eta), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\sin^{-1} \left(\frac{h}{\sqrt{eta \cdot eta - \frac{sinTheta_O \cdot sinTheta_O}{\sqrt{1 - sinTheta_O \cdot sinTheta_O}}}}\right)
+</pre><div class="arrow">↓</div><pre class="program">\sin^{-1} \left(\frac{h}{\mathsf{fma}\left(-0.5, sinTheta_O \cdot \frac{sinTheta_O}{eta}, eta\right)}\right)
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 6.0">7.1</span></p><div class="math">\[\sin^{-1} \left(\frac{h}{\sqrt{eta \cdot eta - \frac{sinTheta_O \cdot sinTheta_O}{\sqrt{1 - sinTheta_O \cdot sinTheta_O}}}}\right)
+\]</div></li><li><p>Taylor expanded in sinTheta_O around 0 <span class="error" title="Internally 0.3">0.5</span></p><div class="math">\[\leadsto \sin^{-1} \left(\frac{h}{\color{blue}{eta + -0.5 \cdot \frac{{sinTheta_O}^{2}}{eta}}}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.3">0.4</span></p><div class="math">\[\leadsto \sin^{-1} \left(\frac{h}{\color{blue}{\mathsf{fma}\left(-0.5, \frac{sinTheta_O}{eta} \cdot sinTheta_O, eta\right)}}\right)
+\]</div><div class="math">Proof</div></li><li><p>Final simplification<span class="error" title="Internally 0.3">0.4</span></p><div class="math">\[\leadsto \sin^{-1} \left(\frac{h}{\mathsf{fma}\left(-0.5, sinTheta_O \cdot \frac{sinTheta_O}{eta}, eta\right)}\right)
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (sinTheta_O h eta)
+  :name "HairBSDF, gamma for a refracted ray"
+  :precision binary64
+  :pre (and (and (and (&lt;= -1.0 sinTheta_O) (&lt;= sinTheta_O 1.0)) (and (&lt;= -1.0 h) (&lt;= h 1.0))) (and (&lt;= 0.0 eta) (&lt;= eta 10.0)))
+  (asin (/ h (sqrt (- (* eta eta) (/ (* sinTheta_O sinTheta_O) (sqrt (- 1.0 (* sinTheta_O sinTheta_O)))))))))
+</code></pre></section></body></html>

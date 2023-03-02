@@ -1,0 +1,52 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for ab-angle-&gt;ABCF C</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">20.1 → 20.2</span></div><div>Time: <span class="number">4.9s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Java</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[{\left(a \cdot \cos \left(\pi \cdot \frac{angle}{180}\right)\right)}^{2} + {\left(b \cdot \sin \left(\pi \cdot \frac{angle}{180}\right)\right)}^{2}
+\]</div><div class="arrow">↓</div><div class="program math">\[{\left(a \cdot {\left(\sqrt[3]{\cos \left(\left(0.005555555555555556 \cdot angle\right) \cdot \pi\right)}\right)}^{3}\right)}^{2} + {\left(b \cdot \sin \left(\sqrt{0.005555555555555556} \cdot \left(\left(\pi \cdot angle\right) \cdot \sqrt{0.005555555555555556}\right)\right)\right)}^{2}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (a b angle)
+ :precision binary64
+ (+
+  (pow (* a (cos (* PI (/ angle 180.0)))) 2.0)
+  (pow (* b (sin (* PI (/ angle 180.0)))) 2.0)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (a b angle)
+ :precision binary64
+ (+
+  (pow (* a (pow (cbrt (cos (* (* 0.005555555555555556 angle) PI))) 3.0)) 2.0)
+  (pow
+   (*
+    b
+    (sin
+     (*
+      (sqrt 0.005555555555555556)
+      (* (* PI angle) (sqrt 0.005555555555555556)))))
+   2.0)))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double a, double b, double angle) {
+	return pow((a * cos((((double) M_PI) * (angle / 180.0)))), 2.0) + pow((b * sin((((double) M_PI) * (angle / 180.0)))), 2.0);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double a, double b, double angle) {
+	return pow((a * pow(cbrt(cos(((0.005555555555555556 * angle) * ((double) M_PI)))), 3.0)), 2.0) + pow((b * sin((sqrt(0.005555555555555556) * ((((double) M_PI) * angle) * sqrt(0.005555555555555556))))), 2.0);
+}
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double a, double b, double angle) {
+	return Math.pow((a * Math.cos((Math.PI * (angle / 180.0)))), 2.0) + Math.pow((b * Math.sin((Math.PI * (angle / 180.0)))), 2.0);
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double a, double b, double angle) {
+	return Math.pow((a * Math.pow(Math.cbrt(Math.cos(((0.005555555555555556 * angle) * Math.PI))), 3.0)), 2.0) + Math.pow((b * Math.sin((Math.sqrt(0.005555555555555556) * ((Math.PI * angle) * Math.sqrt(0.005555555555555556))))), 2.0);
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(a, b, angle)
+	return Float64((Float64(a * cos(Float64(pi * Float64(angle / 180.0)))) ^ 2.0) + (Float64(b * sin(Float64(pi * Float64(angle / 180.0)))) ^ 2.0))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(a, b, angle)
+	return Float64((Float64(a * (cbrt(cos(Float64(Float64(0.005555555555555556 * angle) * pi))) ^ 3.0)) ^ 2.0) + (Float64(b * sin(Float64(sqrt(0.005555555555555556) * Float64(Float64(pi * angle) * sqrt(0.005555555555555556))))) ^ 2.0))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[a_, b_, angle_] := N[(N[Power[N[(a * N[Cos[N[(Pi * N[(angle / 180.0), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision] + N[Power[N[(b * N[Sin[N[(Pi * N[(angle / 180.0), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[a_, b_, angle_] := N[(N[Power[N[(a * N[Power[N[Power[N[Cos[N[(N[(0.005555555555555556 * angle), $MachinePrecision] * Pi), $MachinePrecision]], $MachinePrecision], 1/3], $MachinePrecision], 3.0], $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision] + N[Power[N[(b * N[Sin[N[(N[Sqrt[0.005555555555555556], $MachinePrecision] * N[(N[(Pi * angle), $MachinePrecision] * N[Sqrt[0.005555555555555556], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision]), $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">{\left(a \cdot \cos \left(\pi \cdot \frac{angle}{180}\right)\right)}^{2} + {\left(b \cdot \sin \left(\pi \cdot \frac{angle}{180}\right)\right)}^{2}
+</pre><div class="arrow">↓</div><pre class="program">{\left(a \cdot {\left(\sqrt[3]{\cos \left(\left(0.005555555555555556 \cdot angle\right) \cdot \pi\right)}\right)}^{3}\right)}^{2} + {\left(b \cdot \sin \left(\sqrt{0.005555555555555556} \cdot \left(\left(\pi \cdot angle\right) \cdot \sqrt{0.005555555555555556}\right)\right)\right)}^{2}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">a</label><input type="text" class="input-submit" name="var-name-0" value="3.908573037816528e+153"/></li><li><label for="var-name-1">b</label><input type="text" class="input-submit" name="var-name-1" value="1.1701916210773244e-48"/></li><li><label for="var-name-2">angle</label><input type="text" class="input-submit" name="var-name-2" value="-1.5658150937119813e+180"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 21.6">20.1</span></p><div class="math">\[{\left(a \cdot \cos \left(\pi \cdot \frac{angle}{180}\right)\right)}^{2} + {\left(b \cdot \sin \left(\pi \cdot \frac{angle}{180}\right)\right)}^{2}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 21.6">20.1</span></p><div class="math">\[\leadsto \color{blue}{{\left(a \cdot \cos \left(\left(\pi \cdot angle\right) \cdot 0.005555555555555556\right)\right)}^{2} + {\left(b \cdot \sin \left(\left(\pi \cdot angle\right) \cdot 0.005555555555555556\right)\right)}^{2}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 21.6">20.2</span></p><div class="math">\[\leadsto {\left(a \cdot \cos \left(\left(\pi \cdot angle\right) \cdot 0.005555555555555556\right)\right)}^{2} + {\left(b \cdot \sin \color{blue}{\left(\sqrt{0.005555555555555556} \cdot \left(\left(\pi \cdot angle\right) \cdot \sqrt{0.005555555555555556}\right)\right)}\right)}^{2}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 21.6">20.2</span></p><div class="math">\[\leadsto {\left(a \cdot \color{blue}{{\left(\sqrt[3]{\cos \left(\left(\pi \cdot angle\right) \cdot 0.005555555555555556\right)}\right)}^{3}}\right)}^{2} + {\left(b \cdot \sin \left(\sqrt{0.005555555555555556} \cdot \left(\left(\pi \cdot angle\right) \cdot \sqrt{0.005555555555555556}\right)\right)\right)}^{2}
+\]</div></li><li><p>Taylor expanded in angle around inf <span class="error" title="Internally 21.6">20.2</span></p><div class="math">\[\leadsto {\left(a \cdot {\left(\sqrt[3]{\color{blue}{\cos \left(0.005555555555555556 \cdot \left(angle \cdot \pi\right)\right)}}\right)}^{3}\right)}^{2} + {\left(b \cdot \sin \left(\sqrt{0.005555555555555556} \cdot \left(\left(\pi \cdot angle\right) \cdot \sqrt{0.005555555555555556}\right)\right)\right)}^{2}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 21.6">20.2</span></p><div class="math">\[\leadsto {\left(a \cdot {\left(\sqrt[3]{\color{blue}{\cos \left(\left(0.005555555555555556 \cdot angle\right) \cdot \pi\right)}}\right)}^{3}\right)}^{2} + {\left(b \cdot \sin \left(\sqrt{0.005555555555555556} \cdot \left(\left(\pi \cdot angle\right) \cdot \sqrt{0.005555555555555556}\right)\right)\right)}^{2}
+\]</div><div class="math">Proof</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (a b angle)
+  :name "ab-angle-&gt;ABCF C"
+  :precision binary64
+  (+ (pow (* a (cos (* PI (/ angle 180.0)))) 2.0) (pow (* b (sin (* PI (/ angle 180.0)))) 2.0)))
+</code></pre></section></body></html>

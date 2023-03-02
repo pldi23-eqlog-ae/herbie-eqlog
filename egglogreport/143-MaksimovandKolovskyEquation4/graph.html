@@ -1,0 +1,44 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Maksimov and Kolovsky, Equation (4)</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 63.9">16.9 → 0.3</span></div><div>Time: <span class="number">4.7s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(J \cdot \left(e^{\ell} - e^{-\ell}\right)\right) \cdot \cos \left(\frac{K}{2}\right) + U
+\]</div><div class="arrow">↓</div><div class="program math">\[\mathsf{fma}\left(\mathsf{fma}\left(0.3333333333333333, {\ell}^{3}, \mathsf{fma}\left({\ell}^{5}, 0.016666666666666666, \mathsf{fma}\left(0.0003968253968253968, {\ell}^{7}, \ell + \ell\right)\right)\right), J \cdot \cos \left(K \cdot 0.5\right), U\right)
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (J l K U)
+ :precision binary64
+ (+ (* (* J (- (exp l) (exp (- l)))) (cos (/ K 2.0))) U))</pre><div class="arrow">↓</div><pre class="program">(FPCore (J l K U)
+ :precision binary64
+ (fma
+  (fma
+   0.3333333333333333
+   (pow l 3.0)
+   (fma
+    (pow l 5.0)
+    0.016666666666666666
+    (fma 0.0003968253968253968 (pow l 7.0) (+ l l))))
+  (* J (cos (* K 0.5)))
+  U))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double J, double l, double K, double U) {
+	return ((J * (exp(l) - exp(-l))) * cos((K / 2.0))) + U;
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double J, double l, double K, double U) {
+	return fma(fma(0.3333333333333333, pow(l, 3.0), fma(pow(l, 5.0), 0.016666666666666666, fma(0.0003968253968253968, pow(l, 7.0), (l + l)))), (J * cos((K * 0.5))), U);
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(J, l, K, U)
+	return Float64(Float64(Float64(J * Float64(exp(l) - exp(Float64(-l)))) * cos(Float64(K / 2.0))) + U)
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(J, l, K, U)
+	return fma(fma(0.3333333333333333, (l ^ 3.0), fma((l ^ 5.0), 0.016666666666666666, fma(0.0003968253968253968, (l ^ 7.0), Float64(l + l)))), Float64(J * cos(Float64(K * 0.5))), U)
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[J_, l_, K_, U_] := N[(N[(N[(J * N[(N[Exp[l], $MachinePrecision] - N[Exp[(-l)], $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * N[Cos[N[(K / 2.0), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] + U), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[J_, l_, K_, U_] := N[(N[(0.3333333333333333 * N[Power[l, 3.0], $MachinePrecision] + N[(N[Power[l, 5.0], $MachinePrecision] * 0.016666666666666666 + N[(0.0003968253968253968 * N[Power[l, 7.0], $MachinePrecision] + N[(l + l), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * N[(J * N[Cos[N[(K * 0.5), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] + U), $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(J \cdot \left(e^{\ell} - e^{-\ell}\right)\right) \cdot \cos \left(\frac{K}{2}\right) + U
+</pre><div class="arrow">↓</div><pre class="program">\mathsf{fma}\left(\mathsf{fma}\left(0.3333333333333333, {\ell}^{3}, \mathsf{fma}\left({\ell}^{5}, 0.016666666666666666, \mathsf{fma}\left(0.0003968253968253968, {\ell}^{7}, \ell + \ell\right)\right)\right), J \cdot \cos \left(K \cdot 0.5\right), U\right)
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 16.9">16.9</span></p><div class="math">\[\left(J \cdot \left(e^{\ell} - e^{-\ell}\right)\right) \cdot \cos \left(\frac{K}{2}\right) + U
+\]</div></li><li><p>Simplified<span class="error" title="Internally 16.9">16.9</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(J \cdot \left(e^{\ell} - e^{-\ell}\right), \cos \left(K \cdot 0.5\right), U\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in l around 0 <span class="error" title="Internally 0.2">0.3</span></p><div class="math">\[\leadsto \mathsf{fma}\left(\color{blue}{2 \cdot \left(\ell \cdot J\right) + \left(0.0003968253968253968 \cdot \left({\ell}^{7} \cdot J\right) + \left(0.3333333333333333 \cdot \left({\ell}^{3} \cdot J\right) + 0.016666666666666666 \cdot \left({\ell}^{5} \cdot J\right)\right)\right)}, \cos \left(K \cdot 0.5\right), U\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.2">0.3</span></p><div class="math">\[\leadsto \mathsf{fma}\left(\color{blue}{J \cdot \left(2 \cdot \ell + 0.0003968253968253968 \cdot {\ell}^{7}\right) + J \cdot \mathsf{fma}\left(0.3333333333333333, {\ell}^{3}, 0.016666666666666666 \cdot {\ell}^{5}\right)}, \cos \left(K \cdot 0.5\right), U\right)
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.9">1.0</span></p><div class="math">\[\leadsto \color{blue}{{\left(\sqrt[3]{\mathsf{fma}\left(J \cdot \left(\mathsf{fma}\left(0.0003968253968253968, {\ell}^{7}, \ell + \ell\right) + \mathsf{fma}\left(0.3333333333333333, {\ell}^{3}, 0.016666666666666666 \cdot {\ell}^{5}\right)\right), \cos \left(K \cdot 0.5\right), U\right)}\right)}^{3}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.2">0.3</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\mathsf{fma}\left(0.3333333333333333, {\ell}^{3}, \mathsf{fma}\left({\ell}^{5}, 0.016666666666666666, \mathsf{fma}\left(0.0003968253968253968, {\ell}^{7}, \ell + \ell\right)\right)\right), J \cdot \cos \left(K \cdot 0.5\right), U\right)}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (J l K U)
+  :name "Maksimov and Kolovsky, Equation (4)"
+  :precision binary64
+  (+ (* (* J (- (exp l) (exp (- l)))) (cos (/ K 2.0))) U))
+</code></pre></section></body></html>

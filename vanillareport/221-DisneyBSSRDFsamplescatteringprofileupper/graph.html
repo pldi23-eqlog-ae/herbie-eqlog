@@ -1,0 +1,40 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Disney BSSRDF, sample scattering profile, upper</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 14.0 → 10.3">1.3 → 0.7</span></div><div>Time: <span class="number">1.6s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[\left(0 \leq s \land s \leq 256\right) \land \left(0.25 \leq u \land u \leq 1\right)\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(3 \cdot s\right) \cdot \log \left(\frac{1}{1 - \frac{u - 0.25}{0.75}}\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[s \cdot \sqrt{\sqrt{{\left(\mathsf{log1p}\left(\mathsf{fma}\left(u, -1.3333333333333333, 0.3333333333333333\right)\right)\right)}^{4}} \cdot 9}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (s u)
+ :precision binary64
+ (* (* 3.0 s) (log (/ 1.0 (- 1.0 (/ (- u 0.25) 0.75))))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (s u)
+ :precision binary64
+ (*
+  s
+  (sqrt
+   (*
+    (sqrt (pow (log1p (fma u -1.3333333333333333 0.3333333333333333)) 4.0))
+    9.0))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double s, double u) {
+	return (3.0 * s) * log((1.0 / (1.0 - ((u - 0.25) / 0.75))));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double s, double u) {
+	return s * sqrt((sqrt(pow(log1p(fma(u, -1.3333333333333333, 0.3333333333333333)), 4.0)) * 9.0));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(s, u)
+	return Float64(Float64(3.0 * s) * log(Float64(1.0 / Float64(1.0 - Float64(Float64(u - 0.25) / 0.75)))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(s, u)
+	return Float64(s * sqrt(Float64(sqrt((log1p(fma(u, -1.3333333333333333, 0.3333333333333333)) ^ 4.0)) * 9.0)))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[s_, u_] := N[(N[(3.0 * s), $MachinePrecision] * N[Log[N[(1.0 / N[(1.0 - N[(N[(u - 0.25), $MachinePrecision] / 0.75), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[s_, u_] := N[(s * N[Sqrt[N[(N[Sqrt[N[Power[N[Log[1 + N[(u * -1.3333333333333333 + 0.3333333333333333), $MachinePrecision]], $MachinePrecision], 4.0], $MachinePrecision]], $MachinePrecision] * 9.0), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(3 \cdot s\right) \cdot \log \left(\frac{1}{1 - \frac{u - 0.25}{0.75}}\right)
+</pre><div class="arrow">↓</div><pre class="program">s \cdot \sqrt{\sqrt{{\left(\mathsf{log1p}\left(\mathsf{fma}\left(u, -1.3333333333333333, 0.3333333333333333\right)\right)\right)}^{4}} \cdot 9}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 1.4">1.3</span></p><div class="math">\[\left(3 \cdot s\right) \cdot \log \left(\frac{1}{1 - \frac{u - 0.25}{0.75}}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.7">0.7</span></p><div class="math">\[\leadsto \color{blue}{s \cdot \left(\mathsf{log1p}\left(\mathsf{fma}\left(u, -1.3333333333333333, 0.3333333333333333\right)\right) \cdot -3\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.7">0.7</span></p><div class="math">\[\leadsto s \cdot \color{blue}{\sqrt{{\left(\mathsf{log1p}\left(\mathsf{fma}\left(u, -1.3333333333333333, 0.3333333333333333\right)\right)\right)}^{2} \cdot 9}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.7">0.7</span></p><div class="math">\[\leadsto s \cdot \sqrt{\color{blue}{\sqrt{{\left(\mathsf{log1p}\left(\mathsf{fma}\left(u, -1.3333333333333333, 0.3333333333333333\right)\right)\right)}^{4}}} \cdot 9}
+\]</div></li><li><p>Final simplification<span class="error" title="Internally 0.7">0.7</span></p><div class="math">\[\leadsto s \cdot \sqrt{\sqrt{{\left(\mathsf{log1p}\left(\mathsf{fma}\left(u, -1.3333333333333333, 0.3333333333333333\right)\right)\right)}^{4}} \cdot 9}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (s u)
+  :name "Disney BSSRDF, sample scattering profile, upper"
+  :precision binary64
+  :pre (and (and (&lt;= 0.0 s) (&lt;= s 256.0)) (and (&lt;= 0.25 u) (&lt;= u 1.0)))
+  (* (* 3.0 s) (log (/ 1.0 (- 1.0 (/ (- u 0.25) 0.75))))))
+</code></pre></section></body></html>

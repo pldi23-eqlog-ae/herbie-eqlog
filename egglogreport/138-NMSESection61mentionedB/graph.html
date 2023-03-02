@@ -1,0 +1,42 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for NMSE Section 6.1 mentioned, B</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 1.6">14.1 → 0.3</span></div><div>Time: <span class="number">2.5s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Java</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(\frac{\pi}{2} \cdot \frac{1}{b \cdot b - a \cdot a}\right) \cdot \left(\frac{1}{a} - \frac{1}{b}\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\frac{\sqrt[3]{0.5 \cdot \pi} \cdot \frac{\sqrt[3]{0.25 \cdot \left(\pi \cdot \pi\right)}}{a \cdot b}}{a + b}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (a b)
+ :precision binary64
+ (* (* (/ PI 2.0) (/ 1.0 (- (* b b) (* a a)))) (- (/ 1.0 a) (/ 1.0 b))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (a b)
+ :precision binary64
+ (/ (* (cbrt (* 0.5 PI)) (/ (cbrt (* 0.25 (* PI PI))) (* a b))) (+ a b)))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double a, double b) {
+	return ((((double) M_PI) / 2.0) * (1.0 / ((b * b) - (a * a)))) * ((1.0 / a) - (1.0 / b));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double a, double b) {
+	return (cbrt((0.5 * ((double) M_PI))) * (cbrt((0.25 * (((double) M_PI) * ((double) M_PI)))) / (a * b))) / (a + b);
+}
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double a, double b) {
+	return ((Math.PI / 2.0) * (1.0 / ((b * b) - (a * a)))) * ((1.0 / a) - (1.0 / b));
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double a, double b) {
+	return (Math.cbrt((0.5 * Math.PI)) * (Math.cbrt((0.25 * (Math.PI * Math.PI))) / (a * b))) / (a + b);
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(a, b)
+	return Float64(Float64(Float64(pi / 2.0) * Float64(1.0 / Float64(Float64(b * b) - Float64(a * a)))) * Float64(Float64(1.0 / a) - Float64(1.0 / b)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(a, b)
+	return Float64(Float64(cbrt(Float64(0.5 * pi)) * Float64(cbrt(Float64(0.25 * Float64(pi * pi))) / Float64(a * b))) / Float64(a + b))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[a_, b_] := N[(N[(N[(Pi / 2.0), $MachinePrecision] * N[(1.0 / N[(N[(b * b), $MachinePrecision] - N[(a * a), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * N[(N[(1.0 / a), $MachinePrecision] - N[(1.0 / b), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[a_, b_] := N[(N[(N[Power[N[(0.5 * Pi), $MachinePrecision], 1/3], $MachinePrecision] * N[(N[Power[N[(0.25 * N[(Pi * Pi), $MachinePrecision]), $MachinePrecision], 1/3], $MachinePrecision] / N[(a * b), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] / N[(a + b), $MachinePrecision]), $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(\frac{\pi}{2} \cdot \frac{1}{b \cdot b - a \cdot a}\right) \cdot \left(\frac{1}{a} - \frac{1}{b}\right)
+</pre><div class="arrow">↓</div><pre class="program">\frac{\sqrt[3]{0.5 \cdot \pi} \cdot \frac{\sqrt[3]{0.25 \cdot \left(\pi \cdot \pi\right)}}{a \cdot b}}{a + b}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">a</label><input type="text" class="input-submit" name="var-name-0" value="7.41741682409675e+297"/></li><li><label for="var-name-1">b</label><input type="text" class="input-submit" name="var-name-1" value="-1.1664750013041762e+102"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 14.7">14.1</span></p><div class="math">\[\left(\frac{\pi}{2} \cdot \frac{1}{b \cdot b - a \cdot a}\right) \cdot \left(\frac{1}{a} - \frac{1}{b}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 13.8">13.9</span></p><div class="math">\[\leadsto \color{blue}{\frac{\left(b - a\right) \cdot \left(\pi \cdot 0.5\right)}{\left(a \cdot b\right) \cdot \left(\left(a + b\right) \cdot \left(b - a\right)\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.3">0.3</span></p><div class="math">\[\leadsto \color{blue}{\frac{\frac{\pi \cdot 0.5}{b - a} \cdot \frac{b - a}{a \cdot b}}{a + b}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.2">0.3</span></p><div class="math">\[\leadsto \frac{\color{blue}{\frac{\frac{\pi \cdot 0.5}{b}}{a}}}{a + b}
+\]</div></li><li><p>Taylor expanded in b around 0 <span class="error" title="Internally 0.2">0.2</span></p><div class="math">\[\leadsto \frac{\color{blue}{0.5 \cdot \frac{\pi}{a \cdot b}}}{a + b}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.2">0.2</span></p><div class="math">\[\leadsto \frac{\color{blue}{\frac{0.5 \cdot \pi}{a \cdot b}}}{a + b}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.2">0.3</span></p><div class="math">\[\leadsto \frac{\color{blue}{\sqrt[3]{0.5 \cdot \pi} \cdot \frac{\sqrt[3]{0.25 \cdot \left(\pi \cdot \pi\right)}}{a \cdot b}}}{a + b}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (a b)
+  :name "NMSE Section 6.1 mentioned, B"
+  :precision binary64
+  (* (* (/ PI 2.0) (/ 1.0 (- (* b b) (* a a)))) (- (/ 1.0 a) (/ 1.0 b))))
+</code></pre></section></body></html>

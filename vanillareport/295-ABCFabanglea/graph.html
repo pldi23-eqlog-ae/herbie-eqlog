@@ -1,0 +1,163 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for ABCF-&gt;ab-angle a</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">52.5 → 32.4</span></div><div>Time: <span class="number">5.6s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="preprocess"><div class="program math">\[ \begin{array}{c}[A, C] = \mathsf{sort}([A, C])\\ \end{array} \]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{-\sqrt{\left(2 \cdot \left(\left({B}^{2} - \left(4 \cdot A\right) \cdot C\right) \cdot F\right)\right) \cdot \left(\left(A + C\right) + \sqrt{{\left(A - C\right)}^{2} + {B}^{2}}\right)}}{{B}^{2} - \left(4 \cdot A\right) \cdot C}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)\\
+t_1 := F \cdot t_0\\
+t_2 := \mathsf{hypot}\left(B, A - C\right)\\
+t_3 := \left(A + C\right) + t_2\\
+t_4 := {B}^{2} + C \cdot \left(A \cdot -4\right)\\
+t_5 := \frac{-\sqrt{\left(2 \cdot \left(t_4 \cdot F\right)\right) \cdot \left(\left(A + C\right) + \sqrt{{B}^{2} + {\left(A - C\right)}^{2}}\right)}}{t_4}\\
+\mathbf{if}\;t_5 \leq -2 \cdot 10^{-216}:\\
+\;\;\;\;\left(\sqrt{2 \cdot t_0} \cdot \sqrt{F}\right) \cdot \left(\sqrt{A + \left(C + t_2\right)} \cdot \frac{-1}{t_0}\right)\\
+
+\mathbf{elif}\;t_5 \leq 2 \cdot 10^{+188}:\\
+\;\;\;\;\frac{-\sqrt{2 \cdot \left(t_1 \cdot \left(C + \mathsf{fma}\left(-0.5, \frac{B}{\frac{A}{B}}, C\right)\right)\right)}}{t_0}\\
+
+\mathbf{elif}\;t_5 \leq \infty:\\
+\;\;\;\;\sqrt{2 \cdot t_1} \cdot \frac{-\sqrt[3]{t_3}}{\frac{t_0}{\sqrt[3]{\sqrt{t_3}}}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\sqrt{F \cdot \left(C + \mathsf{hypot}\left(C, B\right)\right)} \cdot \frac{-\sqrt{2}}{B}\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (A B C F)
+ :precision binary64
+ (/
+  (-
+   (sqrt
+    (*
+     (* 2.0 (* (- (pow B 2.0) (* (* 4.0 A) C)) F))
+     (+ (+ A C) (sqrt (+ (pow (- A C) 2.0) (pow B 2.0)))))))
+  (- (pow B 2.0) (* (* 4.0 A) C))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (A B C F)
+ :precision binary64
+ (let* ((t_0 (fma B B (* A (* C -4.0))))
+        (t_1 (* F t_0))
+        (t_2 (hypot B (- A C)))
+        (t_3 (+ (+ A C) t_2))
+        (t_4 (+ (pow B 2.0) (* C (* A -4.0))))
+        (t_5
+         (/
+          (-
+           (sqrt
+            (*
+             (* 2.0 (* t_4 F))
+             (+ (+ A C) (sqrt (+ (pow B 2.0) (pow (- A C) 2.0)))))))
+          t_4)))
+   (if (&lt;= t_5 -2e-216)
+     (*
+      (* (sqrt (* 2.0 t_0)) (sqrt F))
+      (* (sqrt (+ A (+ C t_2))) (/ -1.0 t_0)))
+     (if (&lt;= t_5 2e+188)
+       (/ (- (sqrt (* 2.0 (* t_1 (+ C (fma -0.5 (/ B (/ A B)) C)))))) t_0)
+       (if (&lt;= t_5 INFINITY)
+         (* (sqrt (* 2.0 t_1)) (/ (- (cbrt t_3)) (/ t_0 (cbrt (sqrt t_3)))))
+         (* (sqrt (* F (+ C (hypot C B)))) (/ (- (sqrt 2.0)) B)))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double A, double B, double C, double F) {
+	return -sqrt(((2.0 * ((pow(B, 2.0) - ((4.0 * A) * C)) * F)) * ((A + C) + sqrt((pow((A - C), 2.0) + pow(B, 2.0)))))) / (pow(B, 2.0) - ((4.0 * A) * C));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double A, double B, double C, double F) {
+	double t_0 = fma(B, B, (A * (C * -4.0)));
+	double t_1 = F * t_0;
+	double t_2 = hypot(B, (A - C));
+	double t_3 = (A + C) + t_2;
+	double t_4 = pow(B, 2.0) + (C * (A * -4.0));
+	double t_5 = -sqrt(((2.0 * (t_4 * F)) * ((A + C) + sqrt((pow(B, 2.0) + pow((A - C), 2.0)))))) / t_4;
+	double tmp;
+	if (t_5 &lt;= -2e-216) {
+		tmp = (sqrt((2.0 * t_0)) * sqrt(F)) * (sqrt((A + (C + t_2))) * (-1.0 / t_0));
+	} else if (t_5 &lt;= 2e+188) {
+		tmp = -sqrt((2.0 * (t_1 * (C + fma(-0.5, (B / (A / B)), C))))) / t_0;
+	} else if (t_5 &lt;= ((double) INFINITY)) {
+		tmp = sqrt((2.0 * t_1)) * (-cbrt(t_3) / (t_0 / cbrt(sqrt(t_3))));
+	} else {
+		tmp = sqrt((F * (C + hypot(C, B)))) * (-sqrt(2.0) / B);
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(A, B, C, F)
+	return Float64(Float64(-sqrt(Float64(Float64(2.0 * Float64(Float64((B ^ 2.0) - Float64(Float64(4.0 * A) * C)) * F)) * Float64(Float64(A + C) + sqrt(Float64((Float64(A - C) ^ 2.0) + (B ^ 2.0))))))) / Float64((B ^ 2.0) - Float64(Float64(4.0 * A) * C)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(A, B, C, F)
+	t_0 = fma(B, B, Float64(A * Float64(C * -4.0)))
+	t_1 = Float64(F * t_0)
+	t_2 = hypot(B, Float64(A - C))
+	t_3 = Float64(Float64(A + C) + t_2)
+	t_4 = Float64((B ^ 2.0) + Float64(C * Float64(A * -4.0)))
+	t_5 = Float64(Float64(-sqrt(Float64(Float64(2.0 * Float64(t_4 * F)) * Float64(Float64(A + C) + sqrt(Float64((B ^ 2.0) + (Float64(A - C) ^ 2.0))))))) / t_4)
+	tmp = 0.0
+	if (t_5 &lt;= -2e-216)
+		tmp = Float64(Float64(sqrt(Float64(2.0 * t_0)) * sqrt(F)) * Float64(sqrt(Float64(A + Float64(C + t_2))) * Float64(-1.0 / t_0)));
+	elseif (t_5 &lt;= 2e+188)
+		tmp = Float64(Float64(-sqrt(Float64(2.0 * Float64(t_1 * Float64(C + fma(-0.5, Float64(B / Float64(A / B)), C)))))) / t_0);
+	elseif (t_5 &lt;= Inf)
+		tmp = Float64(sqrt(Float64(2.0 * t_1)) * Float64(Float64(-cbrt(t_3)) / Float64(t_0 / cbrt(sqrt(t_3)))));
+	else
+		tmp = Float64(sqrt(Float64(F * Float64(C + hypot(C, B)))) * Float64(Float64(-sqrt(2.0)) / B));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[A_, B_, C_, F_] := N[((-N[Sqrt[N[(N[(2.0 * N[(N[(N[Power[B, 2.0], $MachinePrecision] - N[(N[(4.0 * A), $MachinePrecision] * C), $MachinePrecision]), $MachinePrecision] * F), $MachinePrecision]), $MachinePrecision] * N[(N[(A + C), $MachinePrecision] + N[Sqrt[N[(N[Power[N[(A - C), $MachinePrecision], 2.0], $MachinePrecision] + N[Power[B, 2.0], $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]) / N[(N[Power[B, 2.0], $MachinePrecision] - N[(N[(4.0 * A), $MachinePrecision] * C), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[A_, B_, C_, F_] := Block[{t$95$0 = N[(B * B + N[(A * N[(C * -4.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$1 = N[(F * t$95$0), $MachinePrecision]}, Block[{t$95$2 = N[Sqrt[B ^ 2 + N[(A - C), $MachinePrecision] ^ 2], $MachinePrecision]}, Block[{t$95$3 = N[(N[(A + C), $MachinePrecision] + t$95$2), $MachinePrecision]}, Block[{t$95$4 = N[(N[Power[B, 2.0], $MachinePrecision] + N[(C * N[(A * -4.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$5 = N[((-N[Sqrt[N[(N[(2.0 * N[(t$95$4 * F), $MachinePrecision]), $MachinePrecision] * N[(N[(A + C), $MachinePrecision] + N[Sqrt[N[(N[Power[B, 2.0], $MachinePrecision] + N[Power[N[(A - C), $MachinePrecision], 2.0], $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]) / t$95$4), $MachinePrecision]}, If[LessEqual[t$95$5, -2e-216], N[(N[(N[Sqrt[N[(2.0 * t$95$0), $MachinePrecision]], $MachinePrecision] * N[Sqrt[F], $MachinePrecision]), $MachinePrecision] * N[(N[Sqrt[N[(A + N[(C + t$95$2), $MachinePrecision]), $MachinePrecision]], $MachinePrecision] * N[(-1.0 / t$95$0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], If[LessEqual[t$95$5, 2e+188], N[((-N[Sqrt[N[(2.0 * N[(t$95$1 * N[(C + N[(-0.5 * N[(B / N[(A / B), $MachinePrecision]), $MachinePrecision] + C), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]) / t$95$0), $MachinePrecision], If[LessEqual[t$95$5, Infinity], N[(N[Sqrt[N[(2.0 * t$95$1), $MachinePrecision]], $MachinePrecision] * N[((-N[Power[t$95$3, 1/3], $MachinePrecision]) / N[(t$95$0 / N[Power[N[Sqrt[t$95$3], $MachinePrecision], 1/3], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], N[(N[Sqrt[N[(F * N[(C + N[Sqrt[C ^ 2 + B ^ 2], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision] * N[((-N[Sqrt[2.0], $MachinePrecision]) / B), $MachinePrecision]), $MachinePrecision]]]]]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{-\sqrt{\left(2 \cdot \left(\left({B}^{2} - \left(4 \cdot A\right) \cdot C\right) \cdot F\right)\right) \cdot \left(\left(A + C\right) + \sqrt{{\left(A - C\right)}^{2} + {B}^{2}}\right)}}{{B}^{2} - \left(4 \cdot A\right) \cdot C}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)\\
+t_1 := F \cdot t_0\\
+t_2 := \mathsf{hypot}\left(B, A - C\right)\\
+t_3 := \left(A + C\right) + t_2\\
+t_4 := {B}^{2} + C \cdot \left(A \cdot -4\right)\\
+t_5 := \frac{-\sqrt{\left(2 \cdot \left(t_4 \cdot F\right)\right) \cdot \left(\left(A + C\right) + \sqrt{{B}^{2} + {\left(A - C\right)}^{2}}\right)}}{t_4}\\
+\mathbf{if}\;t_5 \leq -2 \cdot 10^{-216}:\\
+\;\;\;\;\left(\sqrt{2 \cdot t_0} \cdot \sqrt{F}\right) \cdot \left(\sqrt{A + \left(C + t_2\right)} \cdot \frac{-1}{t_0}\right)\\
+
+\mathbf{elif}\;t_5 \leq 2 \cdot 10^{+188}:\\
+\;\;\;\;\frac{-\sqrt{2 \cdot \left(t_1 \cdot \left(C + \mathsf{fma}\left(-0.5, \frac{B}{\frac{A}{B}}, C\right)\right)\right)}}{t_0}\\
+
+\mathbf{elif}\;t_5 \leq \infty:\\
+\;\;\;\;\sqrt{2 \cdot t_1} \cdot \frac{-\sqrt[3]{t_3}}{\frac{t_0}{\sqrt[3]{\sqrt{t_3}}}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\sqrt{F \cdot \left(C + \mathsf{hypot}\left(C, B\right)\right)} \cdot \frac{-\sqrt{2}}{B}\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 4 regimes</li><li><h2><code>if <span class="condition"> (/.f64 (neg.f64 (sqrt.f64 (*.f64 (*.f64 2 (*.f64 (-.f64 (pow.f64 B 2) (*.f64 (*.f64 4 A) C)) F)) (+.f64 (+.f64 A C) (sqrt.f64 (+.f64 (pow.f64 (-.f64 A C) 2) (pow.f64 B 2))))))) (-.f64 (pow.f64 B 2) (*.f64 (*.f64 4 A) C)))  &lt; -2.0000000000000001e-216</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 36.1">38.7</span></p><div class="math">\[\frac{-\sqrt{\left(2 \cdot \left(\left({B}^{2} - \left(4 \cdot A\right) \cdot C\right) \cdot F\right)\right) \cdot \left(\left(A + C\right) + \sqrt{{\left(A - C\right)}^{2} + {B}^{2}}\right)}}{{B}^{2} - \left(4 \cdot A\right) \cdot C}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 32.3">32.3</span></p><div class="math">\[\leadsto \color{blue}{\frac{-\sqrt{2 \cdot \left(\left(\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right) \cdot F\right) \cdot \left(C + \left(A + \mathsf{hypot}\left(B, A - C\right)\right)\right)\right)}}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 24.0">24.8</span></p><div class="math">\[\leadsto \frac{-\color{blue}{\sqrt{2 \cdot \left(\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right) \cdot F\right)} \cdot \sqrt{A + \left(\mathsf{hypot}\left(B, A - C\right) + C\right)}}}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 24.1">24.9</span></p><div class="math">\[\leadsto \color{blue}{\left(-\sqrt{2 \cdot \left(\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right) \cdot F\right)}\right) \cdot \left(\sqrt{A + \left(C + \mathsf{hypot}\left(B, A - C\right)\right)} \cdot \frac{1}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 7.4">14.6</span></p><div class="math">\[\leadsto \left(-\color{blue}{\sqrt{2 \cdot \mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)} \cdot \sqrt{F}}\right) \cdot \left(\sqrt{A + \left(C + \mathsf{hypot}\left(B, A - C\right)\right)} \cdot \frac{1}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}\right)
+\]</div></li></ol><h2><code>if <span class="condition">-2.0000000000000001e-216 &lt;  (/.f64 (neg.f64 (sqrt.f64 (*.f64 (*.f64 2 (*.f64 (-.f64 (pow.f64 B 2) (*.f64 (*.f64 4 A) C)) F)) (+.f64 (+.f64 A C) (sqrt.f64 (+.f64 (pow.f64 (-.f64 A C) 2) (pow.f64 B 2))))))) (-.f64 (pow.f64 B 2) (*.f64 (*.f64 4 A) C)))  &lt; 2e188</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 51.2">50.0</span></p><div class="math">\[\frac{-\sqrt{\left(2 \cdot \left(\left({B}^{2} - \left(4 \cdot A\right) \cdot C\right) \cdot F\right)\right) \cdot \left(\left(A + C\right) + \sqrt{{\left(A - C\right)}^{2} + {B}^{2}}\right)}}{{B}^{2} - \left(4 \cdot A\right) \cdot C}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 49.0">46.5</span></p><div class="math">\[\leadsto \color{blue}{\frac{-\sqrt{2 \cdot \left(\left(\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right) \cdot F\right) \cdot \left(C + \left(A + \mathsf{hypot}\left(B, A - C\right)\right)\right)\right)}}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in A around -inf <span class="error" title="Internally 40.3">22.8</span></p><div class="math">\[\leadsto \frac{-\sqrt{2 \cdot \left(\left(\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right) \cdot F\right) \cdot \left(C + \color{blue}{\left(C + -0.5 \cdot \frac{{B}^{2}}{A}\right)}\right)\right)}}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 40.3">22.8</span></p><div class="math">\[\leadsto \frac{-\sqrt{2 \cdot \left(\left(\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right) \cdot F\right) \cdot \left(C + \color{blue}{\mathsf{fma}\left(-0.5, \frac{B}{\frac{A}{B}}, C\right)}\right)\right)}}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">2e188 &lt;  (/.f64 (neg.f64 (sqrt.f64 (*.f64 (*.f64 2 (*.f64 (-.f64 (pow.f64 B 2) (*.f64 (*.f64 4 A) C)) F)) (+.f64 (+.f64 A C) (sqrt.f64 (+.f64 (pow.f64 (-.f64 A C) 2) (pow.f64 B 2))))))) (-.f64 (pow.f64 B 2) (*.f64 (*.f64 4 A) C)))  &lt; +inf.0</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 64.0">59.1</span></p><div class="math">\[\frac{-\sqrt{\left(2 \cdot \left(\left({B}^{2} - \left(4 \cdot A\right) \cdot C\right) \cdot F\right)\right) \cdot \left(\left(A + C\right) + \sqrt{{\left(A - C\right)}^{2} + {B}^{2}}\right)}}{{B}^{2} - \left(4 \cdot A\right) \cdot C}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 34.7">40.6</span></p><div class="math">\[\leadsto \color{blue}{\frac{-\sqrt{2 \cdot \left(\left(\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right) \cdot F\right) \cdot \left(C + \left(A + \mathsf{hypot}\left(B, A - C\right)\right)\right)\right)}}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 5.6">17.0</span></p><div class="math">\[\leadsto \frac{-\color{blue}{\sqrt{2 \cdot \left(\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right) \cdot F\right)} \cdot \sqrt{A + \left(\mathsf{hypot}\left(B, A - C\right) + C\right)}}}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 5.3">17.2</span></p><div class="math">\[\leadsto \color{blue}{\left(-\sqrt{2 \cdot \left(\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right) \cdot F\right)}\right) \cdot \left(\sqrt{A + \left(C + \mathsf{hypot}\left(B, A - C\right)\right)} \cdot \frac{1}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 5.2">17.1</span></p><div class="math">\[\leadsto \left(-\sqrt{2 \cdot \left(\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right) \cdot F\right)}\right) \cdot \color{blue}{\frac{\sqrt[3]{\mathsf{hypot}\left(B, A - C\right) + \left(A + C\right)}}{\frac{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}{\sqrt[3]{\sqrt{\mathsf{hypot}\left(B, A - C\right) + \left(A + C\right)}}}}}
+\]</div></li></ol><h2><code>if <span class="condition">+inf.0 &lt;  (/.f64 (neg.f64 (sqrt.f64 (*.f64 (*.f64 2 (*.f64 (-.f64 (pow.f64 B 2) (*.f64 (*.f64 4 A) C)) F)) (+.f64 (+.f64 A C) (sqrt.f64 (+.f64 (pow.f64 (-.f64 A C) 2) (pow.f64 B 2))))))) (-.f64 (pow.f64 B 2) (*.f64 (*.f64 4 A) C))) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\frac{-\sqrt{\left(2 \cdot \left(\left({B}^{2} - \left(4 \cdot A\right) \cdot C\right) \cdot F\right)\right) \cdot \left(\left(A + C\right) + \sqrt{{\left(A - C\right)}^{2} + {B}^{2}}\right)}}{{B}^{2} - \left(4 \cdot A\right) \cdot C}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 63.0">63.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{-\sqrt{2 \cdot \left(\left(\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right) \cdot F\right) \cdot \left(C + \left(A + \mathsf{hypot}\left(B, A - C\right)\right)\right)\right)}}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\leadsto \frac{-\color{blue}{\sqrt{2 \cdot \left(\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right) \cdot F\right)} \cdot \sqrt{A + \left(\mathsf{hypot}\left(B, A - C\right) + C\right)}}}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\leadsto \color{blue}{\left(-\sqrt{2 \cdot \left(\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right) \cdot F\right)}\right) \cdot \left(\sqrt{A + \left(C + \mathsf{hypot}\left(B, A - C\right)\right)} \cdot \frac{1}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}\right)}
+\]</div></li><li><p>Taylor expanded in A around 0 <span class="error" title="Internally 63.4">63.4</span></p><div class="math">\[\leadsto \color{blue}{-1 \cdot \left(\sqrt{\left(C + \sqrt{{B}^{2} + {C}^{2}}\right) \cdot F} \cdot \frac{\sqrt{2}}{B}\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 48.1">52.8</span></p><div class="math">\[\leadsto \color{blue}{\sqrt{\left(C + \mathsf{hypot}\left(C, B\right)\right) \cdot F} \cdot \left(-\frac{\sqrt{2}}{B}\right)}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 4 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 30.3">32.4</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;\frac{-\sqrt{\left(2 \cdot \left(\left({B}^{2} + C \cdot \left(A \cdot -4\right)\right) \cdot F\right)\right) \cdot \left(\left(A + C\right) + \sqrt{{B}^{2} + {\left(A - C\right)}^{2}}\right)}}{{B}^{2} + C \cdot \left(A \cdot -4\right)} \leq -2 \cdot 10^{-216}:\\
+\;\;\;\;\left(\sqrt{2 \cdot \mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)} \cdot \sqrt{F}\right) \cdot \left(\sqrt{A + \left(C + \mathsf{hypot}\left(B, A - C\right)\right)} \cdot \frac{-1}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}\right)\\
+
+\mathbf{elif}\;\frac{-\sqrt{\left(2 \cdot \left(\left({B}^{2} + C \cdot \left(A \cdot -4\right)\right) \cdot F\right)\right) \cdot \left(\left(A + C\right) + \sqrt{{B}^{2} + {\left(A - C\right)}^{2}}\right)}}{{B}^{2} + C \cdot \left(A \cdot -4\right)} \leq 2 \cdot 10^{+188}:\\
+\;\;\;\;\frac{-\sqrt{2 \cdot \left(\left(F \cdot \mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)\right) \cdot \left(C + \mathsf{fma}\left(-0.5, \frac{B}{\frac{A}{B}}, C\right)\right)\right)}}{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}\\
+
+\mathbf{elif}\;\frac{-\sqrt{\left(2 \cdot \left(\left({B}^{2} + C \cdot \left(A \cdot -4\right)\right) \cdot F\right)\right) \cdot \left(\left(A + C\right) + \sqrt{{B}^{2} + {\left(A - C\right)}^{2}}\right)}}{{B}^{2} + C \cdot \left(A \cdot -4\right)} \leq \infty:\\
+\;\;\;\;\sqrt{2 \cdot \left(F \cdot \mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)\right)} \cdot \frac{-\sqrt[3]{\left(A + C\right) + \mathsf{hypot}\left(B, A - C\right)}}{\frac{\mathsf{fma}\left(B, B, A \cdot \left(C \cdot -4\right)\right)}{\sqrt[3]{\sqrt{\left(A + C\right) + \mathsf{hypot}\left(B, A - C\right)}}}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\sqrt{F \cdot \left(C + \mathsf{hypot}\left(C, B\right)\right)} \cdot \frac{-\sqrt{2}}{B}\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (A B C F)
+  :name "ABCF-&gt;ab-angle a"
+  :precision binary64
+  (/ (- (sqrt (* (* 2.0 (* (- (pow B 2.0) (* (* 4.0 A) C)) F)) (+ (+ A C) (sqrt (+ (pow (- A C) 2.0) (pow B 2.0))))))) (- (pow B 2.0) (* (* 4.0 A) C))))
+</code></pre></section></body></html>

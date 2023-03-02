@@ -1,0 +1,110 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for _divideComplex, real part</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">26.3 → 9.0</span></div><div>Time: <span class="number">1.8s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{x.re \cdot y.re + x.im \cdot y.im}{y.re \cdot y.re + y.im \cdot y.im}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \mathsf{fma}\left(y.im, y.im, y.re \cdot y.re\right)\\
+t_1 := \frac{x.re \cdot y.re + x.im \cdot y.im}{y.re \cdot y.re + y.im \cdot y.im}\\
+\mathbf{if}\;t_1 \leq -\infty:\\
+\;\;\;\;\mathsf{fma}\left(\frac{y.im}{t_0}, x.im, y.re \cdot \frac{x.re}{t_0}\right)\\
+
+\mathbf{elif}\;t_1 \leq 2 \cdot 10^{+261}:\\
+\;\;\;\;\frac{\frac{\mathsf{fma}\left(x.re, y.re, x.im \cdot y.im\right)}{\mathsf{hypot}\left(y.re, y.im\right)}}{\mathsf{hypot}\left(y.re, y.im\right)}\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{y.im}{y.re}, \frac{x.im}{y.re}, \frac{x.re}{y.re}\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x.re x.im y.re y.im)
+ :precision binary64
+ (/ (+ (* x.re y.re) (* x.im y.im)) (+ (* y.re y.re) (* y.im y.im))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x.re x.im y.re y.im)
+ :precision binary64
+ (let* ((t_0 (fma y.im y.im (* y.re y.re)))
+        (t_1
+         (/ (+ (* x.re y.re) (* x.im y.im)) (+ (* y.re y.re) (* y.im y.im)))))
+   (if (&lt;= t_1 (- INFINITY))
+     (fma (/ y.im t_0) x.im (* y.re (/ x.re t_0)))
+     (if (&lt;= t_1 2e+261)
+       (/
+        (/ (fma x.re y.re (* x.im y.im)) (hypot y.re y.im))
+        (hypot y.re y.im))
+       (fma (/ y.im y.re) (/ x.im y.re) (/ x.re y.re))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x_46_re, double x_46_im, double y_46_re, double y_46_im) {
+	return ((x_46_re * y_46_re) + (x_46_im * y_46_im)) / ((y_46_re * y_46_re) + (y_46_im * y_46_im));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x_46_re, double x_46_im, double y_46_re, double y_46_im) {
+	double t_0 = fma(y_46_im, y_46_im, (y_46_re * y_46_re));
+	double t_1 = ((x_46_re * y_46_re) + (x_46_im * y_46_im)) / ((y_46_re * y_46_re) + (y_46_im * y_46_im));
+	double tmp;
+	if (t_1 &lt;= -((double) INFINITY)) {
+		tmp = fma((y_46_im / t_0), x_46_im, (y_46_re * (x_46_re / t_0)));
+	} else if (t_1 &lt;= 2e+261) {
+		tmp = (fma(x_46_re, y_46_re, (x_46_im * y_46_im)) / hypot(y_46_re, y_46_im)) / hypot(y_46_re, y_46_im);
+	} else {
+		tmp = fma((y_46_im / y_46_re), (x_46_im / y_46_re), (x_46_re / y_46_re));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x_46_re, x_46_im, y_46_re, y_46_im)
+	return Float64(Float64(Float64(x_46_re * y_46_re) + Float64(x_46_im * y_46_im)) / Float64(Float64(y_46_re * y_46_re) + Float64(y_46_im * y_46_im)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x_46_re, x_46_im, y_46_re, y_46_im)
+	t_0 = fma(y_46_im, y_46_im, Float64(y_46_re * y_46_re))
+	t_1 = Float64(Float64(Float64(x_46_re * y_46_re) + Float64(x_46_im * y_46_im)) / Float64(Float64(y_46_re * y_46_re) + Float64(y_46_im * y_46_im)))
+	tmp = 0.0
+	if (t_1 &lt;= Float64(-Inf))
+		tmp = fma(Float64(y_46_im / t_0), x_46_im, Float64(y_46_re * Float64(x_46_re / t_0)));
+	elseif (t_1 &lt;= 2e+261)
+		tmp = Float64(Float64(fma(x_46_re, y_46_re, Float64(x_46_im * y_46_im)) / hypot(y_46_re, y_46_im)) / hypot(y_46_re, y_46_im));
+	else
+		tmp = fma(Float64(y_46_im / y_46_re), Float64(x_46_im / y_46_re), Float64(x_46_re / y_46_re));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x$46$re_, x$46$im_, y$46$re_, y$46$im_] := N[(N[(N[(x$46$re * y$46$re), $MachinePrecision] + N[(x$46$im * y$46$im), $MachinePrecision]), $MachinePrecision] / N[(N[(y$46$re * y$46$re), $MachinePrecision] + N[(y$46$im * y$46$im), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x$46$re_, x$46$im_, y$46$re_, y$46$im_] := Block[{t$95$0 = N[(y$46$im * y$46$im + N[(y$46$re * y$46$re), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$1 = N[(N[(N[(x$46$re * y$46$re), $MachinePrecision] + N[(x$46$im * y$46$im), $MachinePrecision]), $MachinePrecision] / N[(N[(y$46$re * y$46$re), $MachinePrecision] + N[(y$46$im * y$46$im), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[t$95$1, (-Infinity)], N[(N[(y$46$im / t$95$0), $MachinePrecision] * x$46$im + N[(y$46$re * N[(x$46$re / t$95$0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], If[LessEqual[t$95$1, 2e+261], N[(N[(N[(x$46$re * y$46$re + N[(x$46$im * y$46$im), $MachinePrecision]), $MachinePrecision] / N[Sqrt[y$46$re ^ 2 + y$46$im ^ 2], $MachinePrecision]), $MachinePrecision] / N[Sqrt[y$46$re ^ 2 + y$46$im ^ 2], $MachinePrecision]), $MachinePrecision], N[(N[(y$46$im / y$46$re), $MachinePrecision] * N[(x$46$im / y$46$re), $MachinePrecision] + N[(x$46$re / y$46$re), $MachinePrecision]), $MachinePrecision]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{x.re \cdot y.re + x.im \cdot y.im}{y.re \cdot y.re + y.im \cdot y.im}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \mathsf{fma}\left(y.im, y.im, y.re \cdot y.re\right)\\
+t_1 := \frac{x.re \cdot y.re + x.im \cdot y.im}{y.re \cdot y.re + y.im \cdot y.im}\\
+\mathbf{if}\;t_1 \leq -\infty:\\
+\;\;\;\;\mathsf{fma}\left(\frac{y.im}{t_0}, x.im, y.re \cdot \frac{x.re}{t_0}\right)\\
+
+\mathbf{elif}\;t_1 \leq 2 \cdot 10^{+261}:\\
+\;\;\;\;\frac{\frac{\mathsf{fma}\left(x.re, y.re, x.im \cdot y.im\right)}{\mathsf{hypot}\left(y.re, y.im\right)}}{\mathsf{hypot}\left(y.re, y.im\right)}\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{y.im}{y.re}, \frac{x.im}{y.re}, \frac{x.re}{y.re}\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> (/.f64 (+.f64 (*.f64 x.re y.re) (*.f64 x.im y.im)) (+.f64 (*.f64 y.re y.re) (*.f64 y.im y.im)))  &lt; -inf.0</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\frac{x.re \cdot y.re + x.im \cdot y.im}{y.re \cdot y.re + y.im \cdot y.im}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left(x.re, y.re, x.im \cdot y.im\right)}{\mathsf{fma}\left(y.re, y.re, y.im \cdot y.im\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in x.re around 0 <span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{y.im \cdot x.im}{{y.re}^{2} + {y.im}^{2}} + \frac{x.re \cdot y.re}{{y.re}^{2} + {y.im}^{2}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 17.7">21.7</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{y.im}{\mathsf{fma}\left(y.im, y.im, y.re \cdot y.re\right)}, x.im, y.re \cdot \frac{x.re}{\mathsf{fma}\left(y.im, y.im, y.re \cdot y.re\right)}\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-inf.0 &lt;  (/.f64 (+.f64 (*.f64 x.re y.re) (*.f64 x.im y.im)) (+.f64 (*.f64 y.re y.re) (*.f64 y.im y.im)))  &lt; 1.9999999999999999e261</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 11.2">12.2</span></p><div class="math">\[\frac{x.re \cdot y.re + x.im \cdot y.im}{y.re \cdot y.re + y.im \cdot y.im}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 11.2">12.2</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left(x.re, y.re, x.im \cdot y.im\right)}{\mathsf{fma}\left(y.re, y.re, y.im \cdot y.im\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 1.3">1.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{1}{\mathsf{hypot}\left(y.re, y.im\right)} \cdot \frac{\mathsf{fma}\left(x.re, y.re, x.im \cdot y.im\right)}{\mathsf{hypot}\left(y.re, y.im\right)}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 1.2">0.8</span></p><div class="math">\[\leadsto \color{blue}{\frac{\frac{\mathsf{fma}\left(x.re, y.re, x.im \cdot y.im\right)}{\mathsf{hypot}\left(y.re, y.im\right)}}{\mathsf{hypot}\left(y.re, y.im\right)}}
+\]</div></li></ol><h2><code>if <span class="condition">1.9999999999999999e261 &lt;  (/.f64 (+.f64 (*.f64 x.re y.re) (*.f64 x.im y.im)) (+.f64 (*.f64 y.re y.re) (*.f64 y.im y.im))) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 62.6">61.0</span></p><div class="math">\[\frac{x.re \cdot y.re + x.im \cdot y.im}{y.re \cdot y.re + y.im \cdot y.im}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 62.6">61.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left(x.re, y.re, x.im \cdot y.im\right)}{\mathsf{fma}\left(y.re, y.re, y.im \cdot y.im\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 55.6">58.6</span></p><div class="math">\[\leadsto \color{blue}{\frac{1}{\mathsf{hypot}\left(y.re, y.im\right)} \cdot \frac{\mathsf{fma}\left(x.re, y.re, x.im \cdot y.im\right)}{\mathsf{hypot}\left(y.re, y.im\right)}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 55.6">58.6</span></p><div class="math">\[\leadsto \color{blue}{\frac{\frac{\mathsf{fma}\left(x.re, y.re, x.im \cdot y.im\right)}{\mathsf{hypot}\left(y.re, y.im\right)}}{\mathsf{hypot}\left(y.re, y.im\right)}}
+\]</div></li><li><p>Taylor expanded in y.re around inf <span class="error" title="Internally 31.3">38.2</span></p><div class="math">\[\leadsto \color{blue}{\frac{x.re}{y.re} + \frac{y.im \cdot x.im}{{y.re}^{2}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 23.3">30.4</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{y.im}{y.re}, \frac{x.im}{y.re}, \frac{x.re}{y.re}\right)}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 7.1">9.0</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;\frac{x.re \cdot y.re + x.im \cdot y.im}{y.re \cdot y.re + y.im \cdot y.im} \leq -\infty:\\
+\;\;\;\;\mathsf{fma}\left(\frac{y.im}{\mathsf{fma}\left(y.im, y.im, y.re \cdot y.re\right)}, x.im, y.re \cdot \frac{x.re}{\mathsf{fma}\left(y.im, y.im, y.re \cdot y.re\right)}\right)\\
+
+\mathbf{elif}\;\frac{x.re \cdot y.re + x.im \cdot y.im}{y.re \cdot y.re + y.im \cdot y.im} \leq 2 \cdot 10^{+261}:\\
+\;\;\;\;\frac{\frac{\mathsf{fma}\left(x.re, y.re, x.im \cdot y.im\right)}{\mathsf{hypot}\left(y.re, y.im\right)}}{\mathsf{hypot}\left(y.re, y.im\right)}\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{y.im}{y.re}, \frac{x.im}{y.re}, \frac{x.re}{y.re}\right)\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x.re x.im y.re y.im)
+  :name "_divideComplex, real part"
+  :precision binary64
+  (/ (+ (* x.re y.re) (* x.im y.im)) (+ (* y.re y.re) (* y.im y.im))))
+</code></pre></section></body></html>

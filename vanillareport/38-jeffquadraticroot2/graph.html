@@ -1,0 +1,447 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for jeff quadratic root 2</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">19.8 → 6.8</span></div><div>Time: <span class="number">3.7s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Fortran</option><option>Java</option><option>Python</option><option>Julia</option><option>MATLAB</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{\left(-b\right) - \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\left(-b\right) + \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}{2 \cdot a}\\
+
+
+\end{array}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \sqrt{b \cdot b + c \cdot \left(a \cdot -4\right)}\\
+t_1 := \left(-b\right) - b\\
+t_2 := \frac{2 \cdot c}{\left(-b\right) - t_0}\\
+t_3 := \frac{t_0 - b}{2 \cdot a}\\
+\mathbf{if}\;b \leq -1.3 \cdot 10^{+107}:\\
+\;\;\;\;\begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;t_2\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{t_1}{2 \cdot a}\\
+
+
+\end{array}\\
+
+\mathbf{elif}\;b \leq 6 \cdot 10^{+105}:\\
+\;\;\;\;\begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;t_2\\
+
+\mathbf{else}:\\
+\;\;\;\;t_3\\
+
+
+\end{array}\\
+
+\mathbf{elif}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{t_1}\\
+
+\mathbf{else}:\\
+\;\;\;\;t_3\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (a b c)
+ :precision binary64
+ (if (&gt;= b 0.0)
+   (/ (* 2.0 c) (- (- b) (sqrt (- (* b b) (* (* 4.0 a) c)))))
+   (/ (+ (- b) (sqrt (- (* b b) (* (* 4.0 a) c)))) (* 2.0 a))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (a b c)
+ :precision binary64
+ (let* ((t_0 (sqrt (+ (* b b) (* c (* a -4.0)))))
+        (t_1 (- (- b) b))
+        (t_2 (/ (* 2.0 c) (- (- b) t_0)))
+        (t_3 (/ (- t_0 b) (* 2.0 a))))
+   (if (&lt;= b -1.3e+107)
+     (if (&gt;= b 0.0) t_2 (/ t_1 (* 2.0 a)))
+     (if (&lt;= b 6e+105)
+       (if (&gt;= b 0.0) t_2 t_3)
+       (if (&gt;= b 0.0) (/ (* 2.0 c) t_1) t_3)))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double a, double b, double c) {
+	double tmp;
+	if (b &gt;= 0.0) {
+		tmp = (2.0 * c) / (-b - sqrt(((b * b) - ((4.0 * a) * c))));
+	} else {
+		tmp = (-b + sqrt(((b * b) - ((4.0 * a) * c)))) / (2.0 * a);
+	}
+	return tmp;
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double a, double b, double c) {
+	double t_0 = sqrt(((b * b) + (c * (a * -4.0))));
+	double t_1 = -b - b;
+	double t_2 = (2.0 * c) / (-b - t_0);
+	double t_3 = (t_0 - b) / (2.0 * a);
+	double tmp_1;
+	if (b &lt;= -1.3e+107) {
+		double tmp_2;
+		if (b &gt;= 0.0) {
+			tmp_2 = t_2;
+		} else {
+			tmp_2 = t_1 / (2.0 * a);
+		}
+		tmp_1 = tmp_2;
+	} else if (b &lt;= 6e+105) {
+		double tmp_3;
+		if (b &gt;= 0.0) {
+			tmp_3 = t_2;
+		} else {
+			tmp_3 = t_3;
+		}
+		tmp_1 = tmp_3;
+	} else if (b &gt;= 0.0) {
+		tmp_1 = (2.0 * c) / t_1;
+	} else {
+		tmp_1 = t_3;
+	}
+	return tmp_1;
+}
+</pre></div><div class="implementation" data-language="Fortran"><pre class="program">real(8) function code(a, b, c)
+    real(8), intent (in) :: a
+    real(8), intent (in) :: b
+    real(8), intent (in) :: c
+    real(8) :: tmp
+    if (b &gt;= 0.0d0) then
+        tmp = (2.0d0 * c) / (-b - sqrt(((b * b) - ((4.0d0 * a) * c))))
+    else
+        tmp = (-b + sqrt(((b * b) - ((4.0d0 * a) * c)))) / (2.0d0 * a)
+    end if
+    code = tmp
+end function
+</pre><div class="arrow">↓</div><pre class="program">real(8) function code(a, b, c)
+    real(8), intent (in) :: a
+    real(8), intent (in) :: b
+    real(8), intent (in) :: c
+    real(8) :: t_0
+    real(8) :: t_1
+    real(8) :: t_2
+    real(8) :: t_3
+    real(8) :: tmp
+    real(8) :: tmp_1
+    real(8) :: tmp_2
+    real(8) :: tmp_3
+    t_0 = sqrt(((b * b) + (c * (a * (-4.0d0)))))
+    t_1 = -b - b
+    t_2 = (2.0d0 * c) / (-b - t_0)
+    t_3 = (t_0 - b) / (2.0d0 * a)
+    if (b &lt;= (-1.3d+107)) then
+        if (b &gt;= 0.0d0) then
+            tmp_2 = t_2
+        else
+            tmp_2 = t_1 / (2.0d0 * a)
+        end if
+        tmp_1 = tmp_2
+    else if (b &lt;= 6d+105) then
+        if (b &gt;= 0.0d0) then
+            tmp_3 = t_2
+        else
+            tmp_3 = t_3
+        end if
+        tmp_1 = tmp_3
+    else if (b &gt;= 0.0d0) then
+        tmp_1 = (2.0d0 * c) / t_1
+    else
+        tmp_1 = t_3
+    end if
+    code = tmp_1
+end function
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double a, double b, double c) {
+	double tmp;
+	if (b &gt;= 0.0) {
+		tmp = (2.0 * c) / (-b - Math.sqrt(((b * b) - ((4.0 * a) * c))));
+	} else {
+		tmp = (-b + Math.sqrt(((b * b) - ((4.0 * a) * c)))) / (2.0 * a);
+	}
+	return tmp;
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double a, double b, double c) {
+	double t_0 = Math.sqrt(((b * b) + (c * (a * -4.0))));
+	double t_1 = -b - b;
+	double t_2 = (2.0 * c) / (-b - t_0);
+	double t_3 = (t_0 - b) / (2.0 * a);
+	double tmp_1;
+	if (b &lt;= -1.3e+107) {
+		double tmp_2;
+		if (b &gt;= 0.0) {
+			tmp_2 = t_2;
+		} else {
+			tmp_2 = t_1 / (2.0 * a);
+		}
+		tmp_1 = tmp_2;
+	} else if (b &lt;= 6e+105) {
+		double tmp_3;
+		if (b &gt;= 0.0) {
+			tmp_3 = t_2;
+		} else {
+			tmp_3 = t_3;
+		}
+		tmp_1 = tmp_3;
+	} else if (b &gt;= 0.0) {
+		tmp_1 = (2.0 * c) / t_1;
+	} else {
+		tmp_1 = t_3;
+	}
+	return tmp_1;
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(a, b, c):
+	tmp = 0
+	if b &gt;= 0.0:
+		tmp = (2.0 * c) / (-b - math.sqrt(((b * b) - ((4.0 * a) * c))))
+	else:
+		tmp = (-b + math.sqrt(((b * b) - ((4.0 * a) * c)))) / (2.0 * a)
+	return tmp
+</pre><div class="arrow">↓</div><pre class="program">def code(a, b, c):
+	t_0 = math.sqrt(((b * b) + (c * (a * -4.0))))
+	t_1 = -b - b
+	t_2 = (2.0 * c) / (-b - t_0)
+	t_3 = (t_0 - b) / (2.0 * a)
+	tmp_1 = 0
+	if b &lt;= -1.3e+107:
+		tmp_2 = 0
+		if b &gt;= 0.0:
+			tmp_2 = t_2
+		else:
+			tmp_2 = t_1 / (2.0 * a)
+		tmp_1 = tmp_2
+	elif b &lt;= 6e+105:
+		tmp_3 = 0
+		if b &gt;= 0.0:
+			tmp_3 = t_2
+		else:
+			tmp_3 = t_3
+		tmp_1 = tmp_3
+	elif b &gt;= 0.0:
+		tmp_1 = (2.0 * c) / t_1
+	else:
+		tmp_1 = t_3
+	return tmp_1
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(a, b, c)
+	tmp = 0.0
+	if (b &gt;= 0.0)
+		tmp = Float64(Float64(2.0 * c) / Float64(Float64(-b) - sqrt(Float64(Float64(b * b) - Float64(Float64(4.0 * a) * c)))));
+	else
+		tmp = Float64(Float64(Float64(-b) + sqrt(Float64(Float64(b * b) - Float64(Float64(4.0 * a) * c)))) / Float64(2.0 * a));
+	end
+	return tmp
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(a, b, c)
+	t_0 = sqrt(Float64(Float64(b * b) + Float64(c * Float64(a * -4.0))))
+	t_1 = Float64(Float64(-b) - b)
+	t_2 = Float64(Float64(2.0 * c) / Float64(Float64(-b) - t_0))
+	t_3 = Float64(Float64(t_0 - b) / Float64(2.0 * a))
+	tmp_1 = 0.0
+	if (b &lt;= -1.3e+107)
+		tmp_2 = 0.0
+		if (b &gt;= 0.0)
+			tmp_2 = t_2;
+		else
+			tmp_2 = Float64(t_1 / Float64(2.0 * a));
+		end
+		tmp_1 = tmp_2;
+	elseif (b &lt;= 6e+105)
+		tmp_3 = 0.0
+		if (b &gt;= 0.0)
+			tmp_3 = t_2;
+		else
+			tmp_3 = t_3;
+		end
+		tmp_1 = tmp_3;
+	elseif (b &gt;= 0.0)
+		tmp_1 = Float64(Float64(2.0 * c) / t_1);
+	else
+		tmp_1 = t_3;
+	end
+	return tmp_1
+end
+</pre></div><div class="implementation" data-language="MATLAB"><pre class="program">function tmp_2 = code(a, b, c)
+	tmp = 0.0;
+	if (b &gt;= 0.0)
+		tmp = (2.0 * c) / (-b - sqrt(((b * b) - ((4.0 * a) * c))));
+	else
+		tmp = (-b + sqrt(((b * b) - ((4.0 * a) * c)))) / (2.0 * a);
+	end
+	tmp_2 = tmp;
+end
+</pre><div class="arrow">↓</div><pre class="program">function tmp_5 = code(a, b, c)
+	t_0 = sqrt(((b * b) + (c * (a * -4.0))));
+	t_1 = -b - b;
+	t_2 = (2.0 * c) / (-b - t_0);
+	t_3 = (t_0 - b) / (2.0 * a);
+	tmp_2 = 0.0;
+	if (b &lt;= -1.3e+107)
+		tmp_3 = 0.0;
+		if (b &gt;= 0.0)
+			tmp_3 = t_2;
+		else
+			tmp_3 = t_1 / (2.0 * a);
+		end
+		tmp_2 = tmp_3;
+	elseif (b &lt;= 6e+105)
+		tmp_4 = 0.0;
+		if (b &gt;= 0.0)
+			tmp_4 = t_2;
+		else
+			tmp_4 = t_3;
+		end
+		tmp_2 = tmp_4;
+	elseif (b &gt;= 0.0)
+		tmp_2 = (2.0 * c) / t_1;
+	else
+		tmp_2 = t_3;
+	end
+	tmp_5 = tmp_2;
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[a_, b_, c_] := If[GreaterEqual[b, 0.0], N[(N[(2.0 * c), $MachinePrecision] / N[((-b) - N[Sqrt[N[(N[(b * b), $MachinePrecision] - N[(N[(4.0 * a), $MachinePrecision] * c), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision], N[(N[((-b) + N[Sqrt[N[(N[(b * b), $MachinePrecision] - N[(N[(4.0 * a), $MachinePrecision] * c), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] / N[(2.0 * a), $MachinePrecision]), $MachinePrecision]]
+</pre><div class="arrow">↓</div><pre class="program">code[a_, b_, c_] := Block[{t$95$0 = N[Sqrt[N[(N[(b * b), $MachinePrecision] + N[(c * N[(a * -4.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]}, Block[{t$95$1 = N[((-b) - b), $MachinePrecision]}, Block[{t$95$2 = N[(N[(2.0 * c), $MachinePrecision] / N[((-b) - t$95$0), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$3 = N[(N[(t$95$0 - b), $MachinePrecision] / N[(2.0 * a), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[b, -1.3e+107], If[GreaterEqual[b, 0.0], t$95$2, N[(t$95$1 / N[(2.0 * a), $MachinePrecision]), $MachinePrecision]], If[LessEqual[b, 6e+105], If[GreaterEqual[b, 0.0], t$95$2, t$95$3], If[GreaterEqual[b, 0.0], N[(N[(2.0 * c), $MachinePrecision] / t$95$1), $MachinePrecision], t$95$3]]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{\left(-b\right) - \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\left(-b\right) + \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}{2 \cdot a}\\
+
+
+\end{array}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \sqrt{b \cdot b + c \cdot \left(a \cdot -4\right)}\\
+t_1 := \left(-b\right) - b\\
+t_2 := \frac{2 \cdot c}{\left(-b\right) - t_0}\\
+t_3 := \frac{t_0 - b}{2 \cdot a}\\
+\mathbf{if}\;b \leq -1.3 \cdot 10^{+107}:\\
+\;\;\;\;\begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;t_2\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{t_1}{2 \cdot a}\\
+
+
+\end{array}\\
+
+\mathbf{elif}\;b \leq 6 \cdot 10^{+105}:\\
+\;\;\;\;\begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;t_2\\
+
+\mathbf{else}:\\
+\;\;\;\;t_3\\
+
+
+\end{array}\\
+
+\mathbf{elif}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{t_1}\\
+
+\mathbf{else}:\\
+\;\;\;\;t_3\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">a</label><input type="text" class="input-submit" name="var-name-0" value="-1.3301448607192362e+160"/></li><li><label for="var-name-1">b</label><input type="text" class="input-submit" name="var-name-1" value="-3.264651707330893e+74"/></li><li><label for="var-name-2">c</label><input type="text" class="input-submit" name="var-name-2" value="-2.3298888078322576e-135"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> b  &lt; -1.3000000000000001e107</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 52.0">48.4</span></p><div class="math">\[\begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{\left(-b\right) - \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\left(-b\right) + \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}{2 \cdot a}\\
+
+
+\end{array}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 52.0">48.4</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{\left(-b\right) - \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\left(-b\right) + \sqrt{\mathsf{fma}\left(\left(a \cdot -4\right) \cdot {\left(\sqrt[3]{c}\right)}^{2}, \sqrt[3]{c}, b \cdot b\right)}}{2 \cdot a}\\
+
+
+\end{array}
+\]</div></li><li><p>Taylor expanded in b around -inf <span class="error" title="Internally 2.5">3.6</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{\left(-b\right) - \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\left(-b\right) + -1 \cdot b}{2 \cdot a}\\
+
+
+\end{array}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 2.5">3.6</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{\left(-b\right) - \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\left(-b\right) + \left(-b\right)}{2 \cdot a}\\
+
+
+\end{array}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-1.3000000000000001e107 &lt;  b  &lt; 6.0000000000000001e105</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 5.4">9.1</span></p><div class="math">\[\begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{\left(-b\right) - \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\left(-b\right) + \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}{2 \cdot a}\\
+
+
+\end{array}
+\]</div></li></ol><h2><code>if <span class="condition">6.0000000000000001e105 &lt;  b </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 35.5">31.0</span></p><div class="math">\[\begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{\left(-b\right) - \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\left(-b\right) + \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}{2 \cdot a}\\
+
+
+\end{array}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 35.5">31.0</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{\left(-b\right) - \sqrt{\color{blue}{\mathsf{fma}\left(-{\left(\sqrt[3]{a \cdot \left(4 \cdot c\right)}\right)}^{2}, \sqrt[3]{a \cdot \left(4 \cdot c\right)}, b \cdot b\right)}}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\left(-b\right) + \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}{2 \cdot a}\\
+
+
+\end{array}
+\]</div></li><li><p>Taylor expanded in a around 0 <span class="error" title="Internally 6.0">2.3</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{\left(-b\right) - \color{blue}{b}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\left(-b\right) + \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}{2 \cdot a}\\
+
+
+\end{array}
+\]</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 5.0">6.8</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;b \leq -1.3 \cdot 10^{+107}:\\
+\;\;\;\;\begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{\left(-b\right) - \sqrt{b \cdot b + c \cdot \left(a \cdot -4\right)}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\left(-b\right) - b}{2 \cdot a}\\
+
+
+\end{array}\\
+
+\mathbf{elif}\;b \leq 6 \cdot 10^{+105}:\\
+\;\;\;\;\begin{array}{l}
+\mathbf{if}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{\left(-b\right) - \sqrt{b \cdot b + c \cdot \left(a \cdot -4\right)}}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\sqrt{b \cdot b + c \cdot \left(a \cdot -4\right)} - b}{2 \cdot a}\\
+
+
+\end{array}\\
+
+\mathbf{elif}\;b \geq 0:\\
+\;\;\;\;\frac{2 \cdot c}{\left(-b\right) - b}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\sqrt{b \cdot b + c \cdot \left(a \cdot -4\right)} - b}{2 \cdot a}\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (a b c)
+  :name "jeff quadratic root 2"
+  :precision binary64
+  (if (&gt;= b 0.0) (/ (* 2.0 c) (- (- b) (sqrt (- (* b b) (* (* 4.0 a) c))))) (/ (+ (- b) (sqrt (- (* b b) (* (* 4.0 a) c)))) (* 2.0 a))))
+</code></pre></section></body></html>

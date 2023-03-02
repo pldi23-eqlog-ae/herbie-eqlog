@@ -1,0 +1,48 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Cubic critical, medium range</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 62.0 → 50.6">43.9 → 3.0</span></div><div>Time: <span class="number">3.7s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[\left(\left(1.1102230246251565 \cdot 10^{-16} &lt; a \land a &lt; 9007199254740992\right) \land \left(1.1102230246251565 \cdot 10^{-16} &lt; b \land b &lt; 9007199254740992\right)\right) \land \left(1.1102230246251565 \cdot 10^{-16} &lt; c \land c &lt; 9007199254740992\right)\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{\left(-b\right) + \sqrt{b \cdot b - \left(3 \cdot a\right) \cdot c}}{3 \cdot a}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := {\left(c \cdot a\right)}^{4}\\
+\mathsf{fma}\left(-0.5625, \frac{{c}^{3} \cdot \left(a \cdot a\right)}{{b}^{5}}, \mathsf{fma}\left(-0.16666666666666666, \frac{\mathsf{fma}\left(t_0, 5.0625, \left(-1.125 \cdot -1.125\right) \cdot t_0\right)}{a \cdot {b}^{7}}, \mathsf{fma}\left(-0.5, \frac{c}{b}, \frac{-0.375 \cdot \left(\left(c \cdot c\right) \cdot a\right)}{{b}^{3}}\right)\right)\right)
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (a b c)
+ :precision binary64
+ (/ (+ (- b) (sqrt (- (* b b) (* (* 3.0 a) c)))) (* 3.0 a)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (a b c)
+ :precision binary64
+ (let* ((t_0 (pow (* c a) 4.0)))
+   (fma
+    -0.5625
+    (/ (* (pow c 3.0) (* a a)) (pow b 5.0))
+    (fma
+     -0.16666666666666666
+     (/ (fma t_0 5.0625 (* (* -1.125 -1.125) t_0)) (* a (pow b 7.0)))
+     (fma -0.5 (/ c b) (/ (* -0.375 (* (* c c) a)) (pow b 3.0)))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double a, double b, double c) {
+	return (-b + sqrt(((b * b) - ((3.0 * a) * c)))) / (3.0 * a);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double a, double b, double c) {
+	double t_0 = pow((c * a), 4.0);
+	return fma(-0.5625, ((pow(c, 3.0) * (a * a)) / pow(b, 5.0)), fma(-0.16666666666666666, (fma(t_0, 5.0625, ((-1.125 * -1.125) * t_0)) / (a * pow(b, 7.0))), fma(-0.5, (c / b), ((-0.375 * ((c * c) * a)) / pow(b, 3.0)))));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(a, b, c)
+	return Float64(Float64(Float64(-b) + sqrt(Float64(Float64(b * b) - Float64(Float64(3.0 * a) * c)))) / Float64(3.0 * a))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(a, b, c)
+	t_0 = Float64(c * a) ^ 4.0
+	return fma(-0.5625, Float64(Float64((c ^ 3.0) * Float64(a * a)) / (b ^ 5.0)), fma(-0.16666666666666666, Float64(fma(t_0, 5.0625, Float64(Float64(-1.125 * -1.125) * t_0)) / Float64(a * (b ^ 7.0))), fma(-0.5, Float64(c / b), Float64(Float64(-0.375 * Float64(Float64(c * c) * a)) / (b ^ 3.0)))))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[a_, b_, c_] := N[(N[((-b) + N[Sqrt[N[(N[(b * b), $MachinePrecision] - N[(N[(3.0 * a), $MachinePrecision] * c), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] / N[(3.0 * a), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[a_, b_, c_] := Block[{t$95$0 = N[Power[N[(c * a), $MachinePrecision], 4.0], $MachinePrecision]}, N[(-0.5625 * N[(N[(N[Power[c, 3.0], $MachinePrecision] * N[(a * a), $MachinePrecision]), $MachinePrecision] / N[Power[b, 5.0], $MachinePrecision]), $MachinePrecision] + N[(-0.16666666666666666 * N[(N[(t$95$0 * 5.0625 + N[(N[(-1.125 * -1.125), $MachinePrecision] * t$95$0), $MachinePrecision]), $MachinePrecision] / N[(a * N[Power[b, 7.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(-0.5 * N[(c / b), $MachinePrecision] + N[(N[(-0.375 * N[(N[(c * c), $MachinePrecision] * a), $MachinePrecision]), $MachinePrecision] / N[Power[b, 3.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{\left(-b\right) + \sqrt{b \cdot b - \left(3 \cdot a\right) \cdot c}}{3 \cdot a}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := {\left(c \cdot a\right)}^{4}\\
+\mathsf{fma}\left(-0.5625, \frac{{c}^{3} \cdot \left(a \cdot a\right)}{{b}^{5}}, \mathsf{fma}\left(-0.16666666666666666, \frac{\mathsf{fma}\left(t_0, 5.0625, \left(-1.125 \cdot -1.125\right) \cdot t_0\right)}{a \cdot {b}^{7}}, \mathsf{fma}\left(-0.5, \frac{c}{b}, \frac{-0.375 \cdot \left(\left(c \cdot c\right) \cdot a\right)}{{b}^{3}}\right)\right)\right)
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 45.2">43.9</span></p><div class="math">\[\frac{\left(-b\right) + \sqrt{b \cdot b - \left(3 \cdot a\right) \cdot c}}{3 \cdot a}
+\]</div></li><li><p>Taylor expanded in b around inf <span class="error" title="Internally 2.4">3.0</span></p><div class="math">\[\leadsto \color{blue}{-0.5625 \cdot \frac{{c}^{3} \cdot {a}^{2}}{{b}^{5}} + \left(-0.16666666666666666 \cdot \frac{{\left(-1.125 \cdot \left({c}^{2} \cdot {a}^{2}\right)\right)}^{2} + 5.0625 \cdot \left({c}^{4} \cdot {a}^{4}\right)}{a \cdot {b}^{7}} + \left(-0.5 \cdot \frac{c}{b} + -0.375 \cdot \frac{{c}^{2} \cdot a}{{b}^{3}}\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 2.4">3.0</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(-0.5625, \frac{{c}^{3} \cdot \left(a \cdot a\right)}{{b}^{5}}, \mathsf{fma}\left(-0.16666666666666666, \frac{\mathsf{fma}\left({\left(c \cdot a\right)}^{4}, 5.0625, \left(-1.125 \cdot -1.125\right) \cdot {\left(c \cdot a\right)}^{4}\right)}{a \cdot {b}^{7}}, \mathsf{fma}\left(-0.5, \frac{c}{b}, \frac{-0.375 \cdot \left(\left(c \cdot c\right) \cdot a\right)}{{b}^{3}}\right)\right)\right)}
+\]</div><div class="math">Proof</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (a b c)
+  :name "Cubic critical, medium range"
+  :precision binary64
+  :pre (and (and (and (&lt; 1.1102230246251565e-16 a) (&lt; a 9007199254740992.0)) (and (&lt; 1.1102230246251565e-16 b) (&lt; b 9007199254740992.0))) (and (&lt; 1.1102230246251565e-16 c) (&lt; c 9007199254740992.0)))
+  (/ (+ (- b) (sqrt (- (* b b) (* (* 3.0 a) c)))) (* 3.0 a)))
+</code></pre></section></body></html>

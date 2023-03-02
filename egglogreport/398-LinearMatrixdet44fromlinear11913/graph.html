@@ -1,0 +1,268 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Linear.Matrix:det44 from linear-1.19.1.3</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">26.7 → 20.0</span></div><div>Time: <span class="number">26.2s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(\left(\left(\left(\left(x \cdot y - z \cdot t\right) \cdot \left(a \cdot b - c \cdot i\right) - \left(x \cdot j - z \cdot k\right) \cdot \left(y0 \cdot b - y1 \cdot i\right)\right) + \left(x \cdot y2 - z \cdot y3\right) \cdot \left(y0 \cdot c - y1 \cdot a\right)\right) + \left(t \cdot j - y \cdot k\right) \cdot \left(y4 \cdot b - y5 \cdot i\right)\right) - \left(t \cdot y2 - y \cdot y3\right) \cdot \left(y4 \cdot c - y5 \cdot a\right)\right) + \left(k \cdot y2 - j \cdot y3\right) \cdot \left(y4 \cdot y1 - y5 \cdot y0\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := -y0 \cdot b\\
+t_2 := \mathsf{fma}\left(t, y2, -y \cdot y3\right)\\
+t_3 := i \cdot \left(t \cdot y5\right)\\
+t_4 := t \cdot j - k \cdot y\\
+t_5 := t \cdot y2 - y \cdot y3\\
+t_6 := c \cdot t_5\\
+t_7 := t_2 \cdot y5\\
+t_8 := y0 \cdot \left(y3 \cdot y5\right)\\
+t_9 := k \cdot y2 - y3 \cdot j\\
+t_10 := y1 \cdot i - y0 \cdot b\\
+t_11 := c \cdot y0 - y1 \cdot a\\
+t_12 := a \cdot b - c \cdot i\\
+t_13 := \left(\left(\left(\left(\left(x \cdot y - z \cdot t\right) \cdot t_12 - \left(x \cdot j - z \cdot k\right) \cdot \left(y0 \cdot b - y1 \cdot i\right)\right) + \left(x \cdot y2 - z \cdot y3\right) \cdot \left(y0 \cdot c - y1 \cdot a\right)\right) + \left(t \cdot j - y \cdot k\right) \cdot \left(y4 \cdot b - y5 \cdot i\right)\right) - t_5 \cdot \left(y4 \cdot c - y5 \cdot a\right)\right) + \left(k \cdot y2 - j \cdot y3\right) \cdot \left(y4 \cdot y1 - y5 \cdot y0\right)\\
+t_14 := -1 \cdot \left(k \cdot \left(z \cdot t_10\right)\right)\\
+\mathbf{if}\;t_13 \leq -\infty:\\
+\;\;\;\;\mathsf{fma}\left(a, t_7, \left(\left(\left(t_10 \cdot x + y4 \cdot \left(t \cdot b + -1 \cdot \left(y1 \cdot y3\right)\right)\right) - \left(-1 \cdot t_8 + t_3\right)\right) \cdot j + \left(\left(\left(k \cdot \left(y1 \cdot y2\right) + -1 \cdot \left(k \cdot \left(y \cdot b\right)\right)\right) - t_6\right) \cdot y4 + \left(\left(y \cdot x - t \cdot z\right) \cdot t_12 + \left(\left(x \cdot y2 - y3 \cdot z\right) \cdot t_11 + t_14\right)\right)\right)\right) - \left(k \cdot \left(y0 \cdot \left(y5 \cdot y2\right)\right) + -1 \cdot \left(k \cdot \left(i \cdot \left(y \cdot y5\right)\right)\right)\right)\right)\\
+
+\mathbf{elif}\;t_13 \leq 2 \cdot 10^{+303}:\\
+\;\;\;\;\mathsf{fma}\left(\mathsf{fma}\left(y4, y1, -y5 \cdot y0\right), \mathsf{fma}\left(k, y2, -j \cdot y3\right), \mathsf{fma}\left(\mathsf{fma}\left(x, y2, -z \cdot y3\right), \mathsf{fma}\left(y0, c, -y1 \cdot a\right), \mathsf{fma}\left(\mathsf{fma}\left(x, y, -z \cdot t\right), \mathsf{fma}\left(a, b, -c \cdot i\right), \mathsf{fma}\left(x, j, -z \cdot k\right) \cdot \mathsf{fma}\left(i, y1, t_1\right)\right)\right) + \mathsf{fma}\left(\mathsf{fma}\left(t, j, -y \cdot k\right), \mathsf{fma}\left(y4, b, -y5 \cdot i\right), t_2 \cdot \mathsf{fma}\left(y5, a, -y4 \cdot c\right)\right)\right)\\
+
+\mathbf{elif}\;t_13 \leq \infty:\\
+\;\;\;\;\mathsf{fma}\left(a, t_7, \left(y4 \cdot \left(\left(t_4 \cdot b + y1 \cdot t_9\right) - t_6\right) + \left(-1 \cdot \left(t \cdot \left(z \cdot t_12\right)\right) + \left(\left(y \cdot t_12 + \left(t_11 \cdot y2 + j \cdot t_10\right)\right) \cdot x + \left(-1 \cdot \left(t_11 \cdot \left(y3 \cdot z\right)\right) + t_14\right)\right)\right)\right) - \left(i \cdot \left(t_4 \cdot y5\right) + y0 \cdot \left(y5 \cdot t_9\right)\right)\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(a, t_7, -\left(\left(\left(-\mathsf{fma}\left(y1, i, t_1\right) \cdot x\right) + y4 \cdot \mathsf{fma}\left(y1, y3, -t \cdot b\right)\right) - \left(\left(-t_3\right) + t_8\right)\right) \cdot j\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a b c i j k y0 y1 y2 y3 y4 y5)
+ :precision binary64
+ (+
+  (-
+   (+
+    (+
+     (-
+      (* (- (* x y) (* z t)) (- (* a b) (* c i)))
+      (* (- (* x j) (* z k)) (- (* y0 b) (* y1 i))))
+     (* (- (* x y2) (* z y3)) (- (* y0 c) (* y1 a))))
+    (* (- (* t j) (* y k)) (- (* y4 b) (* y5 i))))
+   (* (- (* t y2) (* y y3)) (- (* y4 c) (* y5 a))))
+  (* (- (* k y2) (* j y3)) (- (* y4 y1) (* y5 y0)))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a b c i j k y0 y1 y2 y3 y4 y5)
+ :precision binary64
+ (let* ((t_1 (- (* y0 b)))
+        (t_2 (fma t y2 (- (* y y3))))
+        (t_3 (* i (* t y5)))
+        (t_4 (- (* t j) (* k y)))
+        (t_5 (- (* t y2) (* y y3)))
+        (t_6 (* c t_5))
+        (t_7 (* t_2 y5))
+        (t_8 (* y0 (* y3 y5)))
+        (t_9 (- (* k y2) (* y3 j)))
+        (t_10 (- (* y1 i) (* y0 b)))
+        (t_11 (- (* c y0) (* y1 a)))
+        (t_12 (- (* a b) (* c i)))
+        (t_13
+         (+
+          (-
+           (+
+            (+
+             (-
+              (* (- (* x y) (* z t)) t_12)
+              (* (- (* x j) (* z k)) (- (* y0 b) (* y1 i))))
+             (* (- (* x y2) (* z y3)) (- (* y0 c) (* y1 a))))
+            (* (- (* t j) (* y k)) (- (* y4 b) (* y5 i))))
+           (* t_5 (- (* y4 c) (* y5 a))))
+          (* (- (* k y2) (* j y3)) (- (* y4 y1) (* y5 y0)))))
+        (t_14 (* -1.0 (* k (* z t_10)))))
+   (if (&lt;= t_13 (- INFINITY))
+     (fma
+      a
+      t_7
+      (-
+       (+
+        (*
+         (-
+          (+ (* t_10 x) (* y4 (+ (* t b) (* -1.0 (* y1 y3)))))
+          (+ (* -1.0 t_8) t_3))
+         j)
+        (+
+         (* (- (+ (* k (* y1 y2)) (* -1.0 (* k (* y b)))) t_6) y4)
+         (+
+          (* (- (* y x) (* t z)) t_12)
+          (+ (* (- (* x y2) (* y3 z)) t_11) t_14))))
+       (+ (* k (* y0 (* y5 y2))) (* -1.0 (* k (* i (* y y5)))))))
+     (if (&lt;= t_13 2e+303)
+       (fma
+        (fma y4 y1 (- (* y5 y0)))
+        (fma k y2 (- (* j y3)))
+        (+
+         (fma
+          (fma x y2 (- (* z y3)))
+          (fma y0 c (- (* y1 a)))
+          (fma
+           (fma x y (- (* z t)))
+           (fma a b (- (* c i)))
+           (* (fma x j (- (* z k))) (fma i y1 t_1))))
+         (fma
+          (fma t j (- (* y k)))
+          (fma y4 b (- (* y5 i)))
+          (* t_2 (fma y5 a (- (* y4 c)))))))
+       (if (&lt;= t_13 INFINITY)
+         (fma
+          a
+          t_7
+          (-
+           (+
+            (* y4 (- (+ (* t_4 b) (* y1 t_9)) t_6))
+            (+
+             (* -1.0 (* t (* z t_12)))
+             (+
+              (* (+ (* y t_12) (+ (* t_11 y2) (* j t_10))) x)
+              (+ (* -1.0 (* t_11 (* y3 z))) t_14))))
+           (+ (* i (* t_4 y5)) (* y0 (* y5 t_9)))))
+         (fma
+          a
+          t_7
+          (-
+           (*
+            (-
+             (+ (- (* (fma y1 i t_1) x)) (* y4 (fma y1 y3 (- (* t b)))))
+             (+ (- t_3) t_8))
+            j))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a, double b, double c, double i, double j, double k, double y0, double y1, double y2, double y3, double y4, double y5) {
+	return (((((((x * y) - (z * t)) * ((a * b) - (c * i))) - (((x * j) - (z * k)) * ((y0 * b) - (y1 * i)))) + (((x * y2) - (z * y3)) * ((y0 * c) - (y1 * a)))) + (((t * j) - (y * k)) * ((y4 * b) - (y5 * i)))) - (((t * y2) - (y * y3)) * ((y4 * c) - (y5 * a)))) + (((k * y2) - (j * y3)) * ((y4 * y1) - (y5 * y0)));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a, double b, double c, double i, double j, double k, double y0, double y1, double y2, double y3, double y4, double y5) {
+	double t_1 = -(y0 * b);
+	double t_2 = fma(t, y2, -(y * y3));
+	double t_3 = i * (t * y5);
+	double t_4 = (t * j) - (k * y);
+	double t_5 = (t * y2) - (y * y3);
+	double t_6 = c * t_5;
+	double t_7 = t_2 * y5;
+	double t_8 = y0 * (y3 * y5);
+	double t_9 = (k * y2) - (y3 * j);
+	double t_10 = (y1 * i) - (y0 * b);
+	double t_11 = (c * y0) - (y1 * a);
+	double t_12 = (a * b) - (c * i);
+	double t_13 = (((((((x * y) - (z * t)) * t_12) - (((x * j) - (z * k)) * ((y0 * b) - (y1 * i)))) + (((x * y2) - (z * y3)) * ((y0 * c) - (y1 * a)))) + (((t * j) - (y * k)) * ((y4 * b) - (y5 * i)))) - (t_5 * ((y4 * c) - (y5 * a)))) + (((k * y2) - (j * y3)) * ((y4 * y1) - (y5 * y0)));
+	double t_14 = -1.0 * (k * (z * t_10));
+	double tmp;
+	if (t_13 &lt;= -((double) INFINITY)) {
+		tmp = fma(a, t_7, ((((((t_10 * x) + (y4 * ((t * b) + (-1.0 * (y1 * y3))))) - ((-1.0 * t_8) + t_3)) * j) + (((((k * (y1 * y2)) + (-1.0 * (k * (y * b)))) - t_6) * y4) + ((((y * x) - (t * z)) * t_12) + ((((x * y2) - (y3 * z)) * t_11) + t_14)))) - ((k * (y0 * (y5 * y2))) + (-1.0 * (k * (i * (y * y5)))))));
+	} else if (t_13 &lt;= 2e+303) {
+		tmp = fma(fma(y4, y1, -(y5 * y0)), fma(k, y2, -(j * y3)), (fma(fma(x, y2, -(z * y3)), fma(y0, c, -(y1 * a)), fma(fma(x, y, -(z * t)), fma(a, b, -(c * i)), (fma(x, j, -(z * k)) * fma(i, y1, t_1)))) + fma(fma(t, j, -(y * k)), fma(y4, b, -(y5 * i)), (t_2 * fma(y5, a, -(y4 * c))))));
+	} else if (t_13 &lt;= ((double) INFINITY)) {
+		tmp = fma(a, t_7, (((y4 * (((t_4 * b) + (y1 * t_9)) - t_6)) + ((-1.0 * (t * (z * t_12))) + ((((y * t_12) + ((t_11 * y2) + (j * t_10))) * x) + ((-1.0 * (t_11 * (y3 * z))) + t_14)))) - ((i * (t_4 * y5)) + (y0 * (y5 * t_9)))));
+	} else {
+		tmp = fma(a, t_7, -(((-(fma(y1, i, t_1) * x) + (y4 * fma(y1, y3, -(t * b)))) - (-t_3 + t_8)) * j));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a, b, c, i, j, k, y0, y1, y2, y3, y4, y5)
+	return Float64(Float64(Float64(Float64(Float64(Float64(Float64(Float64(x * y) - Float64(z * t)) * Float64(Float64(a * b) - Float64(c * i))) - Float64(Float64(Float64(x * j) - Float64(z * k)) * Float64(Float64(y0 * b) - Float64(y1 * i)))) + Float64(Float64(Float64(x * y2) - Float64(z * y3)) * Float64(Float64(y0 * c) - Float64(y1 * a)))) + Float64(Float64(Float64(t * j) - Float64(y * k)) * Float64(Float64(y4 * b) - Float64(y5 * i)))) - Float64(Float64(Float64(t * y2) - Float64(y * y3)) * Float64(Float64(y4 * c) - Float64(y5 * a)))) + Float64(Float64(Float64(k * y2) - Float64(j * y3)) * Float64(Float64(y4 * y1) - Float64(y5 * y0))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a, b, c, i, j, k, y0, y1, y2, y3, y4, y5)
+	t_1 = Float64(-Float64(y0 * b))
+	t_2 = fma(t, y2, Float64(-Float64(y * y3)))
+	t_3 = Float64(i * Float64(t * y5))
+	t_4 = Float64(Float64(t * j) - Float64(k * y))
+	t_5 = Float64(Float64(t * y2) - Float64(y * y3))
+	t_6 = Float64(c * t_5)
+	t_7 = Float64(t_2 * y5)
+	t_8 = Float64(y0 * Float64(y3 * y5))
+	t_9 = Float64(Float64(k * y2) - Float64(y3 * j))
+	t_10 = Float64(Float64(y1 * i) - Float64(y0 * b))
+	t_11 = Float64(Float64(c * y0) - Float64(y1 * a))
+	t_12 = Float64(Float64(a * b) - Float64(c * i))
+	t_13 = Float64(Float64(Float64(Float64(Float64(Float64(Float64(Float64(x * y) - Float64(z * t)) * t_12) - Float64(Float64(Float64(x * j) - Float64(z * k)) * Float64(Float64(y0 * b) - Float64(y1 * i)))) + Float64(Float64(Float64(x * y2) - Float64(z * y3)) * Float64(Float64(y0 * c) - Float64(y1 * a)))) + Float64(Float64(Float64(t * j) - Float64(y * k)) * Float64(Float64(y4 * b) - Float64(y5 * i)))) - Float64(t_5 * Float64(Float64(y4 * c) - Float64(y5 * a)))) + Float64(Float64(Float64(k * y2) - Float64(j * y3)) * Float64(Float64(y4 * y1) - Float64(y5 * y0))))
+	t_14 = Float64(-1.0 * Float64(k * Float64(z * t_10)))
+	tmp = 0.0
+	if (t_13 &lt;= Float64(-Inf))
+		tmp = fma(a, t_7, Float64(Float64(Float64(Float64(Float64(Float64(t_10 * x) + Float64(y4 * Float64(Float64(t * b) + Float64(-1.0 * Float64(y1 * y3))))) - Float64(Float64(-1.0 * t_8) + t_3)) * j) + Float64(Float64(Float64(Float64(Float64(k * Float64(y1 * y2)) + Float64(-1.0 * Float64(k * Float64(y * b)))) - t_6) * y4) + Float64(Float64(Float64(Float64(y * x) - Float64(t * z)) * t_12) + Float64(Float64(Float64(Float64(x * y2) - Float64(y3 * z)) * t_11) + t_14)))) - Float64(Float64(k * Float64(y0 * Float64(y5 * y2))) + Float64(-1.0 * Float64(k * Float64(i * Float64(y * y5)))))));
+	elseif (t_13 &lt;= 2e+303)
+		tmp = fma(fma(y4, y1, Float64(-Float64(y5 * y0))), fma(k, y2, Float64(-Float64(j * y3))), Float64(fma(fma(x, y2, Float64(-Float64(z * y3))), fma(y0, c, Float64(-Float64(y1 * a))), fma(fma(x, y, Float64(-Float64(z * t))), fma(a, b, Float64(-Float64(c * i))), Float64(fma(x, j, Float64(-Float64(z * k))) * fma(i, y1, t_1)))) + fma(fma(t, j, Float64(-Float64(y * k))), fma(y4, b, Float64(-Float64(y5 * i))), Float64(t_2 * fma(y5, a, Float64(-Float64(y4 * c)))))));
+	elseif (t_13 &lt;= Inf)
+		tmp = fma(a, t_7, Float64(Float64(Float64(y4 * Float64(Float64(Float64(t_4 * b) + Float64(y1 * t_9)) - t_6)) + Float64(Float64(-1.0 * Float64(t * Float64(z * t_12))) + Float64(Float64(Float64(Float64(y * t_12) + Float64(Float64(t_11 * y2) + Float64(j * t_10))) * x) + Float64(Float64(-1.0 * Float64(t_11 * Float64(y3 * z))) + t_14)))) - Float64(Float64(i * Float64(t_4 * y5)) + Float64(y0 * Float64(y5 * t_9)))));
+	else
+		tmp = fma(a, t_7, Float64(-Float64(Float64(Float64(Float64(-Float64(fma(y1, i, t_1) * x)) + Float64(y4 * fma(y1, y3, Float64(-Float64(t * b))))) - Float64(Float64(-t_3) + t_8)) * j)));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_, b_, c_, i_, j_, k_, y0_, y1_, y2_, y3_, y4_, y5_] := N[(N[(N[(N[(N[(N[(N[(N[(x * y), $MachinePrecision] - N[(z * t), $MachinePrecision]), $MachinePrecision] * N[(N[(a * b), $MachinePrecision] - N[(c * i), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - N[(N[(N[(x * j), $MachinePrecision] - N[(z * k), $MachinePrecision]), $MachinePrecision] * N[(N[(y0 * b), $MachinePrecision] - N[(y1 * i), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(N[(N[(x * y2), $MachinePrecision] - N[(z * y3), $MachinePrecision]), $MachinePrecision] * N[(N[(y0 * c), $MachinePrecision] - N[(y1 * a), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(N[(N[(t * j), $MachinePrecision] - N[(y * k), $MachinePrecision]), $MachinePrecision] * N[(N[(y4 * b), $MachinePrecision] - N[(y5 * i), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - N[(N[(N[(t * y2), $MachinePrecision] - N[(y * y3), $MachinePrecision]), $MachinePrecision] * N[(N[(y4 * c), $MachinePrecision] - N[(y5 * a), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(N[(N[(k * y2), $MachinePrecision] - N[(j * y3), $MachinePrecision]), $MachinePrecision] * N[(N[(y4 * y1), $MachinePrecision] - N[(y5 * y0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_, b_, c_, i_, j_, k_, y0_, y1_, y2_, y3_, y4_, y5_] := Block[{t$95$1 = (-N[(y0 * b), $MachinePrecision])}, Block[{t$95$2 = N[(t * y2 + (-N[(y * y3), $MachinePrecision])), $MachinePrecision]}, Block[{t$95$3 = N[(i * N[(t * y5), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$4 = N[(N[(t * j), $MachinePrecision] - N[(k * y), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$5 = N[(N[(t * y2), $MachinePrecision] - N[(y * y3), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$6 = N[(c * t$95$5), $MachinePrecision]}, Block[{t$95$7 = N[(t$95$2 * y5), $MachinePrecision]}, Block[{t$95$8 = N[(y0 * N[(y3 * y5), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$9 = N[(N[(k * y2), $MachinePrecision] - N[(y3 * j), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$10 = N[(N[(y1 * i), $MachinePrecision] - N[(y0 * b), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$11 = N[(N[(c * y0), $MachinePrecision] - N[(y1 * a), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$12 = N[(N[(a * b), $MachinePrecision] - N[(c * i), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$13 = N[(N[(N[(N[(N[(N[(N[(N[(x * y), $MachinePrecision] - N[(z * t), $MachinePrecision]), $MachinePrecision] * t$95$12), $MachinePrecision] - N[(N[(N[(x * j), $MachinePrecision] - N[(z * k), $MachinePrecision]), $MachinePrecision] * N[(N[(y0 * b), $MachinePrecision] - N[(y1 * i), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(N[(N[(x * y2), $MachinePrecision] - N[(z * y3), $MachinePrecision]), $MachinePrecision] * N[(N[(y0 * c), $MachinePrecision] - N[(y1 * a), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(N[(N[(t * j), $MachinePrecision] - N[(y * k), $MachinePrecision]), $MachinePrecision] * N[(N[(y4 * b), $MachinePrecision] - N[(y5 * i), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - N[(t$95$5 * N[(N[(y4 * c), $MachinePrecision] - N[(y5 * a), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(N[(N[(k * y2), $MachinePrecision] - N[(j * y3), $MachinePrecision]), $MachinePrecision] * N[(N[(y4 * y1), $MachinePrecision] - N[(y5 * y0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$14 = N[(-1.0 * N[(k * N[(z * t$95$10), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[t$95$13, (-Infinity)], N[(a * t$95$7 + N[(N[(N[(N[(N[(N[(t$95$10 * x), $MachinePrecision] + N[(y4 * N[(N[(t * b), $MachinePrecision] + N[(-1.0 * N[(y1 * y3), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - N[(N[(-1.0 * t$95$8), $MachinePrecision] + t$95$3), $MachinePrecision]), $MachinePrecision] * j), $MachinePrecision] + N[(N[(N[(N[(N[(k * N[(y1 * y2), $MachinePrecision]), $MachinePrecision] + N[(-1.0 * N[(k * N[(y * b), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - t$95$6), $MachinePrecision] * y4), $MachinePrecision] + N[(N[(N[(N[(y * x), $MachinePrecision] - N[(t * z), $MachinePrecision]), $MachinePrecision] * t$95$12), $MachinePrecision] + N[(N[(N[(N[(x * y2), $MachinePrecision] - N[(y3 * z), $MachinePrecision]), $MachinePrecision] * t$95$11), $MachinePrecision] + t$95$14), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - N[(N[(k * N[(y0 * N[(y5 * y2), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(-1.0 * N[(k * N[(i * N[(y * y5), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], If[LessEqual[t$95$13, 2e+303], N[(N[(y4 * y1 + (-N[(y5 * y0), $MachinePrecision])), $MachinePrecision] * N[(k * y2 + (-N[(j * y3), $MachinePrecision])), $MachinePrecision] + N[(N[(N[(x * y2 + (-N[(z * y3), $MachinePrecision])), $MachinePrecision] * N[(y0 * c + (-N[(y1 * a), $MachinePrecision])), $MachinePrecision] + N[(N[(x * y + (-N[(z * t), $MachinePrecision])), $MachinePrecision] * N[(a * b + (-N[(c * i), $MachinePrecision])), $MachinePrecision] + N[(N[(x * j + (-N[(z * k), $MachinePrecision])), $MachinePrecision] * N[(i * y1 + t$95$1), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(N[(t * j + (-N[(y * k), $MachinePrecision])), $MachinePrecision] * N[(y4 * b + (-N[(y5 * i), $MachinePrecision])), $MachinePrecision] + N[(t$95$2 * N[(y5 * a + (-N[(y4 * c), $MachinePrecision])), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], If[LessEqual[t$95$13, Infinity], N[(a * t$95$7 + N[(N[(N[(y4 * N[(N[(N[(t$95$4 * b), $MachinePrecision] + N[(y1 * t$95$9), $MachinePrecision]), $MachinePrecision] - t$95$6), $MachinePrecision]), $MachinePrecision] + N[(N[(-1.0 * N[(t * N[(z * t$95$12), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(N[(N[(N[(y * t$95$12), $MachinePrecision] + N[(N[(t$95$11 * y2), $MachinePrecision] + N[(j * t$95$10), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * x), $MachinePrecision] + N[(N[(-1.0 * N[(t$95$11 * N[(y3 * z), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + t$95$14), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - N[(N[(i * N[(t$95$4 * y5), $MachinePrecision]), $MachinePrecision] + N[(y0 * N[(y5 * t$95$9), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], N[(a * t$95$7 + (-N[(N[(N[((-N[(N[(y1 * i + t$95$1), $MachinePrecision] * x), $MachinePrecision]) + N[(y4 * N[(y1 * y3 + (-N[(t * b), $MachinePrecision])), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - N[((-t$95$3) + t$95$8), $MachinePrecision]), $MachinePrecision] * j), $MachinePrecision])), $MachinePrecision]]]]]]]]]]]]]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(\left(\left(\left(\left(x \cdot y - z \cdot t\right) \cdot \left(a \cdot b - c \cdot i\right) - \left(x \cdot j - z \cdot k\right) \cdot \left(y0 \cdot b - y1 \cdot i\right)\right) + \left(x \cdot y2 - z \cdot y3\right) \cdot \left(y0 \cdot c - y1 \cdot a\right)\right) + \left(t \cdot j - y \cdot k\right) \cdot \left(y4 \cdot b - y5 \cdot i\right)\right) - \left(t \cdot y2 - y \cdot y3\right) \cdot \left(y4 \cdot c - y5 \cdot a\right)\right) + \left(k \cdot y2 - j \cdot y3\right) \cdot \left(y4 \cdot y1 - y5 \cdot y0\right)
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := -y0 \cdot b\\
+t_2 := \mathsf{fma}\left(t, y2, -y \cdot y3\right)\\
+t_3 := i \cdot \left(t \cdot y5\right)\\
+t_4 := t \cdot j - k \cdot y\\
+t_5 := t \cdot y2 - y \cdot y3\\
+t_6 := c \cdot t_5\\
+t_7 := t_2 \cdot y5\\
+t_8 := y0 \cdot \left(y3 \cdot y5\right)\\
+t_9 := k \cdot y2 - y3 \cdot j\\
+t_10 := y1 \cdot i - y0 \cdot b\\
+t_11 := c \cdot y0 - y1 \cdot a\\
+t_12 := a \cdot b - c \cdot i\\
+t_13 := \left(\left(\left(\left(\left(x \cdot y - z \cdot t\right) \cdot t_12 - \left(x \cdot j - z \cdot k\right) \cdot \left(y0 \cdot b - y1 \cdot i\right)\right) + \left(x \cdot y2 - z \cdot y3\right) \cdot \left(y0 \cdot c - y1 \cdot a\right)\right) + \left(t \cdot j - y \cdot k\right) \cdot \left(y4 \cdot b - y5 \cdot i\right)\right) - t_5 \cdot \left(y4 \cdot c - y5 \cdot a\right)\right) + \left(k \cdot y2 - j \cdot y3\right) \cdot \left(y4 \cdot y1 - y5 \cdot y0\right)\\
+t_14 := -1 \cdot \left(k \cdot \left(z \cdot t_10\right)\right)\\
+\mathbf{if}\;t_13 \leq -\infty:\\
+\;\;\;\;\mathsf{fma}\left(a, t_7, \left(\left(\left(t_10 \cdot x + y4 \cdot \left(t \cdot b + -1 \cdot \left(y1 \cdot y3\right)\right)\right) - \left(-1 \cdot t_8 + t_3\right)\right) \cdot j + \left(\left(\left(k \cdot \left(y1 \cdot y2\right) + -1 \cdot \left(k \cdot \left(y \cdot b\right)\right)\right) - t_6\right) \cdot y4 + \left(\left(y \cdot x - t \cdot z\right) \cdot t_12 + \left(\left(x \cdot y2 - y3 \cdot z\right) \cdot t_11 + t_14\right)\right)\right)\right) - \left(k \cdot \left(y0 \cdot \left(y5 \cdot y2\right)\right) + -1 \cdot \left(k \cdot \left(i \cdot \left(y \cdot y5\right)\right)\right)\right)\right)\\
+
+\mathbf{elif}\;t_13 \leq 2 \cdot 10^{+303}:\\
+\;\;\;\;\mathsf{fma}\left(\mathsf{fma}\left(y4, y1, -y5 \cdot y0\right), \mathsf{fma}\left(k, y2, -j \cdot y3\right), \mathsf{fma}\left(\mathsf{fma}\left(x, y2, -z \cdot y3\right), \mathsf{fma}\left(y0, c, -y1 \cdot a\right), \mathsf{fma}\left(\mathsf{fma}\left(x, y, -z \cdot t\right), \mathsf{fma}\left(a, b, -c \cdot i\right), \mathsf{fma}\left(x, j, -z \cdot k\right) \cdot \mathsf{fma}\left(i, y1, t_1\right)\right)\right) + \mathsf{fma}\left(\mathsf{fma}\left(t, j, -y \cdot k\right), \mathsf{fma}\left(y4, b, -y5 \cdot i\right), t_2 \cdot \mathsf{fma}\left(y5, a, -y4 \cdot c\right)\right)\right)\\
+
+\mathbf{elif}\;t_13 \leq \infty:\\
+\;\;\;\;\mathsf{fma}\left(a, t_7, \left(y4 \cdot \left(\left(t_4 \cdot b + y1 \cdot t_9\right) - t_6\right) + \left(-1 \cdot \left(t \cdot \left(z \cdot t_12\right)\right) + \left(\left(y \cdot t_12 + \left(t_11 \cdot y2 + j \cdot t_10\right)\right) \cdot x + \left(-1 \cdot \left(t_11 \cdot \left(y3 \cdot z\right)\right) + t_14\right)\right)\right)\right) - \left(i \cdot \left(t_4 \cdot y5\right) + y0 \cdot \left(y5 \cdot t_9\right)\right)\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(a, t_7, -\left(\left(\left(-\mathsf{fma}\left(y1, i, t_1\right) \cdot x\right) + y4 \cdot \mathsf{fma}\left(y1, y3, -t \cdot b\right)\right) - \left(\left(-t_3\right) + t_8\right)\right) \cdot j\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>26.7</td></tr><tr><th>Target</th><td>30.5</td></tr><tr><th>Herbie</th><td>20.0</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;y4 &lt; -7.206256231996481 \cdot 10^{+60}:\\
+\;\;\;\;\left(\left(b \cdot a - i \cdot c\right) \cdot \left(y \cdot x - t \cdot z\right) - \left(\left(j \cdot x - k \cdot z\right) \cdot \left(y0 \cdot b - i \cdot y1\right) - \left(j \cdot t - k \cdot y\right) \cdot \left(y4 \cdot b - y5 \cdot i\right)\right)\right) - \left(\frac{y2 \cdot t - y3 \cdot y}{\frac{1}{y4 \cdot c - y5 \cdot a}} - \left(y2 \cdot k - y3 \cdot j\right) \cdot \left(y4 \cdot y1 - y5 \cdot y0\right)\right)\\
+
+\mathbf{elif}\;y4 &lt; -3.364603505246317 \cdot 10^{-66}:\\
+\;\;\;\;\left(\left(\left(\left(t \cdot c\right) \cdot \left(i \cdot z\right) - \left(a \cdot t\right) \cdot \left(b \cdot z\right)\right) - \left(y \cdot c\right) \cdot \left(i \cdot x\right)\right) - \left(b \cdot y0 - i \cdot y1\right) \cdot \left(j \cdot x - k \cdot z\right)\right) + \left(\left(y0 \cdot c - a \cdot y1\right) \cdot \left(x \cdot y2 - z \cdot y3\right) - \left(\left(t \cdot y2 - y \cdot y3\right) \cdot \left(y4 \cdot c - a \cdot y5\right) - \left(y1 \cdot y4 - y5 \cdot y0\right) \cdot \left(k \cdot y2 - j \cdot y3\right)\right)\right)\\
+
+\mathbf{elif}\;y4 &lt; -1.2000065055686116 \cdot 10^{-105}:\\
+\;\;\;\;\left(\left(\left(j \cdot t - k \cdot y\right) \cdot \left(y4 \cdot b - y5 \cdot i\right) - \left(y3 \cdot y\right) \cdot \left(y5 \cdot a - y4 \cdot c\right)\right) + \left(\left(y5 \cdot a\right) \cdot \left(t \cdot y2\right) + \left(k \cdot y2 - j \cdot y3\right) \cdot \left(y4 \cdot y1 - y5 \cdot y0\right)\right)\right) + \left(\left(x \cdot y2 - z \cdot y3\right) \cdot \left(c \cdot y0 - a \cdot y1\right) - \left(\left(b \cdot y0 - i \cdot y1\right) \cdot \left(j \cdot x - k \cdot z\right) - \left(y \cdot x - z \cdot t\right) \cdot \left(b \cdot a - i \cdot c\right)\right)\right)\\
+
+\mathbf{elif}\;y4 &lt; 6.718963124057495 \cdot 10^{-279}:\\
+\;\;\;\;\left(\left(\left(\left(k \cdot y\right) \cdot \left(y5 \cdot i\right) - \left(y \cdot b\right) \cdot \left(y4 \cdot k\right)\right) - \left(y5 \cdot t\right) \cdot \left(i \cdot j\right)\right) - \left(\left(y2 \cdot t - y3 \cdot y\right) \cdot \left(y4 \cdot c - y5 \cdot a\right) - \left(y2 \cdot k - y3 \cdot j\right) \cdot \left(y4 \cdot y1 - y5 \cdot y0\right)\right)\right) + \left(\left(b \cdot a - i \cdot c\right) \cdot \left(y \cdot x - t \cdot z\right) - \left(\left(j \cdot x - k \cdot z\right) \cdot \left(y0 \cdot b - i \cdot y1\right) - \left(y2 \cdot x - y3 \cdot z\right) \cdot \left(c \cdot y0 - y1 \cdot a\right)\right)\right)\\
+
+\mathbf{elif}\;y4 &lt; 4.77962681403792 \cdot 10^{-222}:\\
+\;\;\;\;\left(\left(\left(j \cdot t - k \cdot y\right) \cdot \left(y4 \cdot b - y5 \cdot i\right) - \left(y3 \cdot y\right) \cdot \left(y5 \cdot a - y4 \cdot c\right)\right) + \left(\left(y5 \cdot a\right) \cdot \left(t \cdot y2\right) + \left(k \cdot y2 - j \cdot y3\right) \cdot \left(y4 \cdot y1 - y5 \cdot y0\right)\right)\right) + \left(\left(x \cdot y2 - z \cdot y3\right) \cdot \left(c \cdot y0 - a \cdot y1\right) - \left(\left(b \cdot y0 - i \cdot y1\right) \cdot \left(j \cdot x - k \cdot z\right) - \left(y \cdot x - z \cdot t\right) \cdot \left(b \cdot a - i \cdot c\right)\right)\right)\\
+
+\mathbf{elif}\;y4 &lt; 2.2852241541266835 \cdot 10^{-175}:\\
+\;\;\;\;\left(\left(\left(\left(k \cdot y\right) \cdot \left(y5 \cdot i\right) - \left(y \cdot b\right) \cdot \left(y4 \cdot k\right)\right) - \left(y5 \cdot t\right) \cdot \left(i \cdot j\right)\right) - \left(\left(y2 \cdot t - y3 \cdot y\right) \cdot \left(y4 \cdot c - y5 \cdot a\right) - \left(y2 \cdot k - y3 \cdot j\right) \cdot \left(y4 \cdot y1 - y5 \cdot y0\right)\right)\right) + \left(\left(b \cdot a - i \cdot c\right) \cdot \left(y \cdot x - t \cdot z\right) - \left(\left(j \cdot x - k \cdot z\right) \cdot \left(y0 \cdot b - i \cdot y1\right) - \left(y2 \cdot x - y3 \cdot z\right) \cdot \left(c \cdot y0 - y1 \cdot a\right)\right)\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\left(\left(\left(\left(\left(x \cdot y - z \cdot t\right) \cdot \left(a \cdot b - c \cdot i\right) - \left(k \cdot \left(i \cdot \left(z \cdot y1\right)\right) - \left(j \cdot \left(i \cdot \left(x \cdot y1\right)\right) + y0 \cdot \left(k \cdot \left(z \cdot b\right)\right)\right)\right)\right) + \left(z \cdot \left(y3 \cdot \left(a \cdot y1\right)\right) - \left(y2 \cdot \left(x \cdot \left(a \cdot y1\right)\right) + y0 \cdot \left(z \cdot \left(c \cdot y3\right)\right)\right)\right)\right) + \left(t \cdot j - y \cdot k\right) \cdot \left(y4 \cdot b - y5 \cdot i\right)\right) - \left(t \cdot y2 - y \cdot y3\right) \cdot \left(y4 \cdot c - y5 \cdot a\right)\right) + \left(k \cdot y2 - j \cdot y3\right) \cdot \left(y4 \cdot y1 - y5 \cdot y0\right)\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 4 regimes</li><li><h2><code>if <span class="condition"> (+.f64 (-.f64 (+.f64 (+.f64 (-.f64 (*.f64 (-.f64 (*.f64 x y) (*.f64 z t)) (-.f64 (*.f64 a b) (*.f64 c i))) (*.f64 (-.f64 (*.f64 x j) (*.f64 z k)) (-.f64 (*.f64 y0 b) (*.f64 y1 i)))) (*.f64 (-.f64 (*.f64 x y2) (*.f64 z y3)) (-.f64 (*.f64 y0 c) (*.f64 y1 a)))) (*.f64 (-.f64 (*.f64 t j) (*.f64 y k)) (-.f64 (*.f64 y4 b) (*.f64 y5 i)))) (*.f64 (-.f64 (*.f64 t y2) (*.f64 y y3)) (-.f64 (*.f64 y4 c) (*.f64 y5 a)))) (*.f64 (-.f64 (*.f64 k y2) (*.f64 j y3)) (-.f64 (*.f64 y4 y1) (*.f64 y5 y0))))  &lt; -inf.0</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\left(\left(\left(\left(\left(x \cdot y - z \cdot t\right) \cdot \left(a \cdot b - c \cdot i\right) - \left(x \cdot j - z \cdot k\right) \cdot \left(y0 \cdot b - y1 \cdot i\right)\right) + \left(x \cdot y2 - z \cdot y3\right) \cdot \left(y0 \cdot c - y1 \cdot a\right)\right) + \left(t \cdot j - y \cdot k\right) \cdot \left(y4 \cdot b - y5 \cdot i\right)\right) - \left(t \cdot y2 - y \cdot y3\right) \cdot \left(y4 \cdot c - y5 \cdot a\right)\right) + \left(k \cdot y2 - j \cdot y3\right) \cdot \left(y4 \cdot y1 - y5 \cdot y0\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\mathsf{fma}\left(y4, y1, -y5 \cdot y0\right), \mathsf{fma}\left(k, y2, -j \cdot y3\right), \mathsf{fma}\left(\mathsf{fma}\left(x, y2, -z \cdot y3\right), \mathsf{fma}\left(y0, c, -y1 \cdot a\right), \mathsf{fma}\left(\mathsf{fma}\left(x, y, -z \cdot t\right), \mathsf{fma}\left(a, b, -c \cdot i\right), \mathsf{fma}\left(x, j, -z \cdot k\right) \cdot \mathsf{fma}\left(i, y1, -y0 \cdot b\right)\right)\right) + \mathsf{fma}\left(\mathsf{fma}\left(t, j, -y \cdot k\right), \mathsf{fma}\left(y4, b, -y5 \cdot i\right), \mathsf{fma}\left(t, y2, -y \cdot y3\right) \cdot \mathsf{fma}\left(y5, a, -y4 \cdot c\right)\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in y4 around 0 <span class="error" title="Internally 45.0">50.6</span></p><div class="math">\[\leadsto \color{blue}{a \cdot \left(\left(t \cdot y2 - y \cdot y3\right) \cdot y5\right) + \left(\left(c \cdot y0 - a \cdot y1\right) \cdot \left(y2 \cdot x - y3 \cdot z\right) + \left(-1 \cdot \left(i \cdot \left(\left(t \cdot j - k \cdot y\right) \cdot y5\right)\right) + \left(-1 \cdot \left(y0 \cdot \left(y5 \cdot \left(k \cdot y2 - y3 \cdot j\right)\right)\right) + \left(\left(i \cdot y1 - y0 \cdot b\right) \cdot \left(j \cdot x - k \cdot z\right) + \left(\left(y \cdot x - t \cdot z\right) \cdot \left(a \cdot b - c \cdot i\right) + y4 \cdot \left(\left(t \cdot j - k \cdot y\right) \cdot b + \left(y1 \cdot \left(k \cdot y2 - y3 \cdot j\right) + -1 \cdot \left(c \cdot \left(t \cdot y2 - y \cdot y3\right)\right)\right)\right)\right)\right)\right)\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 45.0">50.6</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(a, \mathsf{fma}\left(t, y2, -y \cdot y3\right) \cdot y5, \mathsf{fma}\left(\mathsf{fma}\left(c, y0, -a \cdot y1\right), \mathsf{fma}\left(y2, x, -y3 \cdot z\right), \left(-i \cdot \left(\mathsf{fma}\left(t, j, -k \cdot y\right) \cdot y5\right)\right) + \left(\left(-y0 \cdot \left(y5 \cdot \mathsf{fma}\left(k, y2, -y3 \cdot j\right)\right)\right) + \mathsf{fma}\left(\mathsf{fma}\left(i, y1, -y0 \cdot b\right), \mathsf{fma}\left(j, x, -k \cdot z\right), \mathsf{fma}\left(\mathsf{fma}\left(y, x, -t \cdot z\right), \mathsf{fma}\left(a, b, -c \cdot i\right), y4 \cdot \mathsf{fma}\left(\mathsf{fma}\left(t, j, -k \cdot y\right), b, \mathsf{fma}\left(y1, \mathsf{fma}\left(k, y2, -y3 \cdot j\right), -c \cdot \mathsf{fma}\left(t, y2, -y \cdot y3\right)\right)\right)\right)\right)\right)\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in j around 0 <span class="error" title="Internally 32.2">44.5</span></p><div class="math">\[\leadsto \mathsf{fma}\left(a, \mathsf{fma}\left(t, y2, -y \cdot y3\right) \cdot y5, \color{blue}{\left(\left(\left(\left(y1 \cdot i - y0 \cdot b\right) \cdot x + y4 \cdot \left(t \cdot b + -1 \cdot \left(y1 \cdot y3\right)\right)\right) - \left(-1 \cdot \left(y0 \cdot \left(y3 \cdot y5\right)\right) + i \cdot \left(t \cdot y5\right)\right)\right) \cdot j + \left(\left(\left(k \cdot \left(y1 \cdot y2\right) + -1 \cdot \left(k \cdot \left(y \cdot b\right)\right)\right) - c \cdot \left(t \cdot y2 - y \cdot y3\right)\right) \cdot y4 + \left(\left(y \cdot x - t \cdot z\right) \cdot \left(a \cdot b - c \cdot i\right) + \left(\left(x \cdot y2 - y3 \cdot z\right) \cdot \left(c \cdot y0 - y1 \cdot a\right) + -1 \cdot \left(k \cdot \left(z \cdot \left(y1 \cdot i - y0 \cdot b\right)\right)\right)\right)\right)\right)\right) - \left(k \cdot \left(y0 \cdot \left(y5 \cdot y2\right)\right) + -1 \cdot \left(k \cdot \left(i \cdot \left(y \cdot y5\right)\right)\right)\right)}\right)
+\]</div></li></ol><h2><code>if <span class="condition">-inf.0 &lt;  (+.f64 (-.f64 (+.f64 (+.f64 (-.f64 (*.f64 (-.f64 (*.f64 x y) (*.f64 z t)) (-.f64 (*.f64 a b) (*.f64 c i))) (*.f64 (-.f64 (*.f64 x j) (*.f64 z k)) (-.f64 (*.f64 y0 b) (*.f64 y1 i)))) (*.f64 (-.f64 (*.f64 x y2) (*.f64 z y3)) (-.f64 (*.f64 y0 c) (*.f64 y1 a)))) (*.f64 (-.f64 (*.f64 t j) (*.f64 y k)) (-.f64 (*.f64 y4 b) (*.f64 y5 i)))) (*.f64 (-.f64 (*.f64 t y2) (*.f64 y y3)) (-.f64 (*.f64 y4 c) (*.f64 y5 a)))) (*.f64 (-.f64 (*.f64 k y2) (*.f64 j y3)) (-.f64 (*.f64 y4 y1) (*.f64 y5 y0))))  &lt; 2e303</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.3">0.7</span></p><div class="math">\[\left(\left(\left(\left(\left(x \cdot y - z \cdot t\right) \cdot \left(a \cdot b - c \cdot i\right) - \left(x \cdot j - z \cdot k\right) \cdot \left(y0 \cdot b - y1 \cdot i\right)\right) + \left(x \cdot y2 - z \cdot y3\right) \cdot \left(y0 \cdot c - y1 \cdot a\right)\right) + \left(t \cdot j - y \cdot k\right) \cdot \left(y4 \cdot b - y5 \cdot i\right)\right) - \left(t \cdot y2 - y \cdot y3\right) \cdot \left(y4 \cdot c - y5 \cdot a\right)\right) + \left(k \cdot y2 - j \cdot y3\right) \cdot \left(y4 \cdot y1 - y5 \cdot y0\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.3">0.7</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\mathsf{fma}\left(y4, y1, -y5 \cdot y0\right), \mathsf{fma}\left(k, y2, -j \cdot y3\right), \mathsf{fma}\left(\mathsf{fma}\left(x, y2, -z \cdot y3\right), \mathsf{fma}\left(y0, c, -y1 \cdot a\right), \mathsf{fma}\left(\mathsf{fma}\left(x, y, -z \cdot t\right), \mathsf{fma}\left(a, b, -c \cdot i\right), \mathsf{fma}\left(x, j, -z \cdot k\right) \cdot \mathsf{fma}\left(i, y1, -y0 \cdot b\right)\right)\right) + \mathsf{fma}\left(\mathsf{fma}\left(t, j, -y \cdot k\right), \mathsf{fma}\left(y4, b, -y5 \cdot i\right), \mathsf{fma}\left(t, y2, -y \cdot y3\right) \cdot \mathsf{fma}\left(y5, a, -y4 \cdot c\right)\right)\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">2e303 &lt;  (+.f64 (-.f64 (+.f64 (+.f64 (-.f64 (*.f64 (-.f64 (*.f64 x y) (*.f64 z t)) (-.f64 (*.f64 a b) (*.f64 c i))) (*.f64 (-.f64 (*.f64 x j) (*.f64 z k)) (-.f64 (*.f64 y0 b) (*.f64 y1 i)))) (*.f64 (-.f64 (*.f64 x y2) (*.f64 z y3)) (-.f64 (*.f64 y0 c) (*.f64 y1 a)))) (*.f64 (-.f64 (*.f64 t j) (*.f64 y k)) (-.f64 (*.f64 y4 b) (*.f64 y5 i)))) (*.f64 (-.f64 (*.f64 t y2) (*.f64 y y3)) (-.f64 (*.f64 y4 c) (*.f64 y5 a)))) (*.f64 (-.f64 (*.f64 k y2) (*.f64 j y3)) (-.f64 (*.f64 y4 y1) (*.f64 y5 y0))))  &lt; +inf.0</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 64.0">61.0</span></p><div class="math">\[\left(\left(\left(\left(\left(x \cdot y - z \cdot t\right) \cdot \left(a \cdot b - c \cdot i\right) - \left(x \cdot j - z \cdot k\right) \cdot \left(y0 \cdot b - y1 \cdot i\right)\right) + \left(x \cdot y2 - z \cdot y3\right) \cdot \left(y0 \cdot c - y1 \cdot a\right)\right) + \left(t \cdot j - y \cdot k\right) \cdot \left(y4 \cdot b - y5 \cdot i\right)\right) - \left(t \cdot y2 - y \cdot y3\right) \cdot \left(y4 \cdot c - y5 \cdot a\right)\right) + \left(k \cdot y2 - j \cdot y3\right) \cdot \left(y4 \cdot y1 - y5 \cdot y0\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 64.0">61.0</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\mathsf{fma}\left(y4, y1, -y5 \cdot y0\right), \mathsf{fma}\left(k, y2, -j \cdot y3\right), \mathsf{fma}\left(\mathsf{fma}\left(x, y2, -z \cdot y3\right), \mathsf{fma}\left(y0, c, -y1 \cdot a\right), \mathsf{fma}\left(\mathsf{fma}\left(x, y, -z \cdot t\right), \mathsf{fma}\left(a, b, -c \cdot i\right), \mathsf{fma}\left(x, j, -z \cdot k\right) \cdot \mathsf{fma}\left(i, y1, -y0 \cdot b\right)\right)\right) + \mathsf{fma}\left(\mathsf{fma}\left(t, j, -y \cdot k\right), \mathsf{fma}\left(y4, b, -y5 \cdot i\right), \mathsf{fma}\left(t, y2, -y \cdot y3\right) \cdot \mathsf{fma}\left(y5, a, -y4 \cdot c\right)\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in y4 around 0 <span class="error" title="Internally 50.9">50.2</span></p><div class="math">\[\leadsto \color{blue}{a \cdot \left(\left(t \cdot y2 - y \cdot y3\right) \cdot y5\right) + \left(\left(c \cdot y0 - a \cdot y1\right) \cdot \left(y2 \cdot x - y3 \cdot z\right) + \left(-1 \cdot \left(i \cdot \left(\left(t \cdot j - k \cdot y\right) \cdot y5\right)\right) + \left(-1 \cdot \left(y0 \cdot \left(y5 \cdot \left(k \cdot y2 - y3 \cdot j\right)\right)\right) + \left(\left(i \cdot y1 - y0 \cdot b\right) \cdot \left(j \cdot x - k \cdot z\right) + \left(\left(y \cdot x - t \cdot z\right) \cdot \left(a \cdot b - c \cdot i\right) + y4 \cdot \left(\left(t \cdot j - k \cdot y\right) \cdot b + \left(y1 \cdot \left(k \cdot y2 - y3 \cdot j\right) + -1 \cdot \left(c \cdot \left(t \cdot y2 - y \cdot y3\right)\right)\right)\right)\right)\right)\right)\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 50.9">50.2</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(a, \mathsf{fma}\left(t, y2, -y \cdot y3\right) \cdot y5, \mathsf{fma}\left(\mathsf{fma}\left(c, y0, -a \cdot y1\right), \mathsf{fma}\left(y2, x, -y3 \cdot z\right), \left(-i \cdot \left(\mathsf{fma}\left(t, j, -k \cdot y\right) \cdot y5\right)\right) + \left(\left(-y0 \cdot \left(y5 \cdot \mathsf{fma}\left(k, y2, -y3 \cdot j\right)\right)\right) + \mathsf{fma}\left(\mathsf{fma}\left(i, y1, -y0 \cdot b\right), \mathsf{fma}\left(j, x, -k \cdot z\right), \mathsf{fma}\left(\mathsf{fma}\left(y, x, -t \cdot z\right), \mathsf{fma}\left(a, b, -c \cdot i\right), y4 \cdot \mathsf{fma}\left(\mathsf{fma}\left(t, j, -k \cdot y\right), b, \mathsf{fma}\left(y1, \mathsf{fma}\left(k, y2, -y3 \cdot j\right), -c \cdot \mathsf{fma}\left(t, y2, -y \cdot y3\right)\right)\right)\right)\right)\right)\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in x around 0 <span class="error" title="Internally 41.5">43.6</span></p><div class="math">\[\leadsto \mathsf{fma}\left(a, \mathsf{fma}\left(t, y2, -y \cdot y3\right) \cdot y5, \color{blue}{\left(y4 \cdot \left(\left(\left(t \cdot j - k \cdot y\right) \cdot b + y1 \cdot \left(k \cdot y2 - y3 \cdot j\right)\right) - c \cdot \left(t \cdot y2 - y \cdot y3\right)\right) + \left(-1 \cdot \left(t \cdot \left(z \cdot \left(a \cdot b - c \cdot i\right)\right)\right) + \left(\left(y \cdot \left(a \cdot b - c \cdot i\right) + \left(\left(c \cdot y0 - y1 \cdot a\right) \cdot y2 + j \cdot \left(y1 \cdot i - y0 \cdot b\right)\right)\right) \cdot x + \left(-1 \cdot \left(\left(c \cdot y0 - y1 \cdot a\right) \cdot \left(y3 \cdot z\right)\right) + -1 \cdot \left(k \cdot \left(z \cdot \left(y1 \cdot i - y0 \cdot b\right)\right)\right)\right)\right)\right)\right) - \left(i \cdot \left(\left(t \cdot j - k \cdot y\right) \cdot y5\right) + y0 \cdot \left(y5 \cdot \left(k \cdot y2 - y3 \cdot j\right)\right)\right)}\right)
+\]</div></li></ol><h2><code>if <span class="condition">+inf.0 &lt;  (+.f64 (-.f64 (+.f64 (+.f64 (-.f64 (*.f64 (-.f64 (*.f64 x y) (*.f64 z t)) (-.f64 (*.f64 a b) (*.f64 c i))) (*.f64 (-.f64 (*.f64 x j) (*.f64 z k)) (-.f64 (*.f64 y0 b) (*.f64 y1 i)))) (*.f64 (-.f64 (*.f64 x y2) (*.f64 z y3)) (-.f64 (*.f64 y0 c) (*.f64 y1 a)))) (*.f64 (-.f64 (*.f64 t j) (*.f64 y k)) (-.f64 (*.f64 y4 b) (*.f64 y5 i)))) (*.f64 (-.f64 (*.f64 t y2) (*.f64 y y3)) (-.f64 (*.f64 y4 c) (*.f64 y5 a)))) (*.f64 (-.f64 (*.f64 k y2) (*.f64 j y3)) (-.f64 (*.f64 y4 y1) (*.f64 y5 y0)))) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\left(\left(\left(\left(\left(x \cdot y - z \cdot t\right) \cdot \left(a \cdot b - c \cdot i\right) - \left(x \cdot j - z \cdot k\right) \cdot \left(y0 \cdot b - y1 \cdot i\right)\right) + \left(x \cdot y2 - z \cdot y3\right) \cdot \left(y0 \cdot c - y1 \cdot a\right)\right) + \left(t \cdot j - y \cdot k\right) \cdot \left(y4 \cdot b - y5 \cdot i\right)\right) - \left(t \cdot y2 - y \cdot y3\right) \cdot \left(y4 \cdot c - y5 \cdot a\right)\right) + \left(k \cdot y2 - j \cdot y3\right) \cdot \left(y4 \cdot y1 - y5 \cdot y0\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\mathsf{fma}\left(y4, y1, -y5 \cdot y0\right), \mathsf{fma}\left(k, y2, -j \cdot y3\right), \mathsf{fma}\left(\mathsf{fma}\left(x, y2, -z \cdot y3\right), \mathsf{fma}\left(y0, c, -y1 \cdot a\right), \mathsf{fma}\left(\mathsf{fma}\left(x, y, -z \cdot t\right), \mathsf{fma}\left(a, b, -c \cdot i\right), \mathsf{fma}\left(x, j, -z \cdot k\right) \cdot \mathsf{fma}\left(i, y1, -y0 \cdot b\right)\right)\right) + \mathsf{fma}\left(\mathsf{fma}\left(t, j, -y \cdot k\right), \mathsf{fma}\left(y4, b, -y5 \cdot i\right), \mathsf{fma}\left(t, y2, -y \cdot y3\right) \cdot \mathsf{fma}\left(y5, a, -y4 \cdot c\right)\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in y4 around 0 <span class="error" title="Internally 58.8">55.8</span></p><div class="math">\[\leadsto \color{blue}{a \cdot \left(\left(t \cdot y2 - y \cdot y3\right) \cdot y5\right) + \left(\left(c \cdot y0 - a \cdot y1\right) \cdot \left(y2 \cdot x - y3 \cdot z\right) + \left(-1 \cdot \left(i \cdot \left(\left(t \cdot j - k \cdot y\right) \cdot y5\right)\right) + \left(-1 \cdot \left(y0 \cdot \left(y5 \cdot \left(k \cdot y2 - y3 \cdot j\right)\right)\right) + \left(\left(i \cdot y1 - y0 \cdot b\right) \cdot \left(j \cdot x - k \cdot z\right) + \left(\left(y \cdot x - t \cdot z\right) \cdot \left(a \cdot b - c \cdot i\right) + y4 \cdot \left(\left(t \cdot j - k \cdot y\right) \cdot b + \left(y1 \cdot \left(k \cdot y2 - y3 \cdot j\right) + -1 \cdot \left(c \cdot \left(t \cdot y2 - y \cdot y3\right)\right)\right)\right)\right)\right)\right)\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 58.8">55.8</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(a, \mathsf{fma}\left(t, y2, -y \cdot y3\right) \cdot y5, \mathsf{fma}\left(\mathsf{fma}\left(c, y0, -a \cdot y1\right), \mathsf{fma}\left(y2, x, -y3 \cdot z\right), \left(-i \cdot \left(\mathsf{fma}\left(t, j, -k \cdot y\right) \cdot y5\right)\right) + \left(\left(-y0 \cdot \left(y5 \cdot \mathsf{fma}\left(k, y2, -y3 \cdot j\right)\right)\right) + \mathsf{fma}\left(\mathsf{fma}\left(i, y1, -y0 \cdot b\right), \mathsf{fma}\left(j, x, -k \cdot z\right), \mathsf{fma}\left(\mathsf{fma}\left(y, x, -t \cdot z\right), \mathsf{fma}\left(a, b, -c \cdot i\right), y4 \cdot \mathsf{fma}\left(\mathsf{fma}\left(t, j, -k \cdot y\right), b, \mathsf{fma}\left(y1, \mathsf{fma}\left(k, y2, -y3 \cdot j\right), -c \cdot \mathsf{fma}\left(t, y2, -y \cdot y3\right)\right)\right)\right)\right)\right)\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in j around -inf <span class="error" title="Internally 43.1">52.8</span></p><div class="math">\[\leadsto \mathsf{fma}\left(a, \mathsf{fma}\left(t, y2, -y \cdot y3\right) \cdot y5, \color{blue}{-1 \cdot \left(\left(\left(-1 \cdot \left(\left(y1 \cdot i - y0 \cdot b\right) \cdot x\right) + y4 \cdot \left(y1 \cdot y3 + -1 \cdot \left(t \cdot b\right)\right)\right) - \left(-1 \cdot \left(i \cdot \left(t \cdot y5\right)\right) + y0 \cdot \left(y3 \cdot y5\right)\right)\right) \cdot j\right)}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 43.1">52.8</span></p><div class="math">\[\leadsto \mathsf{fma}\left(a, \mathsf{fma}\left(t, y2, -y \cdot y3\right) \cdot y5, \color{blue}{-\left(\left(\left(-\mathsf{fma}\left(y1, i, -y0 \cdot b\right) \cdot x\right) + y4 \cdot \mathsf{fma}\left(y1, y3, -t \cdot b\right)\right) - \left(\left(-i \cdot \left(t \cdot y5\right)\right) + y0 \cdot \left(y3 \cdot y5\right)\right)\right) \cdot j}\right)
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 4 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y z t a b c i j k y0 y1 y2 y3 y4 y5)
+  :name "Linear.Matrix:det44 from linear-1.19.1.3"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; y4 -7.206256231996481e+60) (- (- (* (- (* b a) (* i c)) (- (* y x) (* t z))) (- (* (- (* j x) (* k z)) (- (* y0 b) (* i y1))) (* (- (* j t) (* k y)) (- (* y4 b) (* y5 i))))) (- (/ (- (* y2 t) (* y3 y)) (/ 1.0 (- (* y4 c) (* y5 a)))) (* (- (* y2 k) (* y3 j)) (- (* y4 y1) (* y5 y0))))) (if (&lt; y4 -3.364603505246317e-66) (+ (- (- (- (* (* t c) (* i z)) (* (* a t) (* b z))) (* (* y c) (* i x))) (* (- (* b y0) (* i y1)) (- (* j x) (* k z)))) (- (* (- (* y0 c) (* a y1)) (- (* x y2) (* z y3))) (- (* (- (* t y2) (* y y3)) (- (* y4 c) (* a y5))) (* (- (* y1 y4) (* y5 y0)) (- (* k y2) (* j y3)))))) (if (&lt; y4 -1.2000065055686116e-105) (+ (+ (- (* (- (* j t) (* k y)) (- (* y4 b) (* y5 i))) (* (* y3 y) (- (* y5 a) (* y4 c)))) (+ (* (* y5 a) (* t y2)) (* (- (* k y2) (* j y3)) (- (* y4 y1) (* y5 y0))))) (- (* (- (* x y2) (* z y3)) (- (* c y0) (* a y1))) (- (* (- (* b y0) (* i y1)) (- (* j x) (* k z))) (* (- (* y x) (* z t)) (- (* b a) (* i c)))))) (if (&lt; y4 6.718963124057495e-279) (+ (- (- (- (* (* k y) (* y5 i)) (* (* y b) (* y4 k))) (* (* y5 t) (* i j))) (- (* (- (* y2 t) (* y3 y)) (- (* y4 c) (* y5 a))) (* (- (* y2 k) (* y3 j)) (- (* y4 y1) (* y5 y0))))) (- (* (- (* b a) (* i c)) (- (* y x) (* t z))) (- (* (- (* j x) (* k z)) (- (* y0 b) (* i y1))) (* (- (* y2 x) (* y3 z)) (- (* c y0) (* y1 a)))))) (if (&lt; y4 4.77962681403792e-222) (+ (+ (- (* (- (* j t) (* k y)) (- (* y4 b) (* y5 i))) (* (* y3 y) (- (* y5 a) (* y4 c)))) (+ (* (* y5 a) (* t y2)) (* (- (* k y2) (* j y3)) (- (* y4 y1) (* y5 y0))))) (- (* (- (* x y2) (* z y3)) (- (* c y0) (* a y1))) (- (* (- (* b y0) (* i y1)) (- (* j x) (* k z))) (* (- (* y x) (* z t)) (- (* b a) (* i c)))))) (if (&lt; y4 2.2852241541266835e-175) (+ (- (- (- (* (* k y) (* y5 i)) (* (* y b) (* y4 k))) (* (* y5 t) (* i j))) (- (* (- (* y2 t) (* y3 y)) (- (* y4 c) (* y5 a))) (* (- (* y2 k) (* y3 j)) (- (* y4 y1) (* y5 y0))))) (- (* (- (* b a) (* i c)) (- (* y x) (* t z))) (- (* (- (* j x) (* k z)) (- (* y0 b) (* i y1))) (* (- (* y2 x) (* y3 z)) (- (* c y0) (* y1 a)))))) (+ (- (+ (+ (- (* (- (* x y) (* z t)) (- (* a b) (* c i))) (- (* k (* i (* z y1))) (+ (* j (* i (* x y1))) (* y0 (* k (* z b)))))) (- (* z (* y3 (* a y1))) (+ (* y2 (* x (* a y1))) (* y0 (* z (* c y3)))))) (* (- (* t j) (* y k)) (- (* y4 b) (* y5 i)))) (* (- (* t y2) (* y y3)) (- (* y4 c) (* y5 a)))) (* (- (* k y2) (* j y3)) (- (* y4 y1) (* y5 y0))))))))))
+
+  (+ (- (+ (+ (- (* (- (* x y) (* z t)) (- (* a b) (* c i))) (* (- (* x j) (* z k)) (- (* y0 b) (* y1 i)))) (* (- (* x y2) (* z y3)) (- (* y0 c) (* y1 a)))) (* (- (* t j) (* y k)) (- (* y4 b) (* y5 i)))) (* (- (* t y2) (* y y3)) (- (* y4 c) (* y5 a)))) (* (- (* k y2) (* j y3)) (- (* y4 y1) (* y5 y0)))))
+</code></pre></section></body></html>

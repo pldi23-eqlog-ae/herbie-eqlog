@@ -1,0 +1,136 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for System.Random.MWC.Distributions:truncatedExp from mwc-random-0.13.3.2</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">24.7 → 1.1</span></div><div>Time: <span class="number">5.0s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[x - \frac{\log \left(\left(1 - y\right) + y \cdot e^{z}\right)}{t}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := x - \frac{\mathsf{log1p}\left(y \cdot z\right)}{t}\\
+t_2 := \frac{\log \left(\left(1 - y\right) + y \cdot e^{z}\right)}{t}\\
+t_3 := \mathsf{log1p}\left(\mathsf{fma}\left(y, e^{z}, -y\right)\right)\\
+\mathbf{if}\;t_2 \leq -\infty:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;t_2 \leq -2 \cdot 10^{-258}:\\
+\;\;\;\;x - \frac{t_3}{t}\\
+
+\mathbf{elif}\;t_2 \leq 0:\\
+\;\;\;\;x - \mathsf{expm1}\left(z\right) \cdot \frac{y}{t}\\
+
+\mathbf{elif}\;t_2 \leq 2 \cdot 10^{+173}:\\
+\;\;\;\;\mathsf{fma}\left(t_3, \frac{-1}{t}, x\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t)
+ :precision binary64
+ (- x (/ (log (+ (- 1.0 y) (* y (exp z)))) t)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t)
+ :precision binary64
+ (let* ((t_1 (- x (/ (log1p (* y z)) t)))
+        (t_2 (/ (log (+ (- 1.0 y) (* y (exp z)))) t))
+        (t_3 (log1p (fma y (exp z) (- y)))))
+   (if (&lt;= t_2 (- INFINITY))
+     t_1
+     (if (&lt;= t_2 -2e-258)
+       (- x (/ t_3 t))
+       (if (&lt;= t_2 0.0)
+         (- x (* (expm1 z) (/ y t)))
+         (if (&lt;= t_2 2e+173) (fma t_3 (/ -1.0 t) x) t_1))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t) {
+	return x - (log(((1.0 - y) + (y * exp(z)))) / t);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t) {
+	double t_1 = x - (log1p((y * z)) / t);
+	double t_2 = log(((1.0 - y) + (y * exp(z)))) / t;
+	double t_3 = log1p(fma(y, exp(z), -y));
+	double tmp;
+	if (t_2 &lt;= -((double) INFINITY)) {
+		tmp = t_1;
+	} else if (t_2 &lt;= -2e-258) {
+		tmp = x - (t_3 / t);
+	} else if (t_2 &lt;= 0.0) {
+		tmp = x - (expm1(z) * (y / t));
+	} else if (t_2 &lt;= 2e+173) {
+		tmp = fma(t_3, (-1.0 / t), x);
+	} else {
+		tmp = t_1;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t)
+	return Float64(x - Float64(log(Float64(Float64(1.0 - y) + Float64(y * exp(z)))) / t))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t)
+	t_1 = Float64(x - Float64(log1p(Float64(y * z)) / t))
+	t_2 = Float64(log(Float64(Float64(1.0 - y) + Float64(y * exp(z)))) / t)
+	t_3 = log1p(fma(y, exp(z), Float64(-y)))
+	tmp = 0.0
+	if (t_2 &lt;= Float64(-Inf))
+		tmp = t_1;
+	elseif (t_2 &lt;= -2e-258)
+		tmp = Float64(x - Float64(t_3 / t));
+	elseif (t_2 &lt;= 0.0)
+		tmp = Float64(x - Float64(expm1(z) * Float64(y / t)));
+	elseif (t_2 &lt;= 2e+173)
+		tmp = fma(t_3, Float64(-1.0 / t), x);
+	else
+		tmp = t_1;
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_] := N[(x - N[(N[Log[N[(N[(1.0 - y), $MachinePrecision] + N[(y * N[Exp[z], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision] / t), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_] := Block[{t$95$1 = N[(x - N[(N[Log[1 + N[(y * z), $MachinePrecision]], $MachinePrecision] / t), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$2 = N[(N[Log[N[(N[(1.0 - y), $MachinePrecision] + N[(y * N[Exp[z], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision] / t), $MachinePrecision]}, Block[{t$95$3 = N[Log[1 + N[(y * N[Exp[z], $MachinePrecision] + (-y)), $MachinePrecision]], $MachinePrecision]}, If[LessEqual[t$95$2, (-Infinity)], t$95$1, If[LessEqual[t$95$2, -2e-258], N[(x - N[(t$95$3 / t), $MachinePrecision]), $MachinePrecision], If[LessEqual[t$95$2, 0.0], N[(x - N[(N[(Exp[z] - 1), $MachinePrecision] * N[(y / t), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], If[LessEqual[t$95$2, 2e+173], N[(t$95$3 * N[(-1.0 / t), $MachinePrecision] + x), $MachinePrecision], t$95$1]]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">x - \frac{\log \left(\left(1 - y\right) + y \cdot e^{z}\right)}{t}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := x - \frac{\mathsf{log1p}\left(y \cdot z\right)}{t}\\
+t_2 := \frac{\log \left(\left(1 - y\right) + y \cdot e^{z}\right)}{t}\\
+t_3 := \mathsf{log1p}\left(\mathsf{fma}\left(y, e^{z}, -y\right)\right)\\
+\mathbf{if}\;t_2 \leq -\infty:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;t_2 \leq -2 \cdot 10^{-258}:\\
+\;\;\;\;x - \frac{t_3}{t}\\
+
+\mathbf{elif}\;t_2 \leq 0:\\
+\;\;\;\;x - \mathsf{expm1}\left(z\right) \cdot \frac{y}{t}\\
+
+\mathbf{elif}\;t_2 \leq 2 \cdot 10^{+173}:\\
+\;\;\;\;\mathsf{fma}\left(t_3, \frac{-1}{t}, x\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>24.7</td></tr><tr><th>Target</th><td>16.4</td></tr><tr><th>Herbie</th><td>1.1</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;z &lt; -2.8874623088207947 \cdot 10^{+119}:\\
+\;\;\;\;\left(x - \frac{\frac{-0.5}{y \cdot t}}{z \cdot z}\right) - \frac{-0.5}{y \cdot t} \cdot \frac{\frac{2}{z}}{z \cdot z}\\
+
+\mathbf{else}:\\
+\;\;\;\;x - \frac{\log \left(1 + z \cdot y\right)}{t}\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 4 regimes</li><li><h2><code>if <span class="condition"> (/.f64 (log.f64 (+.f64 (-.f64 1 y) (*.f64 y (exp.f64 z)))) t)  &lt; -inf.0 or 2e173 &lt;  (/.f64 (log.f64 (+.f64 (-.f64 1 y) (*.f64 y (exp.f64 z)))) t) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 64.0">61.0</span></p><div class="math">\[x - \frac{\log \left(\left(1 - y\right) + y \cdot e^{z}\right)}{t}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 29.9">24.9</span></p><div class="math">\[\leadsto \color{blue}{x - \frac{\mathsf{log1p}\left(\mathsf{fma}\left(y, e^{z}, -y\right)\right)}{t}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in z around 0 <span class="error" title="Internally 0.1">2.9</span></p><div class="math">\[\leadsto x - \frac{\mathsf{log1p}\left(\color{blue}{y \cdot z}\right)}{t}
+\]</div></li></ol><h2><code>if <span class="condition">-inf.0 &lt;  (/.f64 (log.f64 (+.f64 (-.f64 1 y) (*.f64 y (exp.f64 z)))) t)  &lt; -1.99999999999999991e-258</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.1">2.4</span></p><div class="math">\[x - \frac{\log \left(\left(1 - y\right) + y \cdot e^{z}\right)}{t}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.1">0.9</span></p><div class="math">\[\leadsto \color{blue}{x - \frac{\mathsf{log1p}\left(\mathsf{fma}\left(y, e^{z}, -y\right)\right)}{t}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-1.99999999999999991e-258 &lt;  (/.f64 (log.f64 (+.f64 (-.f64 1 y) (*.f64 y (exp.f64 z)))) t)  &lt; -0.0</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 11.3">11.9</span></p><div class="math">\[x - \frac{\log \left(\left(1 - y\right) + y \cdot e^{z}\right)}{t}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 6.7">6.1</span></p><div class="math">\[\leadsto \color{blue}{x - \frac{\mathsf{log1p}\left(\mathsf{fma}\left(y, e^{z}, -y\right)\right)}{t}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in y around 0 <span class="error" title="Internally 6.8">6.3</span></p><div class="math">\[\leadsto \color{blue}{y \cdot \left(\frac{1}{t} - \frac{e^{z}}{t}\right) + x}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.0">0.3</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(y, \frac{\mathsf{expm1}\left(z\right)}{-t}, x\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.1">0.4</span></p><div class="math">\[\leadsto \mathsf{fma}\left(y, \color{blue}{{\left(\sqrt[3]{\frac{\mathsf{expm1}\left(z\right)}{-t}}\right)}^{3}}, x\right)
+\]</div></li><li><p>Taylor expanded in y around 0 <span class="error" title="Internally 6.7">6.2</span></p><div class="math">\[\leadsto \color{blue}{-1 \cdot \left(\frac{\left(e^{z} - 1\right) \cdot y}{t} \cdot {1}^{0.3333333333333333}\right) + x}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.0">0.2</span></p><div class="math">\[\leadsto \color{blue}{x - \mathsf{expm1}\left(z\right) \cdot \frac{y}{t}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-0.0 &lt;  (/.f64 (log.f64 (+.f64 (-.f64 1 y) (*.f64 y (exp.f64 z)))) t)  &lt; 2e173</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 5.1">1.5</span></p><div class="math">\[x - \frac{\log \left(\left(1 - y\right) + y \cdot e^{z}\right)}{t}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.2">1.1</span></p><div class="math">\[\leadsto \color{blue}{x - \frac{\mathsf{log1p}\left(\mathsf{fma}\left(y, e^{z}, -y\right)\right)}{t}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.1">1.1</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\mathsf{log1p}\left(\mathsf{fma}\left(y, e^{z}, -y\right)\right), \frac{-1}{t}, x\right)}
+\]</div></li></ol></li><li class="event">Recombined 4 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y z t)
+  :name "System.Random.MWC.Distributions:truncatedExp from mwc-random-0.13.3.2"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; z -2.8874623088207947e+119) (- (- x (/ (/ (- 0.5) (* y t)) (* z z))) (* (/ (- 0.5) (* y t)) (/ (/ 2.0 z) (* z z)))) (- x (/ (log (+ 1.0 (* z y))) t)))
+
+  (- x (/ (log (+ (- 1.0 y) (* y (exp z)))) t)))
+</code></pre></section></body></html>

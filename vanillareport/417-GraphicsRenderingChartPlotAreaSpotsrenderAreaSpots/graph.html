@@ -1,0 +1,153 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Graphics.Rendering.Chart.Plot.AreaSpots:renderAreaSpots4D from Chart-1.5.3</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">11.3 → 2.3</span></div><div>Time: <span class="number">2.8s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Fortran</option><option>Java</option><option>Python</option><option>Julia</option><option>MATLAB</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{x \cdot \left(y - z\right)}{t - z}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+\mathbf{if}\;x \leq -265550142.1674508:\\
+\;\;\;\;\left(z - y\right) \cdot \frac{x}{z - t}\\
+
+\mathbf{elif}\;x \leq -3.2889982621126373 \cdot 10^{-271}:\\
+\;\;\;\;\frac{x \cdot \left(y - z\right)}{t - z}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{x}{\frac{t - z}{y - z}}\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t) :precision binary64 (/ (* x (- y z)) (- t z)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t)
+ :precision binary64
+ (if (&lt;= x -265550142.1674508)
+   (* (- z y) (/ x (- z t)))
+   (if (&lt;= x -3.2889982621126373e-271)
+     (/ (* x (- y z)) (- t z))
+     (/ x (/ (- t z) (- y z))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t) {
+	return (x * (y - z)) / (t - z);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t) {
+	double tmp;
+	if (x &lt;= -265550142.1674508) {
+		tmp = (z - y) * (x / (z - t));
+	} else if (x &lt;= -3.2889982621126373e-271) {
+		tmp = (x * (y - z)) / (t - z);
+	} else {
+		tmp = x / ((t - z) / (y - z));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Fortran"><pre class="program">real(8) function code(x, y, z, t)
+    real(8), intent (in) :: x
+    real(8), intent (in) :: y
+    real(8), intent (in) :: z
+    real(8), intent (in) :: t
+    code = (x * (y - z)) / (t - z)
+end function
+</pre><div class="arrow">↓</div><pre class="program">real(8) function code(x, y, z, t)
+    real(8), intent (in) :: x
+    real(8), intent (in) :: y
+    real(8), intent (in) :: z
+    real(8), intent (in) :: t
+    real(8) :: tmp
+    if (x &lt;= (-265550142.1674508d0)) then
+        tmp = (z - y) * (x / (z - t))
+    else if (x &lt;= (-3.2889982621126373d-271)) then
+        tmp = (x * (y - z)) / (t - z)
+    else
+        tmp = x / ((t - z) / (y - z))
+    end if
+    code = tmp
+end function
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double x, double y, double z, double t) {
+	return (x * (y - z)) / (t - z);
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double x, double y, double z, double t) {
+	double tmp;
+	if (x &lt;= -265550142.1674508) {
+		tmp = (z - y) * (x / (z - t));
+	} else if (x &lt;= -3.2889982621126373e-271) {
+		tmp = (x * (y - z)) / (t - z);
+	} else {
+		tmp = x / ((t - z) / (y - z));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(x, y, z, t):
+	return (x * (y - z)) / (t - z)
+</pre><div class="arrow">↓</div><pre class="program">def code(x, y, z, t):
+	tmp = 0
+	if x &lt;= -265550142.1674508:
+		tmp = (z - y) * (x / (z - t))
+	elif x &lt;= -3.2889982621126373e-271:
+		tmp = (x * (y - z)) / (t - z)
+	else:
+		tmp = x / ((t - z) / (y - z))
+	return tmp
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t)
+	return Float64(Float64(x * Float64(y - z)) / Float64(t - z))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t)
+	tmp = 0.0
+	if (x &lt;= -265550142.1674508)
+		tmp = Float64(Float64(z - y) * Float64(x / Float64(z - t)));
+	elseif (x &lt;= -3.2889982621126373e-271)
+		tmp = Float64(Float64(x * Float64(y - z)) / Float64(t - z));
+	else
+		tmp = Float64(x / Float64(Float64(t - z) / Float64(y - z)));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="MATLAB"><pre class="program">function tmp = code(x, y, z, t)
+	tmp = (x * (y - z)) / (t - z);
+end
+</pre><div class="arrow">↓</div><pre class="program">function tmp_2 = code(x, y, z, t)
+	tmp = 0.0;
+	if (x &lt;= -265550142.1674508)
+		tmp = (z - y) * (x / (z - t));
+	elseif (x &lt;= -3.2889982621126373e-271)
+		tmp = (x * (y - z)) / (t - z);
+	else
+		tmp = x / ((t - z) / (y - z));
+	end
+	tmp_2 = tmp;
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_] := N[(N[(x * N[(y - z), $MachinePrecision]), $MachinePrecision] / N[(t - z), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_] := If[LessEqual[x, -265550142.1674508], N[(N[(z - y), $MachinePrecision] * N[(x / N[(z - t), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], If[LessEqual[x, -3.2889982621126373e-271], N[(N[(x * N[(y - z), $MachinePrecision]), $MachinePrecision] / N[(t - z), $MachinePrecision]), $MachinePrecision], N[(x / N[(N[(t - z), $MachinePrecision] / N[(y - z), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{x \cdot \left(y - z\right)}{t - z}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+\mathbf{if}\;x \leq -265550142.1674508:\\
+\;\;\;\;\left(z - y\right) \cdot \frac{x}{z - t}\\
+
+\mathbf{elif}\;x \leq -3.2889982621126373 \cdot 10^{-271}:\\
+\;\;\;\;\frac{x \cdot \left(y - z\right)}{t - z}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{x}{\frac{t - z}{y - z}}\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">x</label><input type="text" class="input-submit" name="var-name-0" value="-4.138291263745232e-111"/></li><li><label for="var-name-1">y</label><input type="text" class="input-submit" name="var-name-1" value="1.0399071059080127e-302"/></li><li><label for="var-name-2">z</label><input type="text" class="input-submit" name="var-name-2" value="2.208728570203222e-14"/></li><li><label for="var-name-3">t</label><input type="text" class="input-submit" name="var-name-3" value="6.111825100678029e+108"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>11.3</td></tr><tr><th>Target</th><td>2.4</td></tr><tr><th>Herbie</th><td>2.3</td></tr></table><div class="math">\[\frac{x}{\frac{t - z}{y - z}}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> x  &lt; -265550142.16745079</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 22.7">23.8</span></p><div class="math">\[\frac{x \cdot \left(y - z\right)}{t - z}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.1">3.0</span></p><div class="math">\[\leadsto \color{blue}{\left(z - y\right) \cdot \frac{x}{z - t}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-265550142.16745079 &lt;  x  &lt; -3.28899826211263732e-271</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 1.0">1.5</span></p><div class="math">\[\frac{x \cdot \left(y - z\right)}{t - z}
+\]</div></li></ol><h2><code>if <span class="condition">-3.28899826211263732e-271 &lt;  x </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 12.3">10.4</span></p><div class="math">\[\frac{x \cdot \left(y - z\right)}{t - z}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 1.1">2.4</span></p><div class="math">\[\leadsto \color{blue}{\frac{x}{1} \cdot \frac{y - z}{t - z}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 1.0">2.4</span></p><div class="math">\[\leadsto \color{blue}{\frac{x}{\frac{t - z}{y - z}}}
+\]</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 0.8">2.3</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;x \leq -265550142.1674508:\\
+\;\;\;\;\left(z - y\right) \cdot \frac{x}{z - t}\\
+
+\mathbf{elif}\;x \leq -3.2889982621126373 \cdot 10^{-271}:\\
+\;\;\;\;\frac{x \cdot \left(y - z\right)}{t - z}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{x}{\frac{t - z}{y - z}}\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x y z t)
+  :name "Graphics.Rendering.Chart.Plot.AreaSpots:renderAreaSpots4D from Chart-1.5.3"
+  :precision binary64
+
+  :herbie-target
+  (/ x (/ (- t z) (- y z)))
+
+  (/ (* x (- y z)) (- t z)))
+</code></pre></section></body></html>

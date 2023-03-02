@@ -1,0 +1,68 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for ENA, Section 1.4, Exercise 4d</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 62.0 → 61.9">24.4 → 1.3</span></div><div>Time: <span class="number">2.0s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[\left(0 \leq x \land x \leq 1000000000\right) \land \left(-1 \leq \varepsilon \land \varepsilon \leq 1\right)\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[x - \sqrt{x \cdot x - \varepsilon}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+\mathbf{if}\;x - \sqrt{x \cdot x - \varepsilon} \leq -2 \cdot 10^{-153}:\\
+\;\;\;\;x - \sqrt{\mathsf{fma}\left(x, x, -\varepsilon\right)}\\
+
+\mathbf{else}:\\
+\;\;\;\;0.5 \cdot \frac{\varepsilon}{x}\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x eps) :precision binary64 (- x (sqrt (- (* x x) eps))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x eps)
+ :precision binary64
+ (if (&lt;= (- x (sqrt (- (* x x) eps))) -2e-153)
+   (- x (sqrt (fma x x (- eps))))
+   (* 0.5 (/ eps x))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double eps) {
+	return x - sqrt(((x * x) - eps));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double eps) {
+	double tmp;
+	if ((x - sqrt(((x * x) - eps))) &lt;= -2e-153) {
+		tmp = x - sqrt(fma(x, x, -eps));
+	} else {
+		tmp = 0.5 * (eps / x);
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, eps)
+	return Float64(x - sqrt(Float64(Float64(x * x) - eps)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, eps)
+	tmp = 0.0
+	if (Float64(x - sqrt(Float64(Float64(x * x) - eps))) &lt;= -2e-153)
+		tmp = Float64(x - sqrt(fma(x, x, Float64(-eps))));
+	else
+		tmp = Float64(0.5 * Float64(eps / x));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, eps_] := N[(x - N[Sqrt[N[(N[(x * x), $MachinePrecision] - eps), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, eps_] := If[LessEqual[N[(x - N[Sqrt[N[(N[(x * x), $MachinePrecision] - eps), $MachinePrecision]], $MachinePrecision]), $MachinePrecision], -2e-153], N[(x - N[Sqrt[N[(x * x + (-eps)), $MachinePrecision]], $MachinePrecision]), $MachinePrecision], N[(0.5 * N[(eps / x), $MachinePrecision]), $MachinePrecision]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">x - \sqrt{x \cdot x - \varepsilon}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+\mathbf{if}\;x - \sqrt{x \cdot x - \varepsilon} \leq -2 \cdot 10^{-153}:\\
+\;\;\;\;x - \sqrt{\mathsf{fma}\left(x, x, -\varepsilon\right)}\\
+
+\mathbf{else}:\\
+\;\;\;\;0.5 \cdot \frac{\varepsilon}{x}\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>24.4</td></tr><tr><th>Target</th><td>0.3</td></tr><tr><th>Herbie</th><td>1.3</td></tr></table><div class="math">\[\frac{\varepsilon}{x + \sqrt{x \cdot x - \varepsilon}}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> (-.f64 x (sqrt.f64 (-.f64 (*.f64 x x) eps)))  &lt; -2.00000000000000008e-153</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.8">0.9</span></p><div class="math">\[x - \sqrt{x \cdot x - \varepsilon}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.8">0.9</span></p><div class="math">\[\leadsto \color{blue}{x - \sqrt{\mathsf{fma}\left(x, x, -\varepsilon\right)}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-2.00000000000000008e-153 &lt;  (-.f64 x (sqrt.f64 (-.f64 (*.f64 x x) eps))) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 59.0">58.3</span></p><div class="math">\[x - \sqrt{x \cdot x - \varepsilon}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 59.0">58.3</span></p><div class="math">\[\leadsto \color{blue}{x - \sqrt{\mathsf{fma}\left(x, x, -\varepsilon\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in x around inf <span class="error" title="Internally 1.0">1.8</span></p><div class="math">\[\leadsto \color{blue}{0.5 \cdot \frac{\varepsilon}{x}}
+\]</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x eps)
+  :name "ENA, Section 1.4, Exercise 4d"
+  :precision binary64
+  :pre (and (and (&lt;= 0.0 x) (&lt;= x 1000000000.0)) (and (&lt;= -1.0 eps) (&lt;= eps 1.0)))
+
+  :herbie-target
+  (/ eps (+ x (sqrt (- (* x x) eps))))
+
+  (- x (sqrt (- (* x x) eps))))
+</code></pre></section></body></html>

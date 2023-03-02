@@ -1,0 +1,150 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Numeric.SpecFunctions:logGamma from math-functions-0.1.5.2, D</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">29.9 → 0.6</span></div><div>Time: <span class="number">3.1s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[x + \frac{y \cdot \left(\left(\left(\left(z \cdot 3.13060547623 + 11.1667541262\right) \cdot z + t\right) \cdot z + a\right) \cdot z + b\right)}{\left(\left(\left(z + 15.234687407\right) \cdot z + 31.4690115749\right) \cdot z + 11.9400905721\right) \cdot z + 0.607771387771}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := \mathsf{fma}\left(z, \mathsf{fma}\left(z, \mathsf{fma}\left(z, z + 15.234687407, 31.4690115749\right), 11.9400905721\right), 0.607771387771\right)\\
+t_2 := \mathsf{fma}\left(y, 3.13060547623 + \left(\frac{457.9610022158428}{z \cdot z} + \left(\frac{t}{z \cdot z} + \left(\frac{a + \left(t \cdot -15.234687407 + -5864.8025282699045\right)}{{z}^{3}} + \frac{-36.52704169880642}{z}\right)\right)\right), x\right)\\
+\mathbf{if}\;z \leq -6.587780488420653 \cdot 10^{+72}:\\
+\;\;\;\;t_2\\
+
+\mathbf{elif}\;z \leq 20000000:\\
+\;\;\;\;\mathsf{fma}\left(y, \mathsf{fma}\left(\frac{a}{t_1}, z, \mathsf{fma}\left(\frac{\mathsf{fma}\left(z, \mathsf{fma}\left(z, 3.13060547623, 11.1667541262\right), t\right)}{t_1}, z \cdot z, \frac{b}{t_1}\right)\right), x\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;t_2\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a b)
+ :precision binary64
+ (+
+  x
+  (/
+   (*
+    y
+    (+ (* (+ (* (+ (* (+ (* z 3.13060547623) 11.1667541262) z) t) z) a) z) b))
+   (+
+    (* (+ (* (+ (* (+ z 15.234687407) z) 31.4690115749) z) 11.9400905721) z)
+    0.607771387771))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a b)
+ :precision binary64
+ (let* ((t_1
+         (fma
+          z
+          (fma z (fma z (+ z 15.234687407) 31.4690115749) 11.9400905721)
+          0.607771387771))
+        (t_2
+         (fma
+          y
+          (+
+           3.13060547623
+           (+
+            (/ 457.9610022158428 (* z z))
+            (+
+             (/ t (* z z))
+             (+
+              (/ (+ a (+ (* t -15.234687407) -5864.8025282699045)) (pow z 3.0))
+              (/ -36.52704169880642 z)))))
+          x)))
+   (if (&lt;= z -6.587780488420653e+72)
+     t_2
+     (if (&lt;= z 20000000.0)
+       (fma
+        y
+        (fma
+         (/ a t_1)
+         z
+         (fma
+          (/ (fma z (fma z 3.13060547623 11.1667541262) t) t_1)
+          (* z z)
+          (/ b t_1)))
+        x)
+       t_2))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a, double b) {
+	return x + ((y * ((((((((z * 3.13060547623) + 11.1667541262) * z) + t) * z) + a) * z) + b)) / (((((((z + 15.234687407) * z) + 31.4690115749) * z) + 11.9400905721) * z) + 0.607771387771));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a, double b) {
+	double t_1 = fma(z, fma(z, fma(z, (z + 15.234687407), 31.4690115749), 11.9400905721), 0.607771387771);
+	double t_2 = fma(y, (3.13060547623 + ((457.9610022158428 / (z * z)) + ((t / (z * z)) + (((a + ((t * -15.234687407) + -5864.8025282699045)) / pow(z, 3.0)) + (-36.52704169880642 / z))))), x);
+	double tmp;
+	if (z &lt;= -6.587780488420653e+72) {
+		tmp = t_2;
+	} else if (z &lt;= 20000000.0) {
+		tmp = fma(y, fma((a / t_1), z, fma((fma(z, fma(z, 3.13060547623, 11.1667541262), t) / t_1), (z * z), (b / t_1))), x);
+	} else {
+		tmp = t_2;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a, b)
+	return Float64(x + Float64(Float64(y * Float64(Float64(Float64(Float64(Float64(Float64(Float64(Float64(z * 3.13060547623) + 11.1667541262) * z) + t) * z) + a) * z) + b)) / Float64(Float64(Float64(Float64(Float64(Float64(Float64(z + 15.234687407) * z) + 31.4690115749) * z) + 11.9400905721) * z) + 0.607771387771)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a, b)
+	t_1 = fma(z, fma(z, fma(z, Float64(z + 15.234687407), 31.4690115749), 11.9400905721), 0.607771387771)
+	t_2 = fma(y, Float64(3.13060547623 + Float64(Float64(457.9610022158428 / Float64(z * z)) + Float64(Float64(t / Float64(z * z)) + Float64(Float64(Float64(a + Float64(Float64(t * -15.234687407) + -5864.8025282699045)) / (z ^ 3.0)) + Float64(-36.52704169880642 / z))))), x)
+	tmp = 0.0
+	if (z &lt;= -6.587780488420653e+72)
+		tmp = t_2;
+	elseif (z &lt;= 20000000.0)
+		tmp = fma(y, fma(Float64(a / t_1), z, fma(Float64(fma(z, fma(z, 3.13060547623, 11.1667541262), t) / t_1), Float64(z * z), Float64(b / t_1))), x);
+	else
+		tmp = t_2;
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_, b_] := N[(x + N[(N[(y * N[(N[(N[(N[(N[(N[(N[(N[(z * 3.13060547623), $MachinePrecision] + 11.1667541262), $MachinePrecision] * z), $MachinePrecision] + t), $MachinePrecision] * z), $MachinePrecision] + a), $MachinePrecision] * z), $MachinePrecision] + b), $MachinePrecision]), $MachinePrecision] / N[(N[(N[(N[(N[(N[(N[(z + 15.234687407), $MachinePrecision] * z), $MachinePrecision] + 31.4690115749), $MachinePrecision] * z), $MachinePrecision] + 11.9400905721), $MachinePrecision] * z), $MachinePrecision] + 0.607771387771), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_, b_] := Block[{t$95$1 = N[(z * N[(z * N[(z * N[(z + 15.234687407), $MachinePrecision] + 31.4690115749), $MachinePrecision] + 11.9400905721), $MachinePrecision] + 0.607771387771), $MachinePrecision]}, Block[{t$95$2 = N[(y * N[(3.13060547623 + N[(N[(457.9610022158428 / N[(z * z), $MachinePrecision]), $MachinePrecision] + N[(N[(t / N[(z * z), $MachinePrecision]), $MachinePrecision] + N[(N[(N[(a + N[(N[(t * -15.234687407), $MachinePrecision] + -5864.8025282699045), $MachinePrecision]), $MachinePrecision] / N[Power[z, 3.0], $MachinePrecision]), $MachinePrecision] + N[(-36.52704169880642 / z), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + x), $MachinePrecision]}, If[LessEqual[z, -6.587780488420653e+72], t$95$2, If[LessEqual[z, 20000000.0], N[(y * N[(N[(a / t$95$1), $MachinePrecision] * z + N[(N[(N[(z * N[(z * 3.13060547623 + 11.1667541262), $MachinePrecision] + t), $MachinePrecision] / t$95$1), $MachinePrecision] * N[(z * z), $MachinePrecision] + N[(b / t$95$1), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + x), $MachinePrecision], t$95$2]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">x + \frac{y \cdot \left(\left(\left(\left(z \cdot 3.13060547623 + 11.1667541262\right) \cdot z + t\right) \cdot z + a\right) \cdot z + b\right)}{\left(\left(\left(z + 15.234687407\right) \cdot z + 31.4690115749\right) \cdot z + 11.9400905721\right) \cdot z + 0.607771387771}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := \mathsf{fma}\left(z, \mathsf{fma}\left(z, \mathsf{fma}\left(z, z + 15.234687407, 31.4690115749\right), 11.9400905721\right), 0.607771387771\right)\\
+t_2 := \mathsf{fma}\left(y, 3.13060547623 + \left(\frac{457.9610022158428}{z \cdot z} + \left(\frac{t}{z \cdot z} + \left(\frac{a + \left(t \cdot -15.234687407 + -5864.8025282699045\right)}{{z}^{3}} + \frac{-36.52704169880642}{z}\right)\right)\right), x\right)\\
+\mathbf{if}\;z \leq -6.587780488420653 \cdot 10^{+72}:\\
+\;\;\;\;t_2\\
+
+\mathbf{elif}\;z \leq 20000000:\\
+\;\;\;\;\mathsf{fma}\left(y, \mathsf{fma}\left(\frac{a}{t_1}, z, \mathsf{fma}\left(\frac{\mathsf{fma}\left(z, \mathsf{fma}\left(z, 3.13060547623, 11.1667541262\right), t\right)}{t_1}, z \cdot z, \frac{b}{t_1}\right)\right), x\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;t_2\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>29.9</td></tr><tr><th>Target</th><td>1.1</td></tr><tr><th>Herbie</th><td>0.6</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;z &lt; -6.499344996252632 \cdot 10^{+53}:\\
+\;\;\;\;x + \left(\left(3.13060547623 - \frac{36.527041698806414}{z}\right) + \frac{t}{z \cdot z}\right) \cdot \frac{y}{1}\\
+
+\mathbf{elif}\;z &lt; 7.066965436914287 \cdot 10^{+59}:\\
+\;\;\;\;x + \frac{y}{\frac{\left(\left(\left(z + 15.234687407\right) \cdot z + 31.4690115749\right) \cdot z + 11.9400905721\right) \cdot z + 0.607771387771}{\left(\left(\left(z \cdot 3.13060547623 + 11.1667541262\right) \cdot z + t\right) \cdot z + a\right) \cdot z + b}}\\
+
+\mathbf{else}:\\
+\;\;\;\;x + \left(\left(3.13060547623 - \frac{36.527041698806414}{z}\right) + \frac{t}{z \cdot z}\right) \cdot \frac{y}{1}\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> z  &lt; -6.5877804884206527e72 or 2e7 &lt;  z </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 60.0">59.7</span></p><div class="math">\[x + \frac{y \cdot \left(\left(\left(\left(z \cdot 3.13060547623 + 11.1667541262\right) \cdot z + t\right) \cdot z + a\right) \cdot z + b\right)}{\left(\left(\left(z + 15.234687407\right) \cdot z + 31.4690115749\right) \cdot z + 11.9400905721\right) \cdot z + 0.607771387771}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 58.8">58.1</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(y, \frac{\mathsf{fma}\left(z, \mathsf{fma}\left(z, \mathsf{fma}\left(z, \mathsf{fma}\left(z, 3.13060547623, 11.1667541262\right), t\right), a\right), b\right)}{\mathsf{fma}\left(z, \mathsf{fma}\left(z, \mathsf{fma}\left(z, z + 15.234687407, 31.4690115749\right), 11.9400905721\right), 0.607771387771\right)}, x\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in z around -inf <span class="error" title="Internally 0.0">0.7</span></p><div class="math">\[\leadsto \mathsf{fma}\left(y, \color{blue}{\left(3.13060547623 + \left(457.9610022158428 \cdot \frac{1}{{z}^{2}} + \left(\frac{t}{{z}^{2}} + -1 \cdot \frac{-1 \cdot a - \left(1112.0901850848957 + -15.234687407 \cdot \left(457.9610022158428 + t\right)\right)}{{z}^{3}}\right)\right)\right) - 36.52704169880642 \cdot \frac{1}{z}}, x\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.0">0.7</span></p><div class="math">\[\leadsto \mathsf{fma}\left(y, \color{blue}{3.13060547623 + \left(\frac{457.9610022158428}{z \cdot z} + \left(\frac{t}{z \cdot z} + \left(\frac{a + \left(t \cdot -15.234687407 + -5864.8025282699045\right)}{{z}^{3}} + \frac{-36.52704169880642}{z}\right)\right)\right)}, x\right)
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-6.5877804884206527e72 &lt;  z  &lt; 2e7</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 2.0">2.9</span></p><div class="math">\[x + \frac{y \cdot \left(\left(\left(\left(z \cdot 3.13060547623 + 11.1667541262\right) \cdot z + t\right) \cdot z + a\right) \cdot z + b\right)}{\left(\left(\left(z + 15.234687407\right) \cdot z + 31.4690115749\right) \cdot z + 11.9400905721\right) \cdot z + 0.607771387771}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.6">1.5</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(y, \frac{\mathsf{fma}\left(z, \mathsf{fma}\left(z, \mathsf{fma}\left(z, \mathsf{fma}\left(z, 3.13060547623, 11.1667541262\right), t\right), a\right), b\right)}{\mathsf{fma}\left(z, \mathsf{fma}\left(z, \mathsf{fma}\left(z, z + 15.234687407, 31.4690115749\right), 11.9400905721\right), 0.607771387771\right)}, x\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in a around 0 <span class="error" title="Internally 0.6">1.7</span></p><div class="math">\[\leadsto \mathsf{fma}\left(y, \color{blue}{\frac{b}{0.607771387771 + \left(11.9400905721 + z \cdot \left(31.4690115749 + \left(15.234687407 + z\right) \cdot z\right)\right) \cdot z} + \left(\frac{a \cdot z}{0.607771387771 + \left(11.9400905721 + z \cdot \left(31.4690115749 + \left(15.234687407 + z\right) \cdot z\right)\right) \cdot z} + \frac{\left(t + \left(11.1667541262 + 3.13060547623 \cdot z\right) \cdot z\right) \cdot {z}^{2}}{0.607771387771 + \left(11.9400905721 + z \cdot \left(31.4690115749 + \left(15.234687407 + z\right) \cdot z\right)\right) \cdot z}\right)}, x\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.2">0.5</span></p><div class="math">\[\leadsto \mathsf{fma}\left(y, \color{blue}{\mathsf{fma}\left(\frac{a}{\mathsf{fma}\left(z, \mathsf{fma}\left(z, \mathsf{fma}\left(z, z + 15.234687407, 31.4690115749\right), 11.9400905721\right), 0.607771387771\right)}, z, \mathsf{fma}\left(\frac{\mathsf{fma}\left(z, \mathsf{fma}\left(z, 3.13060547623, 11.1667541262\right), t\right)}{\mathsf{fma}\left(z, \mathsf{fma}\left(z, \mathsf{fma}\left(z, z + 15.234687407, 31.4690115749\right), 11.9400905721\right), 0.607771387771\right)}, z \cdot z, \frac{b}{\mathsf{fma}\left(z, \mathsf{fma}\left(z, \mathsf{fma}\left(z, z + 15.234687407, 31.4690115749\right), 11.9400905721\right), 0.607771387771\right)}\right)\right)}, x\right)
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 0.1">0.6</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;z \leq -6.587780488420653 \cdot 10^{+72}:\\
+\;\;\;\;\mathsf{fma}\left(y, 3.13060547623 + \left(\frac{457.9610022158428}{z \cdot z} + \left(\frac{t}{z \cdot z} + \left(\frac{a + \left(t \cdot -15.234687407 + -5864.8025282699045\right)}{{z}^{3}} + \frac{-36.52704169880642}{z}\right)\right)\right), x\right)\\
+
+\mathbf{elif}\;z \leq 20000000:\\
+\;\;\;\;\mathsf{fma}\left(y, \mathsf{fma}\left(\frac{a}{\mathsf{fma}\left(z, \mathsf{fma}\left(z, \mathsf{fma}\left(z, z + 15.234687407, 31.4690115749\right), 11.9400905721\right), 0.607771387771\right)}, z, \mathsf{fma}\left(\frac{\mathsf{fma}\left(z, \mathsf{fma}\left(z, 3.13060547623, 11.1667541262\right), t\right)}{\mathsf{fma}\left(z, \mathsf{fma}\left(z, \mathsf{fma}\left(z, z + 15.234687407, 31.4690115749\right), 11.9400905721\right), 0.607771387771\right)}, z \cdot z, \frac{b}{\mathsf{fma}\left(z, \mathsf{fma}\left(z, \mathsf{fma}\left(z, z + 15.234687407, 31.4690115749\right), 11.9400905721\right), 0.607771387771\right)}\right)\right), x\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(y, 3.13060547623 + \left(\frac{457.9610022158428}{z \cdot z} + \left(\frac{t}{z \cdot z} + \left(\frac{a + \left(t \cdot -15.234687407 + -5864.8025282699045\right)}{{z}^{3}} + \frac{-36.52704169880642}{z}\right)\right)\right), x\right)\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x y z t a b)
+  :name "Numeric.SpecFunctions:logGamma from math-functions-0.1.5.2, D"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; z -6.499344996252632e+53) (+ x (* (+ (- 3.13060547623 (/ 36.527041698806414 z)) (/ t (* z z))) (/ y 1.0))) (if (&lt; z 7.066965436914287e+59) (+ x (/ y (/ (+ (* (+ (* (+ (* (+ z 15.234687407) z) 31.4690115749) z) 11.9400905721) z) 0.607771387771) (+ (* (+ (* (+ (* (+ (* z 3.13060547623) 11.1667541262) z) t) z) a) z) b)))) (+ x (* (+ (- 3.13060547623 (/ 36.527041698806414 z)) (/ t (* z z))) (/ y 1.0)))))
+
+  (+ x (/ (* y (+ (* (+ (* (+ (* (+ (* z 3.13060547623) 11.1667541262) z) t) z) a) z) b)) (+ (* (+ (* (+ (* (+ z 15.234687407) z) 31.4690115749) z) 11.9400905721) z) 0.607771387771))))
+</code></pre></section></body></html>

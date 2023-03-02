@@ -1,0 +1,48 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Quadratic roots, wide range</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 62.1 → 50.5">52.4 → 1.6</span></div><div>Time: <span class="number">3.0s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[\left(\left(4.930380657631324 \cdot 10^{-32} &lt; a \land a &lt; 2.028240960365167 \cdot 10^{+31}\right) \land \left(4.930380657631324 \cdot 10^{-32} &lt; b \land b &lt; 2.028240960365167 \cdot 10^{+31}\right)\right) \land \left(4.930380657631324 \cdot 10^{-32} &lt; c \land c &lt; 2.028240960365167 \cdot 10^{+31}\right)\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{\left(-b\right) + \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}{2 \cdot a}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := {\left(c \cdot a\right)}^{4}\\
+\mathsf{fma}\left(-0.25, \frac{\mathsf{fma}\left(16, t_0, \left(-2 \cdot -2\right) \cdot t_0\right)}{a \cdot {b}^{7}}, \mathsf{fma}\left(\frac{{c}^{3} \cdot \left(a \cdot a\right)}{{b}^{5}}, -2, -\frac{c}{b}\right)\right) - \frac{a}{b} \cdot {\left(\frac{c}{b}\right)}^{2}
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (a b c)
+ :precision binary64
+ (/ (+ (- b) (sqrt (- (* b b) (* (* 4.0 a) c)))) (* 2.0 a)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (a b c)
+ :precision binary64
+ (let* ((t_0 (pow (* c a) 4.0)))
+   (-
+    (fma
+     -0.25
+     (/ (fma 16.0 t_0 (* (* -2.0 -2.0) t_0)) (* a (pow b 7.0)))
+     (fma (/ (* (pow c 3.0) (* a a)) (pow b 5.0)) -2.0 (- (/ c b))))
+    (* (/ a b) (pow (/ c b) 2.0)))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double a, double b, double c) {
+	return (-b + sqrt(((b * b) - ((4.0 * a) * c)))) / (2.0 * a);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double a, double b, double c) {
+	double t_0 = pow((c * a), 4.0);
+	return fma(-0.25, (fma(16.0, t_0, ((-2.0 * -2.0) * t_0)) / (a * pow(b, 7.0))), fma(((pow(c, 3.0) * (a * a)) / pow(b, 5.0)), -2.0, -(c / b))) - ((a / b) * pow((c / b), 2.0));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(a, b, c)
+	return Float64(Float64(Float64(-b) + sqrt(Float64(Float64(b * b) - Float64(Float64(4.0 * a) * c)))) / Float64(2.0 * a))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(a, b, c)
+	t_0 = Float64(c * a) ^ 4.0
+	return Float64(fma(-0.25, Float64(fma(16.0, t_0, Float64(Float64(-2.0 * -2.0) * t_0)) / Float64(a * (b ^ 7.0))), fma(Float64(Float64((c ^ 3.0) * Float64(a * a)) / (b ^ 5.0)), -2.0, Float64(-Float64(c / b)))) - Float64(Float64(a / b) * (Float64(c / b) ^ 2.0)))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[a_, b_, c_] := N[(N[((-b) + N[Sqrt[N[(N[(b * b), $MachinePrecision] - N[(N[(4.0 * a), $MachinePrecision] * c), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] / N[(2.0 * a), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[a_, b_, c_] := Block[{t$95$0 = N[Power[N[(c * a), $MachinePrecision], 4.0], $MachinePrecision]}, N[(N[(-0.25 * N[(N[(16.0 * t$95$0 + N[(N[(-2.0 * -2.0), $MachinePrecision] * t$95$0), $MachinePrecision]), $MachinePrecision] / N[(a * N[Power[b, 7.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(N[(N[(N[Power[c, 3.0], $MachinePrecision] * N[(a * a), $MachinePrecision]), $MachinePrecision] / N[Power[b, 5.0], $MachinePrecision]), $MachinePrecision] * -2.0 + (-N[(c / b), $MachinePrecision])), $MachinePrecision]), $MachinePrecision] - N[(N[(a / b), $MachinePrecision] * N[Power[N[(c / b), $MachinePrecision], 2.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{\left(-b\right) + \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}{2 \cdot a}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := {\left(c \cdot a\right)}^{4}\\
+\mathsf{fma}\left(-0.25, \frac{\mathsf{fma}\left(16, t_0, \left(-2 \cdot -2\right) \cdot t_0\right)}{a \cdot {b}^{7}}, \mathsf{fma}\left(\frac{{c}^{3} \cdot \left(a \cdot a\right)}{{b}^{5}}, -2, -\frac{c}{b}\right)\right) - \frac{a}{b} \cdot {\left(\frac{c}{b}\right)}^{2}
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 51.6">52.4</span></p><div class="math">\[\frac{\left(-b\right) + \sqrt{b \cdot b - \left(4 \cdot a\right) \cdot c}}{2 \cdot a}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 51.5">52.4</span></p><div class="math">\[\leadsto \color{blue}{\left(b - \sqrt{\mathsf{fma}\left(b, b, -4 \cdot \left(a \cdot c\right)\right)}\right) \cdot \frac{-0.5}{a}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in b around inf <span class="error" title="Internally 1.7">1.6</span></p><div class="math">\[\leadsto \color{blue}{-1 \cdot \frac{{c}^{2} \cdot a}{{b}^{3}} + \left(-0.25 \cdot \frac{{\left(-2 \cdot \left({c}^{2} \cdot {a}^{2}\right)\right)}^{2} + 16 \cdot \left({c}^{4} \cdot {a}^{4}\right)}{a \cdot {b}^{7}} + \left(-1 \cdot \frac{c}{b} + -2 \cdot \frac{{c}^{3} \cdot {a}^{2}}{{b}^{5}}\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 1.7">1.6</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(-0.25, \frac{\mathsf{fma}\left(16, {\left(c \cdot a\right)}^{4}, \left(-2 \cdot -2\right) \cdot {\left(c \cdot a\right)}^{4}\right)}{a \cdot {b}^{7}}, \mathsf{fma}\left(\frac{{c}^{3} \cdot \left(a \cdot a\right)}{{b}^{5}}, -2, -\frac{c}{b}\right)\right) - \frac{a}{b} \cdot {\left(\frac{c}{b}\right)}^{2}}
+\]</div><div class="math">Proof</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (a b c)
+  :name "Quadratic roots, wide range"
+  :precision binary64
+  :pre (and (and (and (&lt; 4.930380657631324e-32 a) (&lt; a 2.028240960365167e+31)) (and (&lt; 4.930380657631324e-32 b) (&lt; b 2.028240960365167e+31))) (and (&lt; 4.930380657631324e-32 c) (&lt; c 2.028240960365167e+31)))
+  (/ (+ (- b) (sqrt (- (* b b) (* (* 4.0 a) c)))) (* 2.0 a)))
+</code></pre></section></body></html>

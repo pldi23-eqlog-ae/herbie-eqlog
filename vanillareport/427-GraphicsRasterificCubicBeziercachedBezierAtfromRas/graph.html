@@ -1,0 +1,87 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Graphics.Rasterific.CubicBezier:cachedBezierAt from Rasterific-0.6.1</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">2.3 → 1.8</span></div><div>Time: <span class="number">1.9s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(\left(x + y \cdot z\right) + t \cdot a\right) + \left(a \cdot z\right) \cdot b
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+\mathbf{if}\;z \leq 10^{+150}:\\
+\;\;\;\;\left(\left(x + z \cdot y\right) + t \cdot a\right) + \left(z \cdot a\right) \cdot b\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(z, \mathsf{fma}\left(a, b, y\right), \mathsf{fma}\left(t, a, x\right)\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a b)
+ :precision binary64
+ (+ (+ (+ x (* y z)) (* t a)) (* (* a z) b)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a b)
+ :precision binary64
+ (if (&lt;= z 1e+150)
+   (+ (+ (+ x (* z y)) (* t a)) (* (* z a) b))
+   (fma z (fma a b y) (fma t a x))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a, double b) {
+	return ((x + (y * z)) + (t * a)) + ((a * z) * b);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a, double b) {
+	double tmp;
+	if (z &lt;= 1e+150) {
+		tmp = ((x + (z * y)) + (t * a)) + ((z * a) * b);
+	} else {
+		tmp = fma(z, fma(a, b, y), fma(t, a, x));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a, b)
+	return Float64(Float64(Float64(x + Float64(y * z)) + Float64(t * a)) + Float64(Float64(a * z) * b))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a, b)
+	tmp = 0.0
+	if (z &lt;= 1e+150)
+		tmp = Float64(Float64(Float64(x + Float64(z * y)) + Float64(t * a)) + Float64(Float64(z * a) * b));
+	else
+		tmp = fma(z, fma(a, b, y), fma(t, a, x));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_, b_] := N[(N[(N[(x + N[(y * z), $MachinePrecision]), $MachinePrecision] + N[(t * a), $MachinePrecision]), $MachinePrecision] + N[(N[(a * z), $MachinePrecision] * b), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_, b_] := If[LessEqual[z, 1e+150], N[(N[(N[(x + N[(z * y), $MachinePrecision]), $MachinePrecision] + N[(t * a), $MachinePrecision]), $MachinePrecision] + N[(N[(z * a), $MachinePrecision] * b), $MachinePrecision]), $MachinePrecision], N[(z * N[(a * b + y), $MachinePrecision] + N[(t * a + x), $MachinePrecision]), $MachinePrecision]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(\left(x + y \cdot z\right) + t \cdot a\right) + \left(a \cdot z\right) \cdot b
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+\mathbf{if}\;z \leq 10^{+150}:\\
+\;\;\;\;\left(\left(x + z \cdot y\right) + t \cdot a\right) + \left(z \cdot a\right) \cdot b\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(z, \mathsf{fma}\left(a, b, y\right), \mathsf{fma}\left(t, a, x\right)\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>2.3</td></tr><tr><th>Target</th><td>0.3</td></tr><tr><th>Herbie</th><td>1.8</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;z &lt; -11820553527347888000:\\
+\;\;\;\;z \cdot \left(b \cdot a + y\right) + \left(x + t \cdot a\right)\\
+
+\mathbf{elif}\;z &lt; 4.7589743188364287 \cdot 10^{-122}:\\
+\;\;\;\;\left(b \cdot z + t\right) \cdot a + \left(z \cdot y + x\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;z \cdot \left(b \cdot a + y\right) + \left(x + t \cdot a\right)\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> z  &lt; 9.99999999999999981e149</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.6">1.9</span></p><div class="math">\[\left(\left(x + y \cdot z\right) + t \cdot a\right) + \left(a \cdot z\right) \cdot b
+\]</div></li></ol><h2><code>if <span class="condition">9.99999999999999981e149 &lt;  z </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 23.6">8.5</span></p><div class="math">\[\left(\left(x + y \cdot z\right) + t \cdot a\right) + \left(a \cdot z\right) \cdot b
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.1">0.1</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(z, \mathsf{fma}\left(a, b, y\right), \mathsf{fma}\left(t, a, x\right)\right)}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 0.5">1.8</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;z \leq 10^{+150}:\\
+\;\;\;\;\left(\left(x + z \cdot y\right) + t \cdot a\right) + \left(z \cdot a\right) \cdot b\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(z, \mathsf{fma}\left(a, b, y\right), \mathsf{fma}\left(t, a, x\right)\right)\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x y z t a b)
+  :name "Graphics.Rasterific.CubicBezier:cachedBezierAt from Rasterific-0.6.1"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; z -11820553527347888000.0) (+ (* z (+ (* b a) y)) (+ x (* t a))) (if (&lt; z 4.7589743188364287e-122) (+ (* (+ (* b z) t) a) (+ (* z y) x)) (+ (* z (+ (* b a) y)) (+ x (* t a)))))
+
+  (+ (+ (+ x (* y z)) (* t a)) (* (* a z) b)))
+</code></pre></section></body></html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for powComplex, real part</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">34.1 → 6.0</span></div><div>Time: <span class="number">3.7s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[e^{\log \left(\sqrt{x.re \cdot x.re + x.im \cdot x.im}\right) \cdot y.re - \tan^{-1}_* \frac{x.im}{x.re} \cdot y.im} \cdot \cos \left(\log \left(\sqrt{x.re \cdot x.re + x.im \cdot x.im}\right) \cdot y.im + \tan^{-1}_* \frac{x.im}{x.re} \cdot y.re\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \sqrt[3]{\sqrt[3]{y.im}}\\
+t_1 := y.re \cdot \tan^{-1}_* \frac{x.im}{x.re}\\
+t_2 := \log \left(\sqrt{x.re \cdot x.re + x.im \cdot x.im}\right)\\
+t_3 := e^{t_2 \cdot y.re - \tan^{-1}_* \frac{x.im}{x.re} \cdot y.im} \cdot \cos \left(t_2 \cdot y.im + t_1\right)\\
+\mathbf{if}\;t_3 \leq 0:\\
+\;\;\;\;t_3\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{{\left(\mathsf{hypot}\left(x.re, x.im\right)\right)}^{y.re}}{e^{\sqrt[3]{y.im} \cdot \left(\tan^{-1}_* \frac{x.im}{x.re} \cdot \left({t_0}^{2} \cdot \left(\sqrt[3]{y.im} \cdot t_0\right)\right)\right)}} \cdot \cos \left(\mathsf{fma}\left(\log \left(\mathsf{hypot}\left(x.re, x.im\right)\right), y.im, t_1\right)\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x.re x.im y.re y.im)
+ :precision binary64
+ (*
+  (exp
+   (-
+    (* (log (sqrt (+ (* x.re x.re) (* x.im x.im)))) y.re)
+    (* (atan2 x.im x.re) y.im)))
+  (cos
+   (+
+    (* (log (sqrt (+ (* x.re x.re) (* x.im x.im)))) y.im)
+    (* (atan2 x.im x.re) y.re)))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x.re x.im y.re y.im)
+ :precision binary64
+ (let* ((t_0 (cbrt (cbrt y.im)))
+        (t_1 (* y.re (atan2 x.im x.re)))
+        (t_2 (log (sqrt (+ (* x.re x.re) (* x.im x.im)))))
+        (t_3
+         (*
+          (exp (- (* t_2 y.re) (* (atan2 x.im x.re) y.im)))
+          (cos (+ (* t_2 y.im) t_1)))))
+   (if (&lt;= t_3 0.0)
+     t_3
+     (*
+      (/
+       (pow (hypot x.re x.im) y.re)
+       (exp
+        (*
+         (cbrt y.im)
+         (* (atan2 x.im x.re) (* (pow t_0 2.0) (* (cbrt y.im) t_0))))))
+      (cos (fma (log (hypot x.re x.im)) y.im t_1))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x_46_re, double x_46_im, double y_46_re, double y_46_im) {
+	return exp(((log(sqrt(((x_46_re * x_46_re) + (x_46_im * x_46_im)))) * y_46_re) - (atan2(x_46_im, x_46_re) * y_46_im))) * cos(((log(sqrt(((x_46_re * x_46_re) + (x_46_im * x_46_im)))) * y_46_im) + (atan2(x_46_im, x_46_re) * y_46_re)));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x_46_re, double x_46_im, double y_46_re, double y_46_im) {
+	double t_0 = cbrt(cbrt(y_46_im));
+	double t_1 = y_46_re * atan2(x_46_im, x_46_re);
+	double t_2 = log(sqrt(((x_46_re * x_46_re) + (x_46_im * x_46_im))));
+	double t_3 = exp(((t_2 * y_46_re) - (atan2(x_46_im, x_46_re) * y_46_im))) * cos(((t_2 * y_46_im) + t_1));
+	double tmp;
+	if (t_3 &lt;= 0.0) {
+		tmp = t_3;
+	} else {
+		tmp = (pow(hypot(x_46_re, x_46_im), y_46_re) / exp((cbrt(y_46_im) * (atan2(x_46_im, x_46_re) * (pow(t_0, 2.0) * (cbrt(y_46_im) * t_0)))))) * cos(fma(log(hypot(x_46_re, x_46_im)), y_46_im, t_1));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x_46_re, x_46_im, y_46_re, y_46_im)
+	return Float64(exp(Float64(Float64(log(sqrt(Float64(Float64(x_46_re * x_46_re) + Float64(x_46_im * x_46_im)))) * y_46_re) - Float64(atan(x_46_im, x_46_re) * y_46_im))) * cos(Float64(Float64(log(sqrt(Float64(Float64(x_46_re * x_46_re) + Float64(x_46_im * x_46_im)))) * y_46_im) + Float64(atan(x_46_im, x_46_re) * y_46_re))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x_46_re, x_46_im, y_46_re, y_46_im)
+	t_0 = cbrt(cbrt(y_46_im))
+	t_1 = Float64(y_46_re * atan(x_46_im, x_46_re))
+	t_2 = log(sqrt(Float64(Float64(x_46_re * x_46_re) + Float64(x_46_im * x_46_im))))
+	t_3 = Float64(exp(Float64(Float64(t_2 * y_46_re) - Float64(atan(x_46_im, x_46_re) * y_46_im))) * cos(Float64(Float64(t_2 * y_46_im) + t_1)))
+	tmp = 0.0
+	if (t_3 &lt;= 0.0)
+		tmp = t_3;
+	else
+		tmp = Float64(Float64((hypot(x_46_re, x_46_im) ^ y_46_re) / exp(Float64(cbrt(y_46_im) * Float64(atan(x_46_im, x_46_re) * Float64((t_0 ^ 2.0) * Float64(cbrt(y_46_im) * t_0)))))) * cos(fma(log(hypot(x_46_re, x_46_im)), y_46_im, t_1)));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x$46$re_, x$46$im_, y$46$re_, y$46$im_] := N[(N[Exp[N[(N[(N[Log[N[Sqrt[N[(N[(x$46$re * x$46$re), $MachinePrecision] + N[(x$46$im * x$46$im), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]], $MachinePrecision] * y$46$re), $MachinePrecision] - N[(N[ArcTan[x$46$im / x$46$re], $MachinePrecision] * y$46$im), $MachinePrecision]), $MachinePrecision]], $MachinePrecision] * N[Cos[N[(N[(N[Log[N[Sqrt[N[(N[(x$46$re * x$46$re), $MachinePrecision] + N[(x$46$im * x$46$im), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]], $MachinePrecision] * y$46$im), $MachinePrecision] + N[(N[ArcTan[x$46$im / x$46$re], $MachinePrecision] * y$46$re), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x$46$re_, x$46$im_, y$46$re_, y$46$im_] := Block[{t$95$0 = N[Power[N[Power[y$46$im, 1/3], $MachinePrecision], 1/3], $MachinePrecision]}, Block[{t$95$1 = N[(y$46$re * N[ArcTan[x$46$im / x$46$re], $MachinePrecision]), $MachinePrecision]}, Block[{t$95$2 = N[Log[N[Sqrt[N[(N[(x$46$re * x$46$re), $MachinePrecision] + N[(x$46$im * x$46$im), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]], $MachinePrecision]}, Block[{t$95$3 = N[(N[Exp[N[(N[(t$95$2 * y$46$re), $MachinePrecision] - N[(N[ArcTan[x$46$im / x$46$re], $MachinePrecision] * y$46$im), $MachinePrecision]), $MachinePrecision]], $MachinePrecision] * N[Cos[N[(N[(t$95$2 * y$46$im), $MachinePrecision] + t$95$1), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]}, If[LessEqual[t$95$3, 0.0], t$95$3, N[(N[(N[Power[N[Sqrt[x$46$re ^ 2 + x$46$im ^ 2], $MachinePrecision], y$46$re], $MachinePrecision] / N[Exp[N[(N[Power[y$46$im, 1/3], $MachinePrecision] * N[(N[ArcTan[x$46$im / x$46$re], $MachinePrecision] * N[(N[Power[t$95$0, 2.0], $MachinePrecision] * N[(N[Power[y$46$im, 1/3], $MachinePrecision] * t$95$0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] * N[Cos[N[(N[Log[N[Sqrt[x$46$re ^ 2 + x$46$im ^ 2], $MachinePrecision]], $MachinePrecision] * y$46$im + t$95$1), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">e^{\log \left(\sqrt{x.re \cdot x.re + x.im \cdot x.im}\right) \cdot y.re - \tan^{-1}_* \frac{x.im}{x.re} \cdot y.im} \cdot \cos \left(\log \left(\sqrt{x.re \cdot x.re + x.im \cdot x.im}\right) \cdot y.im + \tan^{-1}_* \frac{x.im}{x.re} \cdot y.re\right)
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \sqrt[3]{\sqrt[3]{y.im}}\\
+t_1 := y.re \cdot \tan^{-1}_* \frac{x.im}{x.re}\\
+t_2 := \log \left(\sqrt{x.re \cdot x.re + x.im \cdot x.im}\right)\\
+t_3 := e^{t_2 \cdot y.re - \tan^{-1}_* \frac{x.im}{x.re} \cdot y.im} \cdot \cos \left(t_2 \cdot y.im + t_1\right)\\
+\mathbf{if}\;t_3 \leq 0:\\
+\;\;\;\;t_3\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{{\left(\mathsf{hypot}\left(x.re, x.im\right)\right)}^{y.re}}{e^{\sqrt[3]{y.im} \cdot \left(\tan^{-1}_* \frac{x.im}{x.re} \cdot \left({t_0}^{2} \cdot \left(\sqrt[3]{y.im} \cdot t_0\right)\right)\right)}} \cdot \cos \left(\mathsf{fma}\left(\log \left(\mathsf{hypot}\left(x.re, x.im\right)\right), y.im, t_1\right)\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> (*.f64 (exp.f64 (-.f64 (*.f64 (log.f64 (sqrt.f64 (+.f64 (*.f64 x.re x.re) (*.f64 x.im x.im)))) y.re) (*.f64 (atan2.f64 x.im x.re) y.im))) (cos.f64 (+.f64 (*.f64 (log.f64 (sqrt.f64 (+.f64 (*.f64 x.re x.re) (*.f64 x.im x.im)))) y.im) (*.f64 (atan2.f64 x.im x.re) y.re))))  &lt; 0.0</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 6.9">2.9</span></p><div class="math">\[e^{\log \left(\sqrt{x.re \cdot x.re + x.im \cdot x.im}\right) \cdot y.re - \tan^{-1}_* \frac{x.im}{x.re} \cdot y.im} \cdot \cos \left(\log \left(\sqrt{x.re \cdot x.re + x.im \cdot x.im}\right) \cdot y.im + \tan^{-1}_* \frac{x.im}{x.re} \cdot y.re\right)
+\]</div></li></ol><h2><code>if <span class="condition">0.0 &lt;  (*.f64 (exp.f64 (-.f64 (*.f64 (log.f64 (sqrt.f64 (+.f64 (*.f64 x.re x.re) (*.f64 x.im x.im)))) y.re) (*.f64 (atan2.f64 x.im x.re) y.im))) (cos.f64 (+.f64 (*.f64 (log.f64 (sqrt.f64 (+.f64 (*.f64 x.re x.re) (*.f64 x.im x.im)))) y.im) (*.f64 (atan2.f64 x.im x.re) y.re)))) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 43.6">46.8</span></p><div class="math">\[e^{\log \left(\sqrt{x.re \cdot x.re + x.im \cdot x.im}\right) \cdot y.re - \tan^{-1}_* \frac{x.im}{x.re} \cdot y.im} \cdot \cos \left(\log \left(\sqrt{x.re \cdot x.re + x.im \cdot x.im}\right) \cdot y.im + \tan^{-1}_* \frac{x.im}{x.re} \cdot y.re\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 8.1">7.3</span></p><div class="math">\[\leadsto \color{blue}{\frac{{\left(\mathsf{hypot}\left(x.re, x.im\right)\right)}^{y.re}}{e^{\tan^{-1}_* \frac{x.im}{x.re} \cdot y.im}} \cdot \cos \left(\mathsf{fma}\left(\log \left(\mathsf{hypot}\left(x.re, x.im\right)\right), y.im, y.re \cdot \tan^{-1}_* \frac{x.im}{x.re}\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 8.4">6.0</span></p><div class="math">\[\leadsto \frac{{\left(\mathsf{hypot}\left(x.re, x.im\right)\right)}^{y.re}}{e^{\color{blue}{\sqrt{{\left(y.im \cdot \tan^{-1}_* \frac{x.im}{x.re}\right)}^{2}}}}} \cdot \cos \left(\mathsf{fma}\left(\log \left(\mathsf{hypot}\left(x.re, x.im\right)\right), y.im, y.re \cdot \tan^{-1}_* \frac{x.im}{x.re}\right)\right)
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 8.1">7.3</span></p><div class="math">\[\leadsto \frac{{\left(\mathsf{hypot}\left(x.re, x.im\right)\right)}^{y.re}}{e^{\color{blue}{\left(\tan^{-1}_* \frac{x.im}{x.re} \cdot {\left(\sqrt[3]{y.im}\right)}^{2}\right) \cdot \sqrt[3]{y.im}}}} \cdot \cos \left(\mathsf{fma}\left(\log \left(\mathsf{hypot}\left(x.re, x.im\right)\right), y.im, y.re \cdot \tan^{-1}_* \frac{x.im}{x.re}\right)\right)
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 8.1">7.3</span></p><div class="math">\[\leadsto \frac{{\left(\mathsf{hypot}\left(x.re, x.im\right)\right)}^{y.re}}{e^{\left(\tan^{-1}_* \frac{x.im}{x.re} \cdot \color{blue}{\left({\left(\sqrt[3]{\sqrt[3]{y.im}}\right)}^{2} \cdot \left(\sqrt[3]{\sqrt[3]{y.im}} \cdot \sqrt[3]{y.im}\right)\right)}\right) \cdot \sqrt[3]{y.im}}} \cdot \cos \left(\mathsf{fma}\left(\log \left(\mathsf{hypot}\left(x.re, x.im\right)\right), y.im, y.re \cdot \tan^{-1}_* \frac{x.im}{x.re}\right)\right)
+\]</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 7.7">6.0</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;e^{\log \left(\sqrt{x.re \cdot x.re + x.im \cdot x.im}\right) \cdot y.re - \tan^{-1}_* \frac{x.im}{x.re} \cdot y.im} \cdot \cos \left(\log \left(\sqrt{x.re \cdot x.re + x.im \cdot x.im}\right) \cdot y.im + y.re \cdot \tan^{-1}_* \frac{x.im}{x.re}\right) \leq 0:\\
+\;\;\;\;e^{\log \left(\sqrt{x.re \cdot x.re + x.im \cdot x.im}\right) \cdot y.re - \tan^{-1}_* \frac{x.im}{x.re} \cdot y.im} \cdot \cos \left(\log \left(\sqrt{x.re \cdot x.re + x.im \cdot x.im}\right) \cdot y.im + y.re \cdot \tan^{-1}_* \frac{x.im}{x.re}\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{{\left(\mathsf{hypot}\left(x.re, x.im\right)\right)}^{y.re}}{e^{\sqrt[3]{y.im} \cdot \left(\tan^{-1}_* \frac{x.im}{x.re} \cdot \left({\left(\sqrt[3]{\sqrt[3]{y.im}}\right)}^{2} \cdot \left(\sqrt[3]{y.im} \cdot \sqrt[3]{\sqrt[3]{y.im}}\right)\right)\right)}} \cdot \cos \left(\mathsf{fma}\left(\log \left(\mathsf{hypot}\left(x.re, x.im\right)\right), y.im, y.re \cdot \tan^{-1}_* \frac{x.im}{x.re}\right)\right)\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x.re x.im y.re y.im)
+  :name "powComplex, real part"
+  :precision binary64
+  (* (exp (- (* (log (sqrt (+ (* x.re x.re) (* x.im x.im)))) y.re) (* (atan2 x.im x.re) y.im))) (cos (+ (* (log (sqrt (+ (* x.re x.re) (* x.im x.im)))) y.im) (* (atan2 x.im x.re) y.re)))))
+</code></pre></section></body></html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Octave 3.8, jcobi/4, as called</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 30.6">46.4 → 0.1</span></div><div>Time: <span class="number">984.0ms</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[i &gt; 0\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{\frac{\left(i \cdot i\right) \cdot \left(i \cdot i\right)}{\left(2 \cdot i\right) \cdot \left(2 \cdot i\right)}}{\left(2 \cdot i\right) \cdot \left(2 \cdot i\right) - 1}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+\mathbf{if}\;i \leq 14.773869287503453:\\
+\;\;\;\;\frac{\left(i \cdot i\right) \cdot 0.25}{\mathsf{fma}\left(i \cdot 4, i, -1\right)}\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(0.015625, {i}^{-2}, 0.0625\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (i)
+ :precision binary64
+ (/
+  (/ (* (* i i) (* i i)) (* (* 2.0 i) (* 2.0 i)))
+  (- (* (* 2.0 i) (* 2.0 i)) 1.0)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (i)
+ :precision binary64
+ (if (&lt;= i 14.773869287503453)
+   (/ (* (* i i) 0.25) (fma (* i 4.0) i -1.0))
+   (fma 0.015625 (pow i -2.0) 0.0625)))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double i) {
+	return (((i * i) * (i * i)) / ((2.0 * i) * (2.0 * i))) / (((2.0 * i) * (2.0 * i)) - 1.0);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double i) {
+	double tmp;
+	if (i &lt;= 14.773869287503453) {
+		tmp = ((i * i) * 0.25) / fma((i * 4.0), i, -1.0);
+	} else {
+		tmp = fma(0.015625, pow(i, -2.0), 0.0625);
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(i)
+	return Float64(Float64(Float64(Float64(i * i) * Float64(i * i)) / Float64(Float64(2.0 * i) * Float64(2.0 * i))) / Float64(Float64(Float64(2.0 * i) * Float64(2.0 * i)) - 1.0))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(i)
+	tmp = 0.0
+	if (i &lt;= 14.773869287503453)
+		tmp = Float64(Float64(Float64(i * i) * 0.25) / fma(Float64(i * 4.0), i, -1.0));
+	else
+		tmp = fma(0.015625, (i ^ -2.0), 0.0625);
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[i_] := N[(N[(N[(N[(i * i), $MachinePrecision] * N[(i * i), $MachinePrecision]), $MachinePrecision] / N[(N[(2.0 * i), $MachinePrecision] * N[(2.0 * i), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] / N[(N[(N[(2.0 * i), $MachinePrecision] * N[(2.0 * i), $MachinePrecision]), $MachinePrecision] - 1.0), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[i_] := If[LessEqual[i, 14.773869287503453], N[(N[(N[(i * i), $MachinePrecision] * 0.25), $MachinePrecision] / N[(N[(i * 4.0), $MachinePrecision] * i + -1.0), $MachinePrecision]), $MachinePrecision], N[(0.015625 * N[Power[i, -2.0], $MachinePrecision] + 0.0625), $MachinePrecision]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{\frac{\left(i \cdot i\right) \cdot \left(i \cdot i\right)}{\left(2 \cdot i\right) \cdot \left(2 \cdot i\right)}}{\left(2 \cdot i\right) \cdot \left(2 \cdot i\right) - 1}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+\mathbf{if}\;i \leq 14.773869287503453:\\
+\;\;\;\;\frac{\left(i \cdot i\right) \cdot 0.25}{\mathsf{fma}\left(i \cdot 4, i, -1\right)}\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(0.015625, {i}^{-2}, 0.0625\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> i  &lt; 14.7738692875034534</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 46.2">45.2</span></p><div class="math">\[\frac{\frac{\left(i \cdot i\right) \cdot \left(i \cdot i\right)}{\left(2 \cdot i\right) \cdot \left(2 \cdot i\right)}}{\left(2 \cdot i\right) \cdot \left(2 \cdot i\right) - 1}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.0">0.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{\left(i \cdot i\right) \cdot 0.25}{\mathsf{fma}\left(i \cdot 4, i, -1\right)}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">14.7738692875034534 &lt;  i </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 49.4">47.6</span></p><div class="math">\[\frac{\frac{\left(i \cdot i\right) \cdot \left(i \cdot i\right)}{\left(2 \cdot i\right) \cdot \left(2 \cdot i\right)}}{\left(2 \cdot i\right) \cdot \left(2 \cdot i\right) - 1}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 27.1">31.3</span></p><div class="math">\[\leadsto \color{blue}{\frac{\left(i \cdot i\right) \cdot 0.25}{\mathsf{fma}\left(i \cdot 4, i, -1\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in i around inf <span class="error" title="Internally 0">0.2</span></p><div class="math">\[\leadsto \color{blue}{0.0625 + 0.015625 \cdot \frac{1}{{i}^{2}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0">0.2</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(0.015625, {i}^{-2}, 0.0625\right)}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (i)
+  :name "Octave 3.8, jcobi/4, as called"
+  :precision binary64
+  :pre (&gt; i 0.0)
+  (/ (/ (* (* i i) (* i i)) (* (* 2.0 i) (* 2.0 i))) (- (* (* 2.0 i) (* 2.0 i)) 1.0)))
+</code></pre></section></body></html>

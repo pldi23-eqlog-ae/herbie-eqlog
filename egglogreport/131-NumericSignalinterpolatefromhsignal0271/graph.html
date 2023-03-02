@@ -1,0 +1,103 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Numeric.Signal:interpolate   from hsignal-0.2.7.1</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">14.2 → 6.0</span></div><div>Time: <span class="number">3.9s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[x + \left(y - z\right) \cdot \frac{t - x}{a - z}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := \frac{t \cdot \left(y - z\right)}{a - z} + -1 \cdot \left(\left(\frac{y}{a - z} - \left(\frac{z}{a - z} + 1\right)\right) \cdot x\right)\\
+t_2 := x + \left(y - z\right) \cdot \frac{t - x}{a - z}\\
+\mathbf{if}\;t_2 \leq -\infty:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;t_2 \leq -200:\\
+\;\;\;\;\mathsf{fma}\left(y - z, \frac{x - t}{z - a}, x\right)\\
+
+\mathbf{elif}\;t_2 \leq 2 \cdot 10^{+23}:\\
+\;\;\;\;t_1\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(y - z, \mathsf{fma}\left(x, \frac{-1}{a - z}, \frac{t}{a - z}\right), x\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a) :precision binary64 (+ x (* (- y z) (/ (- t x) (- a z)))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a)
+ :precision binary64
+ (let* ((t_1
+         (+
+          (/ (* t (- y z)) (- a z))
+          (* -1.0 (* (- (/ y (- a z)) (+ (/ z (- a z)) 1.0)) x))))
+        (t_2 (+ x (* (- y z) (/ (- t x) (- a z))))))
+   (if (&lt;= t_2 (- INFINITY))
+     t_1
+     (if (&lt;= t_2 -200.0)
+       (fma (- y z) (/ (- x t) (- z a)) x)
+       (if (&lt;= t_2 2e+23)
+         t_1
+         (fma (- y z) (fma x (/ -1.0 (- a z)) (/ t (- a z))) x))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a) {
+	return x + ((y - z) * ((t - x) / (a - z)));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a) {
+	double t_1 = ((t * (y - z)) / (a - z)) + (-1.0 * (((y / (a - z)) - ((z / (a - z)) + 1.0)) * x));
+	double t_2 = x + ((y - z) * ((t - x) / (a - z)));
+	double tmp;
+	if (t_2 &lt;= -((double) INFINITY)) {
+		tmp = t_1;
+	} else if (t_2 &lt;= -200.0) {
+		tmp = fma((y - z), ((x - t) / (z - a)), x);
+	} else if (t_2 &lt;= 2e+23) {
+		tmp = t_1;
+	} else {
+		tmp = fma((y - z), fma(x, (-1.0 / (a - z)), (t / (a - z))), x);
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a)
+	return Float64(x + Float64(Float64(y - z) * Float64(Float64(t - x) / Float64(a - z))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a)
+	t_1 = Float64(Float64(Float64(t * Float64(y - z)) / Float64(a - z)) + Float64(-1.0 * Float64(Float64(Float64(y / Float64(a - z)) - Float64(Float64(z / Float64(a - z)) + 1.0)) * x)))
+	t_2 = Float64(x + Float64(Float64(y - z) * Float64(Float64(t - x) / Float64(a - z))))
+	tmp = 0.0
+	if (t_2 &lt;= Float64(-Inf))
+		tmp = t_1;
+	elseif (t_2 &lt;= -200.0)
+		tmp = fma(Float64(y - z), Float64(Float64(x - t) / Float64(z - a)), x);
+	elseif (t_2 &lt;= 2e+23)
+		tmp = t_1;
+	else
+		tmp = fma(Float64(y - z), fma(x, Float64(-1.0 / Float64(a - z)), Float64(t / Float64(a - z))), x);
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_] := N[(x + N[(N[(y - z), $MachinePrecision] * N[(N[(t - x), $MachinePrecision] / N[(a - z), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_] := Block[{t$95$1 = N[(N[(N[(t * N[(y - z), $MachinePrecision]), $MachinePrecision] / N[(a - z), $MachinePrecision]), $MachinePrecision] + N[(-1.0 * N[(N[(N[(y / N[(a - z), $MachinePrecision]), $MachinePrecision] - N[(N[(z / N[(a - z), $MachinePrecision]), $MachinePrecision] + 1.0), $MachinePrecision]), $MachinePrecision] * x), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$2 = N[(x + N[(N[(y - z), $MachinePrecision] * N[(N[(t - x), $MachinePrecision] / N[(a - z), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[t$95$2, (-Infinity)], t$95$1, If[LessEqual[t$95$2, -200.0], N[(N[(y - z), $MachinePrecision] * N[(N[(x - t), $MachinePrecision] / N[(z - a), $MachinePrecision]), $MachinePrecision] + x), $MachinePrecision], If[LessEqual[t$95$2, 2e+23], t$95$1, N[(N[(y - z), $MachinePrecision] * N[(x * N[(-1.0 / N[(a - z), $MachinePrecision]), $MachinePrecision] + N[(t / N[(a - z), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + x), $MachinePrecision]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">x + \left(y - z\right) \cdot \frac{t - x}{a - z}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := \frac{t \cdot \left(y - z\right)}{a - z} + -1 \cdot \left(\left(\frac{y}{a - z} - \left(\frac{z}{a - z} + 1\right)\right) \cdot x\right)\\
+t_2 := x + \left(y - z\right) \cdot \frac{t - x}{a - z}\\
+\mathbf{if}\;t_2 \leq -\infty:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;t_2 \leq -200:\\
+\;\;\;\;\mathsf{fma}\left(y - z, \frac{x - t}{z - a}, x\right)\\
+
+\mathbf{elif}\;t_2 \leq 2 \cdot 10^{+23}:\\
+\;\;\;\;t_1\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(y - z, \mathsf{fma}\left(x, \frac{-1}{a - z}, \frac{t}{a - z}\right), x\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> (+.f64 x (*.f64 (-.f64 y z) (/.f64 (-.f64 t x) (-.f64 a z))))  &lt; -inf.0 or -200 &lt;  (+.f64 x (*.f64 (-.f64 y z) (/.f64 (-.f64 t x) (-.f64 a z))))  &lt; 1.9999999999999998e23</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 30.8">29.0</span></p><div class="math">\[x + \left(y - z\right) \cdot \frac{t - x}{a - z}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 30.8">28.9</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(y - z, \frac{x - t}{z - a}, x\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 30.7">28.8</span></p><div class="math">\[\leadsto \mathsf{fma}\left(y - z, \color{blue}{\mathsf{fma}\left(x, \frac{-1}{a - z}, \frac{t}{a - z}\right)}, x\right)
+\]</div></li><li><p>Taylor expanded in x around -inf <span class="error" title="Internally 9.4">9.2</span></p><div class="math">\[\leadsto \color{blue}{\frac{t \cdot \left(y - z\right)}{a - z} + -1 \cdot \left(\left(\frac{y}{a - z} - \left(\frac{z}{a - z} + 1\right)\right) \cdot x\right)}
+\]</div></li></ol><h2><code>if <span class="condition">-inf.0 &lt;  (+.f64 x (*.f64 (-.f64 y z) (/.f64 (-.f64 t x) (-.f64 a z))))  &lt; -200</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 1.4">2.1</span></p><div class="math">\[x + \left(y - z\right) \cdot \frac{t - x}{a - z}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 1.3">2.1</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(y - z, \frac{x - t}{z - a}, x\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">1.9999999999999998e23 &lt;  (+.f64 x (*.f64 (-.f64 y z) (/.f64 (-.f64 t x) (-.f64 a z)))) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 5.0">5.4</span></p><div class="math">\[x + \left(y - z\right) \cdot \frac{t - x}{a - z}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 5.0">5.4</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(y - z, \frac{x - t}{z - a}, x\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 4.9">5.4</span></p><div class="math">\[\leadsto \mathsf{fma}\left(y - z, \color{blue}{\mathsf{fma}\left(x, \frac{-1}{a - z}, \frac{t}{a - z}\right)}, x\right)
+\]</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y z t a)
+  :name "Numeric.Signal:interpolate   from hsignal-0.2.7.1"
+  :precision binary64
+  (+ x (* (- y z) (/ (- t x) (- a z)))))
+</code></pre></section></body></html>

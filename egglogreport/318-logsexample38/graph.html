@@ -1,0 +1,37 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for logs (example 3.8)</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 0">63.0 → 0</span></div><div>Time: <span class="number">1.7s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[n &gt; 6.8 \cdot 10^{+15}\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(\left(n + 1\right) \cdot \log \left(n + 1\right) - n \cdot \log n\right) - 1
+\]</div><div class="arrow">↓</div><div class="program math">\[\mathsf{fma}\left(0, n, \log n\right)
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (n)
+ :precision binary64
+ (- (- (* (+ n 1.0) (log (+ n 1.0))) (* n (log n))) 1.0))</pre><div class="arrow">↓</div><pre class="program">(FPCore (n) :precision binary64 (fma 0.0 n (log n)))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double n) {
+	return (((n + 1.0) * log((n + 1.0))) - (n * log(n))) - 1.0;
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double n) {
+	return fma(0.0, n, log(n));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(n)
+	return Float64(Float64(Float64(Float64(n + 1.0) * log(Float64(n + 1.0))) - Float64(n * log(n))) - 1.0)
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(n)
+	return fma(0.0, n, log(n))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[n_] := N[(N[(N[(N[(n + 1.0), $MachinePrecision] * N[Log[N[(n + 1.0), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] - N[(n * N[Log[n], $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - 1.0), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[n_] := N[(0.0 * n + N[Log[n], $MachinePrecision]), $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(\left(n + 1\right) \cdot \log \left(n + 1\right) - n \cdot \log n\right) - 1
+</pre><div class="arrow">↓</div><pre class="program">\mathsf{fma}\left(0, n, \log n\right)
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>63.0</td></tr><tr><th>Target</th><td>0</td></tr><tr><th>Herbie</th><td>0</td></tr></table><div class="math">\[\log \left(n + 1\right) - \left(\frac{1}{2 \cdot n} - \left(\frac{1}{3 \cdot \left(n \cdot n\right)} - \frac{4}{{n}^{3}}\right)\right)
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 63.0">63.0</span></p><div class="math">\[\left(\left(n + 1\right) \cdot \log \left(n + 1\right) - n \cdot \log n\right) - 1
+\]</div></li><li><p>Simplified<span class="error" title="Internally 61.9">61.9</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(n + 1, \mathsf{log1p}\left(n\right), \mathsf{fma}\left(-n, \log n, -1\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in n around inf <span class="error" title="Internally 0">0.0</span></p><div class="math">\[\leadsto \color{blue}{-1 \cdot \log \left(\frac{1}{n}\right) + n \cdot \left(-1 \cdot \log \left(\frac{1}{n}\right) + \log \left(\frac{1}{n}\right)\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0">0</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(0, n, \log n\right)}
+\]</div><div class="math">Proof</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (n)
+  :name "logs (example 3.8)"
+  :precision binary64
+  :pre (&gt; n 6.8e+15)
+
+  :herbie-target
+  (- (log (+ n 1.0)) (- (/ 1.0 (* 2.0 n)) (- (/ 1.0 (* 3.0 (* n n))) (/ 4.0 (pow n 3.0)))))
+
+  (- (- (* (+ n 1.0) (log (+ n 1.0))) (* n (log n))) 1.0))
+</code></pre></section></body></html>

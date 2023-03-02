@@ -1,0 +1,144 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Diagrams.Solve.Tridiagonal:solveTriDiagonal from diagrams-solve-0.1, B</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 62.0 → 64.0">2.7 → 0.4</span></div><div>Time: <span class="number">2.0s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Java</option><option>Python</option><option>Julia</option><option>MATLAB</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{x}{y - z \cdot t}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+\mathbf{if}\;z \cdot t \leq -\infty:\\
+\;\;\;\;\frac{\frac{-x}{t}}{z}\\
+
+\mathbf{elif}\;z \cdot t \leq 10^{+304}:\\
+\;\;\;\;\frac{x}{y - z \cdot t}\\
+
+\mathbf{else}:\\
+\;\;\;\;{\left(\frac{y}{x} - \frac{z}{\frac{x}{t}}\right)}^{-1}\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t) :precision binary64 (/ x (- y (* z t))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t)
+ :precision binary64
+ (if (&lt;= (* z t) (- INFINITY))
+   (/ (/ (- x) t) z)
+   (if (&lt;= (* z t) 1e+304)
+     (/ x (- y (* z t)))
+     (pow (- (/ y x) (/ z (/ x t))) -1.0))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t) {
+	return x / (y - (z * t));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t) {
+	double tmp;
+	if ((z * t) &lt;= -((double) INFINITY)) {
+		tmp = (-x / t) / z;
+	} else if ((z * t) &lt;= 1e+304) {
+		tmp = x / (y - (z * t));
+	} else {
+		tmp = pow(((y / x) - (z / (x / t))), -1.0);
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double x, double y, double z, double t) {
+	return x / (y - (z * t));
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double x, double y, double z, double t) {
+	double tmp;
+	if ((z * t) &lt;= -Double.POSITIVE_INFINITY) {
+		tmp = (-x / t) / z;
+	} else if ((z * t) &lt;= 1e+304) {
+		tmp = x / (y - (z * t));
+	} else {
+		tmp = Math.pow(((y / x) - (z / (x / t))), -1.0);
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(x, y, z, t):
+	return x / (y - (z * t))
+</pre><div class="arrow">↓</div><pre class="program">def code(x, y, z, t):
+	tmp = 0
+	if (z * t) &lt;= -math.inf:
+		tmp = (-x / t) / z
+	elif (z * t) &lt;= 1e+304:
+		tmp = x / (y - (z * t))
+	else:
+		tmp = math.pow(((y / x) - (z / (x / t))), -1.0)
+	return tmp
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t)
+	return Float64(x / Float64(y - Float64(z * t)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t)
+	tmp = 0.0
+	if (Float64(z * t) &lt;= Float64(-Inf))
+		tmp = Float64(Float64(Float64(-x) / t) / z);
+	elseif (Float64(z * t) &lt;= 1e+304)
+		tmp = Float64(x / Float64(y - Float64(z * t)));
+	else
+		tmp = Float64(Float64(y / x) - Float64(z / Float64(x / t))) ^ -1.0;
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="MATLAB"><pre class="program">function tmp = code(x, y, z, t)
+	tmp = x / (y - (z * t));
+end
+</pre><div class="arrow">↓</div><pre class="program">function tmp_2 = code(x, y, z, t)
+	tmp = 0.0;
+	if ((z * t) &lt;= -Inf)
+		tmp = (-x / t) / z;
+	elseif ((z * t) &lt;= 1e+304)
+		tmp = x / (y - (z * t));
+	else
+		tmp = ((y / x) - (z / (x / t))) ^ -1.0;
+	end
+	tmp_2 = tmp;
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_] := N[(x / N[(y - N[(z * t), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_] := If[LessEqual[N[(z * t), $MachinePrecision], (-Infinity)], N[(N[((-x) / t), $MachinePrecision] / z), $MachinePrecision], If[LessEqual[N[(z * t), $MachinePrecision], 1e+304], N[(x / N[(y - N[(z * t), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], N[Power[N[(N[(y / x), $MachinePrecision] - N[(z / N[(x / t), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], -1.0], $MachinePrecision]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{x}{y - z \cdot t}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+\mathbf{if}\;z \cdot t \leq -\infty:\\
+\;\;\;\;\frac{\frac{-x}{t}}{z}\\
+
+\mathbf{elif}\;z \cdot t \leq 10^{+304}:\\
+\;\;\;\;\frac{x}{y - z \cdot t}\\
+
+\mathbf{else}:\\
+\;\;\;\;{\left(\frac{y}{x} - \frac{z}{\frac{x}{t}}\right)}^{-1}\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">x</label><input type="text" class="input-submit" name="var-name-0" value="-1.679214769397375e-301"/></li><li><label for="var-name-1">y</label><input type="text" class="input-submit" name="var-name-1" value="-2.1376531630514983e+133"/></li><li><label for="var-name-2">z</label><input type="text" class="input-submit" name="var-name-2" value="-9.179453291433892e-44"/></li><li><label for="var-name-3">t</label><input type="text" class="input-submit" name="var-name-3" value="1.03682830287746e-111"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>2.7</td></tr><tr><th>Target</th><td>1.7</td></tr><tr><th>Herbie</th><td>0.4</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;x &lt; -1.618195973607049 \cdot 10^{+50}:\\
+\;\;\;\;\frac{1}{\frac{y}{x} - \frac{z}{x} \cdot t}\\
+
+\mathbf{elif}\;x &lt; 2.1378306434876444 \cdot 10^{+131}:\\
+\;\;\;\;\frac{x}{y - z \cdot t}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{1}{\frac{y}{x} - \frac{z}{x} \cdot t}\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 3 regimes</li><li><h2><code>if <span class="condition"> (*.f64 z t)  &lt; -inf.0</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 25.9">17.9</span></p><div class="math">\[\frac{x}{y - z \cdot t}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 25.9">17.9</span></p><div class="math">\[\leadsto \color{blue}{\frac{{\left(\sqrt[3]{x}\right)}^{2}}{1} \cdot \frac{\sqrt[3]{x}}{y - z \cdot t}}
+\]</div></li><li><p>Taylor expanded in y around 0 <span class="error" title="Internally 25.9">17.9</span></p><div class="math">\[\leadsto \color{blue}{-1 \cdot \frac{x}{t \cdot z}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.1">0.1</span></p><div class="math">\[\leadsto \color{blue}{\frac{-\frac{x}{t}}{z}}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-inf.0 &lt;  (*.f64 z t)  &lt; 9.9999999999999994e303</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.1">0.1</span></p><div class="math">\[\frac{x}{y - z \cdot t}
+\]</div></li></ol><h2><code>if <span class="condition">9.9999999999999994e303 &lt;  (*.f64 z t) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 21.5">19.7</span></p><div class="math">\[\frac{x}{y - z \cdot t}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 21.5">19.7</span></p><div class="math">\[\leadsto \color{blue}{{\left(\frac{y - z \cdot t}{x}\right)}^{-1}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.1">4.1</span></p><div class="math">\[\leadsto {\color{blue}{\left(\frac{y}{x} - \frac{z}{\frac{x}{t}}\right)}}^{-1}
+\]</div></li></ol></li><li class="event">Recombined 3 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 0.1">0.4</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;z \cdot t \leq -\infty:\\
+\;\;\;\;\frac{\frac{-x}{t}}{z}\\
+
+\mathbf{elif}\;z \cdot t \leq 10^{+304}:\\
+\;\;\;\;\frac{x}{y - z \cdot t}\\
+
+\mathbf{else}:\\
+\;\;\;\;{\left(\frac{y}{x} - \frac{z}{\frac{x}{t}}\right)}^{-1}\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x y z t)
+  :name "Diagrams.Solve.Tridiagonal:solveTriDiagonal from diagrams-solve-0.1, B"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; x -1.618195973607049e+50) (/ 1.0 (- (/ y x) (* (/ z x) t))) (if (&lt; x 2.1378306434876444e+131) (/ x (- y (* z t))) (/ 1.0 (- (/ y x) (* (/ z x) t)))))
+
+  (/ x (- y (* z t))))
+</code></pre></section></body></html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for tan-example</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 63.0 → 8.8">13.2 → 0.2</span></div><div>Time: <span class="number">8.0s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[\left(\left(\left(x = 0 \lor 0.5884142 \leq x \land x \leq 505.5909\right) \land \left(-1.796658 \cdot 10^{+308} \leq y \land y \leq -9.425585 \cdot 10^{-310} \lor 1.284938 \cdot 10^{-309} \leq y \land y \leq 1.751224 \cdot 10^{+308}\right)\right) \land \left(-1.776707 \cdot 10^{+308} \leq z \land z \leq -8.599796 \cdot 10^{-310} \lor 3.293145 \cdot 10^{-311} \leq z \land z \leq 1.725154 \cdot 10^{+308}\right)\right) \land \left(-1.796658 \cdot 10^{+308} \leq a \land a \leq -9.425585 \cdot 10^{-310} \lor 1.284938 \cdot 10^{-309} \leq a \land a \leq 1.751224 \cdot 10^{+308}\right)\]</div></div><div id="preprocess"><div class="program math">\[ \begin{array}{c}[y, z] = \mathsf{sort}([y, z])\\ \end{array} \]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Fortran</option><option>Java</option><option>Python</option><option>Julia</option><option>MATLAB</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[x + \left(\tan \left(y + z\right) - \tan a\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[x - \left(\frac{\sin a}{\cos a} - \frac{\frac{\sin z}{\cos z} + \frac{\sin y}{\cos y}}{1 - \sin y \cdot \frac{\sin z}{\cos y \cdot \cos z}}\right)
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z a) :precision binary64 (+ x (- (tan (+ y z)) (tan a))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z a)
+ :precision binary64
+ (-
+  x
+  (-
+   (/ (sin a) (cos a))
+   (/
+    (+ (/ (sin z) (cos z)) (/ (sin y) (cos y)))
+    (- 1.0 (* (sin y) (/ (sin z) (* (cos y) (cos z)))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double a) {
+	return x + (tan((y + z)) - tan(a));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double a) {
+	return x - ((sin(a) / cos(a)) - (((sin(z) / cos(z)) + (sin(y) / cos(y))) / (1.0 - (sin(y) * (sin(z) / (cos(y) * cos(z)))))));
+}
+</pre></div><div class="implementation" data-language="Fortran"><pre class="program">real(8) function code(x, y, z, a)
+    real(8), intent (in) :: x
+    real(8), intent (in) :: y
+    real(8), intent (in) :: z
+    real(8), intent (in) :: a
+    code = x + (tan((y + z)) - tan(a))
+end function
+</pre><div class="arrow">↓</div><pre class="program">real(8) function code(x, y, z, a)
+    real(8), intent (in) :: x
+    real(8), intent (in) :: y
+    real(8), intent (in) :: z
+    real(8), intent (in) :: a
+    code = x - ((sin(a) / cos(a)) - (((sin(z) / cos(z)) + (sin(y) / cos(y))) / (1.0d0 - (sin(y) * (sin(z) / (cos(y) * cos(z)))))))
+end function
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double x, double y, double z, double a) {
+	return x + (Math.tan((y + z)) - Math.tan(a));
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double x, double y, double z, double a) {
+	return x - ((Math.sin(a) / Math.cos(a)) - (((Math.sin(z) / Math.cos(z)) + (Math.sin(y) / Math.cos(y))) / (1.0 - (Math.sin(y) * (Math.sin(z) / (Math.cos(y) * Math.cos(z)))))));
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(x, y, z, a):
+	return x + (math.tan((y + z)) - math.tan(a))
+</pre><div class="arrow">↓</div><pre class="program">def code(x, y, z, a):
+	return x - ((math.sin(a) / math.cos(a)) - (((math.sin(z) / math.cos(z)) + (math.sin(y) / math.cos(y))) / (1.0 - (math.sin(y) * (math.sin(z) / (math.cos(y) * math.cos(z)))))))
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, a)
+	return Float64(x + Float64(tan(Float64(y + z)) - tan(a)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, a)
+	return Float64(x - Float64(Float64(sin(a) / cos(a)) - Float64(Float64(Float64(sin(z) / cos(z)) + Float64(sin(y) / cos(y))) / Float64(1.0 - Float64(sin(y) * Float64(sin(z) / Float64(cos(y) * cos(z))))))))
+end
+</pre></div><div class="implementation" data-language="MATLAB"><pre class="program">function tmp = code(x, y, z, a)
+	tmp = x + (tan((y + z)) - tan(a));
+end
+</pre><div class="arrow">↓</div><pre class="program">function tmp = code(x, y, z, a)
+	tmp = x - ((sin(a) / cos(a)) - (((sin(z) / cos(z)) + (sin(y) / cos(y))) / (1.0 - (sin(y) * (sin(z) / (cos(y) * cos(z)))))));
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, a_] := N[(x + N[(N[Tan[N[(y + z), $MachinePrecision]], $MachinePrecision] - N[Tan[a], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, a_] := N[(x - N[(N[(N[Sin[a], $MachinePrecision] / N[Cos[a], $MachinePrecision]), $MachinePrecision] - N[(N[(N[(N[Sin[z], $MachinePrecision] / N[Cos[z], $MachinePrecision]), $MachinePrecision] + N[(N[Sin[y], $MachinePrecision] / N[Cos[y], $MachinePrecision]), $MachinePrecision]), $MachinePrecision] / N[(1.0 - N[(N[Sin[y], $MachinePrecision] * N[(N[Sin[z], $MachinePrecision] / N[(N[Cos[y], $MachinePrecision] * N[Cos[z], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">x + \left(\tan \left(y + z\right) - \tan a\right)
+</pre><div class="arrow">↓</div><pre class="program">x - \left(\frac{\sin a}{\cos a} - \frac{\frac{\sin z}{\cos z} + \frac{\sin y}{\cos y}}{1 - \sin y \cdot \frac{\sin z}{\cos y \cdot \cos z}}\right)
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">x</label><input type="text" class="input-submit" name="var-name-0" value="40.941950648783255"/></li><li><label for="var-name-1">y</label><input type="text" class="input-submit" name="var-name-1" value="4.2045692646345134e-290"/></li><li><label for="var-name-2">z</label><input type="text" class="input-submit" name="var-name-2" value="-2.2997314807710554e+282"/></li><li><label for="var-name-3">a</label><input type="text" class="input-submit" name="var-name-3" value="2.1870471527549122e-18"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 11.9">13.2</span></p><div class="math">\[x + \left(\tan \left(y + z\right) - \tan a\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 11.9">13.2</span></p><div class="math">\[\leadsto \color{blue}{x - \left(\tan a - \tan \left(y + z\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.3">0.3</span></p><div class="math">\[\leadsto x - \color{blue}{\frac{\mathsf{fma}\left(\sin a, 1 - \tan y \cdot \tan z, -\cos a \cdot \left(\tan y + \tan z\right)\right)}{\cos a \cdot \left(1 - \tan y \cdot \tan z\right)}}
+\]</div></li><li><p>Taylor expanded in a around inf <span class="error" title="Internally 0.3">0.2</span></p><div class="math">\[\leadsto x - \color{blue}{\frac{\sin a \cdot \left(1 - \frac{\sin z \cdot \sin y}{\cos z \cdot \cos y}\right) - \left(\frac{\sin z}{\cos z} + \frac{\sin y}{\cos y}\right) \cdot \cos a}{\left(1 - \frac{\sin z \cdot \sin y}{\cos z \cdot \cos y}\right) \cdot \cos a}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.3">0.2</span></p><div class="math">\[\leadsto x - \color{blue}{\left(\frac{\sin a}{\cos a} + \frac{\frac{-\sin y}{\cos y} - \frac{\sin z}{\cos z}}{1 - \frac{\sin z}{\cos z \cdot \cos y} \cdot \sin y}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Final simplification<span class="error" title="Internally 0.3">0.2</span></p><div class="math">\[\leadsto x - \left(\frac{\sin a}{\cos a} - \frac{\frac{\sin z}{\cos z} + \frac{\sin y}{\cos y}}{1 - \sin y \cdot \frac{\sin z}{\cos y \cdot \cos z}}\right)
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x y z a)
+  :name "tan-example"
+  :precision binary64
+  :pre (and (and (and (or (== x 0.0) (and (&lt;= 0.5884142 x) (&lt;= x 505.5909))) (or (and (&lt;= -1.796658e+308 y) (&lt;= y -9.425585e-310)) (and (&lt;= 1.284938e-309 y) (&lt;= y 1.751224e+308)))) (or (and (&lt;= -1.776707e+308 z) (&lt;= z -8.599796e-310)) (and (&lt;= 3.293145e-311 z) (&lt;= z 1.725154e+308)))) (or (and (&lt;= -1.796658e+308 a) (&lt;= a -9.425585e-310)) (and (&lt;= 1.284938e-309 a) (&lt;= a 1.751224e+308))))
+  (+ x (- (tan (+ y z)) (tan a))))
+</code></pre></section></body></html>

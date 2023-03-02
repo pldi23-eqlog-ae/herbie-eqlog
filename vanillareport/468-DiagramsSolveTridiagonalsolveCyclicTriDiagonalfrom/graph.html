@@ -1,0 +1,146 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Diagrams.Solve.Tridiagonal:solveCyclicTriDiagonal from diagrams-solve-0.1, B</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">16.3 → 5.8</span></div><div>Time: <span class="number">2.5s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{x + \frac{y \cdot z}{t}}{\left(a + 1\right) + \frac{y \cdot b}{t}}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := \frac{y \cdot b}{t}\\
+t_2 := \frac{x + \frac{y \cdot z}{t}}{\left(a + 1\right) + t_1}\\
+t_3 := \frac{x}{1 + \left(a + t_1\right)}\\
+\mathbf{if}\;t_2 \leq -\infty:\\
+\;\;\;\;\frac{y}{\frac{\mathsf{fma}\left(y, b, \mathsf{fma}\left(t, a, t\right)\right)}{z}} + t_3\\
+
+\mathbf{elif}\;t_2 \leq 10^{-6}:\\
+\;\;\;\;t_3 + \frac{y \cdot z}{\mathsf{fma}\left(t, a + 1, y \cdot b\right)}\\
+
+\mathbf{elif}\;t_2 \leq \infty:\\
+\;\;\;\;t_3 + \frac{y}{t} \cdot \frac{z}{a + \mathsf{fma}\left(b, \frac{y}{t}, 1\right)}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{z + \frac{x}{\frac{y}{t}}}{b}\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t a b)
+ :precision binary64
+ (/ (+ x (/ (* y z) t)) (+ (+ a 1.0) (/ (* y b) t))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t a b)
+ :precision binary64
+ (let* ((t_1 (/ (* y b) t))
+        (t_2 (/ (+ x (/ (* y z) t)) (+ (+ a 1.0) t_1)))
+        (t_3 (/ x (+ 1.0 (+ a t_1)))))
+   (if (&lt;= t_2 (- INFINITY))
+     (+ (/ y (/ (fma y b (fma t a t)) z)) t_3)
+     (if (&lt;= t_2 1e-6)
+       (+ t_3 (/ (* y z) (fma t (+ a 1.0) (* y b))))
+       (if (&lt;= t_2 INFINITY)
+         (+ t_3 (* (/ y t) (/ z (+ a (fma b (/ y t) 1.0)))))
+         (/ (+ z (/ x (/ y t))) b))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t, double a, double b) {
+	return (x + ((y * z) / t)) / ((a + 1.0) + ((y * b) / t));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t, double a, double b) {
+	double t_1 = (y * b) / t;
+	double t_2 = (x + ((y * z) / t)) / ((a + 1.0) + t_1);
+	double t_3 = x / (1.0 + (a + t_1));
+	double tmp;
+	if (t_2 &lt;= -((double) INFINITY)) {
+		tmp = (y / (fma(y, b, fma(t, a, t)) / z)) + t_3;
+	} else if (t_2 &lt;= 1e-6) {
+		tmp = t_3 + ((y * z) / fma(t, (a + 1.0), (y * b)));
+	} else if (t_2 &lt;= ((double) INFINITY)) {
+		tmp = t_3 + ((y / t) * (z / (a + fma(b, (y / t), 1.0))));
+	} else {
+		tmp = (z + (x / (y / t))) / b;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t, a, b)
+	return Float64(Float64(x + Float64(Float64(y * z) / t)) / Float64(Float64(a + 1.0) + Float64(Float64(y * b) / t)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t, a, b)
+	t_1 = Float64(Float64(y * b) / t)
+	t_2 = Float64(Float64(x + Float64(Float64(y * z) / t)) / Float64(Float64(a + 1.0) + t_1))
+	t_3 = Float64(x / Float64(1.0 + Float64(a + t_1)))
+	tmp = 0.0
+	if (t_2 &lt;= Float64(-Inf))
+		tmp = Float64(Float64(y / Float64(fma(y, b, fma(t, a, t)) / z)) + t_3);
+	elseif (t_2 &lt;= 1e-6)
+		tmp = Float64(t_3 + Float64(Float64(y * z) / fma(t, Float64(a + 1.0), Float64(y * b))));
+	elseif (t_2 &lt;= Inf)
+		tmp = Float64(t_3 + Float64(Float64(y / t) * Float64(z / Float64(a + fma(b, Float64(y / t), 1.0)))));
+	else
+		tmp = Float64(Float64(z + Float64(x / Float64(y / t))) / b);
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_, a_, b_] := N[(N[(x + N[(N[(y * z), $MachinePrecision] / t), $MachinePrecision]), $MachinePrecision] / N[(N[(a + 1.0), $MachinePrecision] + N[(N[(y * b), $MachinePrecision] / t), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_, a_, b_] := Block[{t$95$1 = N[(N[(y * b), $MachinePrecision] / t), $MachinePrecision]}, Block[{t$95$2 = N[(N[(x + N[(N[(y * z), $MachinePrecision] / t), $MachinePrecision]), $MachinePrecision] / N[(N[(a + 1.0), $MachinePrecision] + t$95$1), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$3 = N[(x / N[(1.0 + N[(a + t$95$1), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[t$95$2, (-Infinity)], N[(N[(y / N[(N[(y * b + N[(t * a + t), $MachinePrecision]), $MachinePrecision] / z), $MachinePrecision]), $MachinePrecision] + t$95$3), $MachinePrecision], If[LessEqual[t$95$2, 1e-6], N[(t$95$3 + N[(N[(y * z), $MachinePrecision] / N[(t * N[(a + 1.0), $MachinePrecision] + N[(y * b), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], If[LessEqual[t$95$2, Infinity], N[(t$95$3 + N[(N[(y / t), $MachinePrecision] * N[(z / N[(a + N[(b * N[(y / t), $MachinePrecision] + 1.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], N[(N[(z + N[(x / N[(y / t), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] / b), $MachinePrecision]]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{x + \frac{y \cdot z}{t}}{\left(a + 1\right) + \frac{y \cdot b}{t}}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := \frac{y \cdot b}{t}\\
+t_2 := \frac{x + \frac{y \cdot z}{t}}{\left(a + 1\right) + t_1}\\
+t_3 := \frac{x}{1 + \left(a + t_1\right)}\\
+\mathbf{if}\;t_2 \leq -\infty:\\
+\;\;\;\;\frac{y}{\frac{\mathsf{fma}\left(y, b, \mathsf{fma}\left(t, a, t\right)\right)}{z}} + t_3\\
+
+\mathbf{elif}\;t_2 \leq 10^{-6}:\\
+\;\;\;\;t_3 + \frac{y \cdot z}{\mathsf{fma}\left(t, a + 1, y \cdot b\right)}\\
+
+\mathbf{elif}\;t_2 \leq \infty:\\
+\;\;\;\;t_3 + \frac{y}{t} \cdot \frac{z}{a + \mathsf{fma}\left(b, \frac{y}{t}, 1\right)}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{z + \frac{x}{\frac{y}{t}}}{b}\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>16.3</td></tr><tr><th>Target</th><td>13.0</td></tr><tr><th>Herbie</th><td>5.8</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;t &lt; -1.3659085366310088 \cdot 10^{-271}:\\
+\;\;\;\;1 \cdot \left(\left(x + \frac{y}{t} \cdot z\right) \cdot \frac{1}{\left(a + 1\right) + \frac{y}{t} \cdot b}\right)\\
+
+\mathbf{elif}\;t &lt; 3.036967103737246 \cdot 10^{-130}:\\
+\;\;\;\;\frac{z}{b}\\
+
+\mathbf{else}:\\
+\;\;\;\;1 \cdot \left(\left(x + \frac{y}{t} \cdot z\right) \cdot \frac{1}{\left(a + 1\right) + \frac{y}{t} \cdot b}\right)\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 4 regimes</li><li><h2><code>if <span class="condition"> (/.f64 (+.f64 x (/.f64 (*.f64 y z) t)) (+.f64 (+.f64 a 1) (/.f64 (*.f64 y b) t)))  &lt; -inf.0</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\frac{x + \frac{y \cdot z}{t}}{\left(a + 1\right) + \frac{y \cdot b}{t}}
+\]</div></li><li><p>Taylor expanded in x around 0 <span class="error" title="Internally 28.6">42.6</span></p><div class="math">\[\leadsto \color{blue}{\frac{y \cdot z}{t \cdot \left(1 + \left(\frac{y \cdot b}{t} + a\right)\right)} + \frac{x}{1 + \left(\frac{y \cdot b}{t} + a\right)}}
+\]</div></li><li><p>Taylor expanded in t around 0 <span class="error" title="Internally 28.7">42.6</span></p><div class="math">\[\leadsto \frac{y \cdot z}{\color{blue}{y \cdot b + t \cdot \left(1 + a\right)}} + \frac{x}{1 + \left(\frac{y \cdot b}{t} + a\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 28.7">42.6</span></p><div class="math">\[\leadsto \frac{y \cdot z}{\color{blue}{\mathsf{fma}\left(t, 1 + a, y \cdot b\right)}} + \frac{x}{1 + \left(\frac{y \cdot b}{t} + a\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0">12.9</span></p><div class="math">\[\leadsto \color{blue}{\left(0 + \frac{y}{\frac{\mathsf{fma}\left(y, b, \mathsf{fma}\left(t, a, t\right)\right)}{z}}\right)} + \frac{x}{1 + \left(\frac{y \cdot b}{t} + a\right)}
+\]</div></li></ol><h2><code>if <span class="condition">-inf.0 &lt;  (/.f64 (+.f64 x (/.f64 (*.f64 y z) t)) (+.f64 (+.f64 a 1) (/.f64 (*.f64 y b) t)))  &lt; 9.99999999999999955e-7</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 7.7">7.8</span></p><div class="math">\[\frac{x + \frac{y \cdot z}{t}}{\left(a + 1\right) + \frac{y \cdot b}{t}}
+\]</div></li><li><p>Taylor expanded in x around 0 <span class="error" title="Internally 8.1">9.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{y \cdot z}{t \cdot \left(1 + \left(\frac{y \cdot b}{t} + a\right)\right)} + \frac{x}{1 + \left(\frac{y \cdot b}{t} + a\right)}}
+\]</div></li><li><p>Taylor expanded in t around 0 <span class="error" title="Internally 5.5">6.7</span></p><div class="math">\[\leadsto \frac{y \cdot z}{\color{blue}{y \cdot b + t \cdot \left(1 + a\right)}} + \frac{x}{1 + \left(\frac{y \cdot b}{t} + a\right)}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 5.5">6.6</span></p><div class="math">\[\leadsto \frac{y \cdot z}{\color{blue}{\mathsf{fma}\left(t, 1 + a, y \cdot b\right)}} + \frac{x}{1 + \left(\frac{y \cdot b}{t} + a\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">9.99999999999999955e-7 &lt;  (/.f64 (+.f64 x (/.f64 (*.f64 y z) t)) (+.f64 (+.f64 a 1) (/.f64 (*.f64 y b) t)))  &lt; +inf.0</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 11.9">12.7</span></p><div class="math">\[\frac{x + \frac{y \cdot z}{t}}{\left(a + 1\right) + \frac{y \cdot b}{t}}
+\]</div></li><li><p>Taylor expanded in x around 0 <span class="error" title="Internally 10.2">8.1</span></p><div class="math">\[\leadsto \color{blue}{\frac{y \cdot z}{t \cdot \left(1 + \left(\frac{y \cdot b}{t} + a\right)\right)} + \frac{x}{1 + \left(\frac{y \cdot b}{t} + a\right)}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.2">3.4</span></p><div class="math">\[\leadsto \color{blue}{\frac{z}{a + \mathsf{fma}\left(b, \frac{y}{t}, 1\right)} \cdot \frac{y}{t}} + \frac{x}{1 + \left(\frac{y \cdot b}{t} + a\right)}
+\]</div></li></ol><h2><code>if <span class="condition">+inf.0 &lt;  (/.f64 (+.f64 x (/.f64 (*.f64 y z) t)) (+.f64 (+.f64 a 1) (/.f64 (*.f64 y b) t))) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 64.0">64.0</span></p><div class="math">\[\frac{x + \frac{y \cdot z}{t}}{\left(a + 1\right) + \frac{y \cdot b}{t}}
+\]</div></li><li><p>Taylor expanded in x around 0 <span class="error" title="Internally 63.4">62.2</span></p><div class="math">\[\leadsto \color{blue}{\frac{y \cdot z}{t \cdot \left(1 + \left(\frac{y \cdot b}{t} + a\right)\right)} + \frac{x}{1 + \left(\frac{y \cdot b}{t} + a\right)}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 53.0">55.1</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{y}{t}, \frac{z}{1 + \left(\frac{y}{t} \cdot b + a\right)}, \frac{x}{1 + \left(\frac{y}{t} \cdot b + a\right)}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in b around inf <span class="error" title="Internally 2.1">3.9</span></p><div class="math">\[\leadsto \color{blue}{\frac{z + \frac{t \cdot x}{y}}{b}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0">1.6</span></p><div class="math">\[\leadsto \color{blue}{\frac{z + \frac{x}{\frac{y}{t}}}{b}}
+\]</div><div class="math">Proof</div></li></ol></li><li class="event">Recombined 4 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 3.8">5.8</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;\frac{x + \frac{y \cdot z}{t}}{\left(a + 1\right) + \frac{y \cdot b}{t}} \leq -\infty:\\
+\;\;\;\;\frac{y}{\frac{\mathsf{fma}\left(y, b, \mathsf{fma}\left(t, a, t\right)\right)}{z}} + \frac{x}{1 + \left(a + \frac{y \cdot b}{t}\right)}\\
+
+\mathbf{elif}\;\frac{x + \frac{y \cdot z}{t}}{\left(a + 1\right) + \frac{y \cdot b}{t}} \leq 10^{-6}:\\
+\;\;\;\;\frac{x}{1 + \left(a + \frac{y \cdot b}{t}\right)} + \frac{y \cdot z}{\mathsf{fma}\left(t, a + 1, y \cdot b\right)}\\
+
+\mathbf{elif}\;\frac{x + \frac{y \cdot z}{t}}{\left(a + 1\right) + \frac{y \cdot b}{t}} \leq \infty:\\
+\;\;\;\;\frac{x}{1 + \left(a + \frac{y \cdot b}{t}\right)} + \frac{y}{t} \cdot \frac{z}{a + \mathsf{fma}\left(b, \frac{y}{t}, 1\right)}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{z + \frac{x}{\frac{y}{t}}}{b}\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x y z t a b)
+  :name "Diagrams.Solve.Tridiagonal:solveCyclicTriDiagonal from diagrams-solve-0.1, B"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; t -1.3659085366310088e-271) (* 1.0 (* (+ x (* (/ y t) z)) (/ 1.0 (+ (+ a 1.0) (* (/ y t) b))))) (if (&lt; t 3.036967103737246e-130) (/ z b) (* 1.0 (* (+ x (* (/ y t) z)) (/ 1.0 (+ (+ a 1.0) (* (/ y t) b)))))))
+
+  (/ (+ x (/ (* y z) t)) (+ (+ a 1.0) (/ (* y b) t))))
+</code></pre></section></body></html>

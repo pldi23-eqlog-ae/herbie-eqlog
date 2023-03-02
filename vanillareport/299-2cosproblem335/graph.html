@@ -1,0 +1,82 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for 2cos (problem 3.3.5)</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 63.0 → 64.0">39.3 → 0.4</span></div><div>Time: <span class="number">3.1s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Fortran</option><option>Java</option><option>Python</option><option>Julia</option><option>MATLAB</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\cos \left(x + \varepsilon\right) - \cos x
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \sin \left(\varepsilon \cdot 0.5\right)\\
+t_1 := 0.5 \cdot \left(x + x\right)\\
+t_0 \cdot \left(-2 \cdot \left(\sin t_1 \cdot \cos \left(\varepsilon \cdot 0.5\right) + \cos t_1 \cdot t_0\right)\right)
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x eps) :precision binary64 (- (cos (+ x eps)) (cos x)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x eps)
+ :precision binary64
+ (let* ((t_0 (sin (* eps 0.5))) (t_1 (* 0.5 (+ x x))))
+   (* t_0 (* -2.0 (+ (* (sin t_1) (cos (* eps 0.5))) (* (cos t_1) t_0))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double eps) {
+	return cos((x + eps)) - cos(x);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double eps) {
+	double t_0 = sin((eps * 0.5));
+	double t_1 = 0.5 * (x + x);
+	return t_0 * (-2.0 * ((sin(t_1) * cos((eps * 0.5))) + (cos(t_1) * t_0)));
+}
+</pre></div><div class="implementation" data-language="Fortran"><pre class="program">real(8) function code(x, eps)
+    real(8), intent (in) :: x
+    real(8), intent (in) :: eps
+    code = cos((x + eps)) - cos(x)
+end function
+</pre><div class="arrow">↓</div><pre class="program">real(8) function code(x, eps)
+    real(8), intent (in) :: x
+    real(8), intent (in) :: eps
+    real(8) :: t_0
+    real(8) :: t_1
+    t_0 = sin((eps * 0.5d0))
+    t_1 = 0.5d0 * (x + x)
+    code = t_0 * ((-2.0d0) * ((sin(t_1) * cos((eps * 0.5d0))) + (cos(t_1) * t_0)))
+end function
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double x, double eps) {
+	return Math.cos((x + eps)) - Math.cos(x);
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double x, double eps) {
+	double t_0 = Math.sin((eps * 0.5));
+	double t_1 = 0.5 * (x + x);
+	return t_0 * (-2.0 * ((Math.sin(t_1) * Math.cos((eps * 0.5))) + (Math.cos(t_1) * t_0)));
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(x, eps):
+	return math.cos((x + eps)) - math.cos(x)
+</pre><div class="arrow">↓</div><pre class="program">def code(x, eps):
+	t_0 = math.sin((eps * 0.5))
+	t_1 = 0.5 * (x + x)
+	return t_0 * (-2.0 * ((math.sin(t_1) * math.cos((eps * 0.5))) + (math.cos(t_1) * t_0)))
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, eps)
+	return Float64(cos(Float64(x + eps)) - cos(x))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, eps)
+	t_0 = sin(Float64(eps * 0.5))
+	t_1 = Float64(0.5 * Float64(x + x))
+	return Float64(t_0 * Float64(-2.0 * Float64(Float64(sin(t_1) * cos(Float64(eps * 0.5))) + Float64(cos(t_1) * t_0))))
+end
+</pre></div><div class="implementation" data-language="MATLAB"><pre class="program">function tmp = code(x, eps)
+	tmp = cos((x + eps)) - cos(x);
+end
+</pre><div class="arrow">↓</div><pre class="program">function tmp = code(x, eps)
+	t_0 = sin((eps * 0.5));
+	t_1 = 0.5 * (x + x);
+	tmp = t_0 * (-2.0 * ((sin(t_1) * cos((eps * 0.5))) + (cos(t_1) * t_0)));
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, eps_] := N[(N[Cos[N[(x + eps), $MachinePrecision]], $MachinePrecision] - N[Cos[x], $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, eps_] := Block[{t$95$0 = N[Sin[N[(eps * 0.5), $MachinePrecision]], $MachinePrecision]}, Block[{t$95$1 = N[(0.5 * N[(x + x), $MachinePrecision]), $MachinePrecision]}, N[(t$95$0 * N[(-2.0 * N[(N[(N[Sin[t$95$1], $MachinePrecision] * N[Cos[N[(eps * 0.5), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] + N[(N[Cos[t$95$1], $MachinePrecision] * t$95$0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\cos \left(x + \varepsilon\right) - \cos x
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \sin \left(\varepsilon \cdot 0.5\right)\\
+t_1 := 0.5 \cdot \left(x + x\right)\\
+t_0 \cdot \left(-2 \cdot \left(\sin t_1 \cdot \cos \left(\varepsilon \cdot 0.5\right) + \cos t_1 \cdot t_0\right)\right)
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">x</label><input type="text" class="input-submit" name="var-name-0" value="-2.49038116160822e-300"/></li><li><label for="var-name-1">eps</label><input type="text" class="input-submit" name="var-name-1" value="2.848960228770028e-66"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 39.7">39.3</span></p><div class="math">\[\cos \left(x + \varepsilon\right) - \cos x
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 17.1">15.2</span></p><div class="math">\[\leadsto \color{blue}{\left(-2 \cdot \sin \left(\left(\varepsilon + \left(x - x\right)\right) \cdot 0.5\right)\right) \cdot \sin \left(\left(x + \left(x + \varepsilon\right)\right) \cdot 0.5\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 17.2">15.2</span></p><div class="math">\[\leadsto \left(-2 \cdot \sin \left(\left(\varepsilon + \left(x - x\right)\right) \cdot 0.5\right)\right) \cdot \color{blue}{\left(\sin \left(x \cdot 0.5\right) \cdot \cos \left(\left(x + \varepsilon\right) \cdot 0.5\right) + \cos \left(x \cdot 0.5\right) \cdot \sin \left(\left(x + \varepsilon\right) \cdot 0.5\right)\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 17.1">15.2</span></p><div class="math">\[\leadsto \color{blue}{{\left(\sin \left(\varepsilon \cdot 0.5\right) \cdot \left(-2 \cdot \sin \left(0.5 \cdot \left(x + \left(x + \varepsilon\right)\right)\right)\right)\right)}^{1}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.5">0.4</span></p><div class="math">\[\leadsto {\left(\sin \left(\varepsilon \cdot 0.5\right) \cdot \left(-2 \cdot \color{blue}{\left(\sin \left(0.5 \cdot \left(x + x\right)\right) \cdot \cos \left(0.5 \cdot \varepsilon\right) + \cos \left(0.5 \cdot \left(x + x\right)\right) \cdot \sin \left(0.5 \cdot \varepsilon\right)\right)}\right)\right)}^{1}
+\]</div></li><li><p>Final simplification<span class="error" title="Internally 0.5">0.4</span></p><div class="math">\[\leadsto \sin \left(\varepsilon \cdot 0.5\right) \cdot \left(-2 \cdot \left(\sin \left(0.5 \cdot \left(x + x\right)\right) \cdot \cos \left(\varepsilon \cdot 0.5\right) + \cos \left(0.5 \cdot \left(x + x\right)\right) \cdot \sin \left(\varepsilon \cdot 0.5\right)\right)\right)
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x eps)
+  :name "2cos (problem 3.3.5)"
+  :precision binary64
+  (- (cos (+ x eps)) (cos x)))
+</code></pre></section></body></html>

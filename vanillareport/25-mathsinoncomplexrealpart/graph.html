@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for math.sin on complex, real part</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">0.0 → 0.0</span></div><div>Time: <span class="number">2.8s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(0.5 \cdot \sin re\right) \cdot \left(e^{0 - im} + e^{im}\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\sin re \cdot \mathsf{fma}\left(0.5, e^{im}, \frac{0.5}{e^{im}}\right)
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (re im)
+ :precision binary64
+ (* (* 0.5 (sin re)) (+ (exp (- 0.0 im)) (exp im))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (re im)
+ :precision binary64
+ (* (sin re) (fma 0.5 (exp im) (/ 0.5 (exp im)))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double re, double im) {
+	return (0.5 * sin(re)) * (exp((0.0 - im)) + exp(im));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double re, double im) {
+	return sin(re) * fma(0.5, exp(im), (0.5 / exp(im)));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(re, im)
+	return Float64(Float64(0.5 * sin(re)) * Float64(exp(Float64(0.0 - im)) + exp(im)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(re, im)
+	return Float64(sin(re) * fma(0.5, exp(im), Float64(0.5 / exp(im))))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[re_, im_] := N[(N[(0.5 * N[Sin[re], $MachinePrecision]), $MachinePrecision] * N[(N[Exp[N[(0.0 - im), $MachinePrecision]], $MachinePrecision] + N[Exp[im], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[re_, im_] := N[(N[Sin[re], $MachinePrecision] * N[(0.5 * N[Exp[im], $MachinePrecision] + N[(0.5 / N[Exp[im], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(0.5 \cdot \sin re\right) \cdot \left(e^{0 - im} + e^{im}\right)
+</pre><div class="arrow">↓</div><pre class="program">\sin re \cdot \mathsf{fma}\left(0.5, e^{im}, \frac{0.5}{e^{im}}\right)
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 0.0">0.0</span></p><div class="math">\[\left(0.5 \cdot \sin re\right) \cdot \left(e^{0 - im} + e^{im}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.0">0.0</span></p><div class="math">\[\leadsto \color{blue}{\sin re \cdot \mathsf{fma}\left(0.5, e^{im}, \frac{0.5}{e^{im}}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Final simplification<span class="error" title="Internally 0.0">0.0</span></p><div class="math">\[\leadsto \sin re \cdot \mathsf{fma}\left(0.5, e^{im}, \frac{0.5}{e^{im}}\right)
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (re im)
+  :name "math.sin on complex, real part"
+  :precision binary64
+  (* (* 0.5 (sin re)) (+ (exp (- 0.0 im)) (exp im))))
+</code></pre></section></body></html>

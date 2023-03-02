@@ -1,0 +1,103 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Henrywood and Agarwal, Equation (13)</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">59.5 → 24.9</span></div><div>Time: <span class="number">6.4s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{c0}{2 \cdot w} \cdot \left(\frac{c0 \cdot \left(d \cdot d\right)}{\left(w \cdot h\right) \cdot \left(D \cdot D\right)} + \sqrt{\frac{c0 \cdot \left(d \cdot d\right)}{\left(w \cdot h\right) \cdot \left(D \cdot D\right)} \cdot \frac{c0 \cdot \left(d \cdot d\right)}{\left(w \cdot h\right) \cdot \left(D \cdot D\right)} - M \cdot M}\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := {\left(D \cdot M\right)}^{2}\\
+t_1 := \mathsf{fma}\left(\frac{t_0 \cdot h}{d \cdot d}, 0.25, \frac{-0.5 \cdot 0}{w}\right)\\
+\mathbf{if}\;c0 \leq -4 \cdot 10^{+153}:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;c0 \leq 2.3 \cdot 10^{+48}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{\frac{t_0}{d} \cdot \left(-h\right)}{-d}, 0.25, \frac{-0.5 \cdot \left(0 \cdot \left(c0 \cdot c0\right)\right)}{w}\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (c0 w h D d M)
+ :precision binary64
+ (*
+  (/ c0 (* 2.0 w))
+  (+
+   (/ (* c0 (* d d)) (* (* w h) (* D D)))
+   (sqrt
+    (-
+     (*
+      (/ (* c0 (* d d)) (* (* w h) (* D D)))
+      (/ (* c0 (* d d)) (* (* w h) (* D D))))
+     (* M M))))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (c0 w h D d M)
+ :precision binary64
+ (let* ((t_0 (pow (* D M) 2.0))
+        (t_1 (fma (/ (* t_0 h) (* d d)) 0.25 (/ (* -0.5 0.0) w))))
+   (if (&lt;= c0 -4e+153)
+     t_1
+     (if (&lt;= c0 2.3e+48)
+       (fma
+        (/ (* (/ t_0 d) (- h)) (- d))
+        0.25
+        (/ (* -0.5 (* 0.0 (* c0 c0))) w))
+       t_1))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double c0, double w, double h, double D, double d, double M) {
+	return (c0 / (2.0 * w)) * (((c0 * (d * d)) / ((w * h) * (D * D))) + sqrt(((((c0 * (d * d)) / ((w * h) * (D * D))) * ((c0 * (d * d)) / ((w * h) * (D * D)))) - (M * M))));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double c0, double w, double h, double D, double d, double M) {
+	double t_0 = pow((D * M), 2.0);
+	double t_1 = fma(((t_0 * h) / (d * d)), 0.25, ((-0.5 * 0.0) / w));
+	double tmp;
+	if (c0 &lt;= -4e+153) {
+		tmp = t_1;
+	} else if (c0 &lt;= 2.3e+48) {
+		tmp = fma((((t_0 / d) * -h) / -d), 0.25, ((-0.5 * (0.0 * (c0 * c0))) / w));
+	} else {
+		tmp = t_1;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(c0, w, h, D, d, M)
+	return Float64(Float64(c0 / Float64(2.0 * w)) * Float64(Float64(Float64(c0 * Float64(d * d)) / Float64(Float64(w * h) * Float64(D * D))) + sqrt(Float64(Float64(Float64(Float64(c0 * Float64(d * d)) / Float64(Float64(w * h) * Float64(D * D))) * Float64(Float64(c0 * Float64(d * d)) / Float64(Float64(w * h) * Float64(D * D)))) - Float64(M * M)))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(c0, w, h, D, d, M)
+	t_0 = Float64(D * M) ^ 2.0
+	t_1 = fma(Float64(Float64(t_0 * h) / Float64(d * d)), 0.25, Float64(Float64(-0.5 * 0.0) / w))
+	tmp = 0.0
+	if (c0 &lt;= -4e+153)
+		tmp = t_1;
+	elseif (c0 &lt;= 2.3e+48)
+		tmp = fma(Float64(Float64(Float64(t_0 / d) * Float64(-h)) / Float64(-d)), 0.25, Float64(Float64(-0.5 * Float64(0.0 * Float64(c0 * c0))) / w));
+	else
+		tmp = t_1;
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[c0_, w_, h_, D_, d_, M_] := N[(N[(c0 / N[(2.0 * w), $MachinePrecision]), $MachinePrecision] * N[(N[(N[(c0 * N[(d * d), $MachinePrecision]), $MachinePrecision] / N[(N[(w * h), $MachinePrecision] * N[(D * D), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[Sqrt[N[(N[(N[(N[(c0 * N[(d * d), $MachinePrecision]), $MachinePrecision] / N[(N[(w * h), $MachinePrecision] * N[(D * D), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * N[(N[(c0 * N[(d * d), $MachinePrecision]), $MachinePrecision] / N[(N[(w * h), $MachinePrecision] * N[(D * D), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - N[(M * M), $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[c0_, w_, h_, D_, d_, M_] := Block[{t$95$0 = N[Power[N[(D * M), $MachinePrecision], 2.0], $MachinePrecision]}, Block[{t$95$1 = N[(N[(N[(t$95$0 * h), $MachinePrecision] / N[(d * d), $MachinePrecision]), $MachinePrecision] * 0.25 + N[(N[(-0.5 * 0.0), $MachinePrecision] / w), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[c0, -4e+153], t$95$1, If[LessEqual[c0, 2.3e+48], N[(N[(N[(N[(t$95$0 / d), $MachinePrecision] * (-h)), $MachinePrecision] / (-d)), $MachinePrecision] * 0.25 + N[(N[(-0.5 * N[(0.0 * N[(c0 * c0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] / w), $MachinePrecision]), $MachinePrecision], t$95$1]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{c0}{2 \cdot w} \cdot \left(\frac{c0 \cdot \left(d \cdot d\right)}{\left(w \cdot h\right) \cdot \left(D \cdot D\right)} + \sqrt{\frac{c0 \cdot \left(d \cdot d\right)}{\left(w \cdot h\right) \cdot \left(D \cdot D\right)} \cdot \frac{c0 \cdot \left(d \cdot d\right)}{\left(w \cdot h\right) \cdot \left(D \cdot D\right)} - M \cdot M}\right)
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := {\left(D \cdot M\right)}^{2}\\
+t_1 := \mathsf{fma}\left(\frac{t_0 \cdot h}{d \cdot d}, 0.25, \frac{-0.5 \cdot 0}{w}\right)\\
+\mathbf{if}\;c0 \leq -4 \cdot 10^{+153}:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;c0 \leq 2.3 \cdot 10^{+48}:\\
+\;\;\;\;\mathsf{fma}\left(\frac{\frac{t_0}{d} \cdot \left(-h\right)}{-d}, 0.25, \frac{-0.5 \cdot \left(0 \cdot \left(c0 \cdot c0\right)\right)}{w}\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> c0  &lt; -4e153 or 2.3e48 &lt;  c0 </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 60.5">61.2</span></p><div class="math">\[\frac{c0}{2 \cdot w} \cdot \left(\frac{c0 \cdot \left(d \cdot d\right)}{\left(w \cdot h\right) \cdot \left(D \cdot D\right)} + \sqrt{\frac{c0 \cdot \left(d \cdot d\right)}{\left(w \cdot h\right) \cdot \left(D \cdot D\right)} \cdot \frac{c0 \cdot \left(d \cdot d\right)}{\left(w \cdot h\right) \cdot \left(D \cdot D\right)} - M \cdot M}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 57.9">59.4</span></p><div class="math">\[\leadsto \color{blue}{\frac{c0 \cdot 0.5}{w} \cdot \mathsf{fma}\left(\frac{c0}{w \cdot h}, {\left(\frac{d}{D}\right)}^{2}, \sqrt{{\left(\frac{c0}{w \cdot h} \cdot {\left(\frac{d}{D}\right)}^{2}\right)}^{2} - M \cdot M}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in c0 around -inf <span class="error" title="Internally 62.3">62.5</span></p><div class="math">\[\leadsto \color{blue}{-0.5 \cdot \frac{\left(\frac{{d}^{2}}{{D}^{2} \cdot \left(w \cdot h\right)} + -1 \cdot \frac{{d}^{2}}{{D}^{2} \cdot \left(w \cdot h\right)}\right) \cdot {c0}^{2}}{w} + 0.25 \cdot \frac{{D}^{2} \cdot \left({M}^{2} \cdot h\right)}{{d}^{2}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 50.2">55.3</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{{\left(D \cdot M\right)}^{2} \cdot h}{d \cdot d}, 0.25, \frac{-0.5 \cdot \left(0 \cdot \left(c0 \cdot c0\right)\right)}{w}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in c0 around 0 <span class="error" title="Internally 21.2">26.8</span></p><div class="math">\[\leadsto \mathsf{fma}\left(\frac{{\left(D \cdot M\right)}^{2} \cdot h}{d \cdot d}, 0.25, \frac{-0.5 \cdot \color{blue}{0}}{w}\right)
+\]</div></li></ol><h2><code>if <span class="condition">-4e153 &lt;  c0  &lt; 2.3e48</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 60.8">58.6</span></p><div class="math">\[\frac{c0}{2 \cdot w} \cdot \left(\frac{c0 \cdot \left(d \cdot d\right)}{\left(w \cdot h\right) \cdot \left(D \cdot D\right)} + \sqrt{\frac{c0 \cdot \left(d \cdot d\right)}{\left(w \cdot h\right) \cdot \left(D \cdot D\right)} \cdot \frac{c0 \cdot \left(d \cdot d\right)}{\left(w \cdot h\right) \cdot \left(D \cdot D\right)} - M \cdot M}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 57.5">55.7</span></p><div class="math">\[\leadsto \color{blue}{\frac{c0 \cdot 0.5}{w} \cdot \mathsf{fma}\left(\frac{c0}{w \cdot h}, {\left(\frac{d}{D}\right)}^{2}, \sqrt{{\left(\frac{c0}{w \cdot h} \cdot {\left(\frac{d}{D}\right)}^{2}\right)}^{2} - M \cdot M}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in c0 around -inf <span class="error" title="Internally 61.3">59.3</span></p><div class="math">\[\leadsto \color{blue}{-0.5 \cdot \frac{\left(\frac{{d}^{2}}{{D}^{2} \cdot \left(w \cdot h\right)} + -1 \cdot \frac{{d}^{2}}{{D}^{2} \cdot \left(w \cdot h\right)}\right) \cdot {c0}^{2}}{w} + 0.25 \cdot \frac{{D}^{2} \cdot \left({M}^{2} \cdot h\right)}{{d}^{2}}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 30.0">28.0</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(\frac{{\left(D \cdot M\right)}^{2} \cdot h}{d \cdot d}, 0.25, \frac{-0.5 \cdot \left(0 \cdot \left(c0 \cdot c0\right)\right)}{w}\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 24.3">23.8</span></p><div class="math">\[\leadsto \mathsf{fma}\left(\color{blue}{\frac{\frac{{\left(D \cdot M\right)}^{2}}{d} \cdot \left(-h\right)}{-d}}, 0.25, \frac{-0.5 \cdot \left(0 \cdot \left(c0 \cdot c0\right)\right)}{w}\right)
+\]</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (c0 w h D d M)
+  :name "Henrywood and Agarwal, Equation (13)"
+  :precision binary64
+  (* (/ c0 (* 2.0 w)) (+ (/ (* c0 (* d d)) (* (* w h) (* D D))) (sqrt (- (* (/ (* c0 (* d d)) (* (* w h) (* D D))) (/ (* c0 (* d d)) (* (* w h) (* D D)))) (* M M))))))
+</code></pre></section></body></html>

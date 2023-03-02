@@ -1,0 +1,150 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Maksimov and Kolovsky, Equation (3)</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">18.1 → 9.3</span></div><div>Time: <span class="number">4.0s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(\left(-2 \cdot J\right) \cdot \cos \left(\frac{K}{2}\right)\right) \cdot \sqrt{1 + {\left(\frac{U}{\left(2 \cdot J\right) \cdot \cos \left(\frac{K}{2}\right)}\right)}^{2}}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \cos \left(K \cdot 0.5\right)\\
+t_1 := {t_0}^{2}\\
+t_2 := \cos \left(\frac{K}{2}\right)\\
+t_3 := J \cdot \left(\mathsf{hypot}\left(1, \frac{U}{t_2 \cdot \left(J \cdot 2\right)}\right) \cdot \left(t_2 \cdot -2\right)\right)\\
+\mathbf{if}\;J \leq -1.4861515777192972 \cdot 10^{-152}:\\
+\;\;\;\;t_3\\
+
+\mathbf{elif}\;J \leq -1.306477816240861 \cdot 10^{-172}:\\
+\;\;\;\;\mathsf{fma}\left(2, \frac{J}{\frac{U}{J}} \cdot t_1, U\right)\\
+
+\mathbf{elif}\;J \leq -1.8885869417417532 \cdot 10^{-235}:\\
+\;\;\;\;t_3\\
+
+\mathbf{elif}\;J \leq 6.366851530521697 \cdot 10^{-240}:\\
+\;\;\;\;\frac{t_1}{\frac{\frac{\frac{U}{J}}{J}}{-2}} - U\\
+
+\mathbf{else}:\\
+\;\;\;\;{\left(\sqrt[3]{\mathsf{hypot}\left(1, \frac{U}{2 \cdot \left(J \cdot t_0\right)}\right) \cdot \left(J \cdot \left(-2 \cdot t_0\right)\right)}\right)}^{3}\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (J K U)
+ :precision binary64
+ (*
+  (* (* -2.0 J) (cos (/ K 2.0)))
+  (sqrt (+ 1.0 (pow (/ U (* (* 2.0 J) (cos (/ K 2.0)))) 2.0)))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (J K U)
+ :precision binary64
+ (let* ((t_0 (cos (* K 0.5)))
+        (t_1 (pow t_0 2.0))
+        (t_2 (cos (/ K 2.0)))
+        (t_3 (* J (* (hypot 1.0 (/ U (* t_2 (* J 2.0)))) (* t_2 -2.0)))))
+   (if (&lt;= J -1.4861515777192972e-152)
+     t_3
+     (if (&lt;= J -1.306477816240861e-172)
+       (fma 2.0 (* (/ J (/ U J)) t_1) U)
+       (if (&lt;= J -1.8885869417417532e-235)
+         t_3
+         (if (&lt;= J 6.366851530521697e-240)
+           (- (/ t_1 (/ (/ (/ U J) J) -2.0)) U)
+           (pow
+            (cbrt (* (hypot 1.0 (/ U (* 2.0 (* J t_0)))) (* J (* -2.0 t_0))))
+            3.0)))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double J, double K, double U) {
+	return ((-2.0 * J) * cos((K / 2.0))) * sqrt((1.0 + pow((U / ((2.0 * J) * cos((K / 2.0)))), 2.0)));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double J, double K, double U) {
+	double t_0 = cos((K * 0.5));
+	double t_1 = pow(t_0, 2.0);
+	double t_2 = cos((K / 2.0));
+	double t_3 = J * (hypot(1.0, (U / (t_2 * (J * 2.0)))) * (t_2 * -2.0));
+	double tmp;
+	if (J &lt;= -1.4861515777192972e-152) {
+		tmp = t_3;
+	} else if (J &lt;= -1.306477816240861e-172) {
+		tmp = fma(2.0, ((J / (U / J)) * t_1), U);
+	} else if (J &lt;= -1.8885869417417532e-235) {
+		tmp = t_3;
+	} else if (J &lt;= 6.366851530521697e-240) {
+		tmp = (t_1 / (((U / J) / J) / -2.0)) - U;
+	} else {
+		tmp = pow(cbrt((hypot(1.0, (U / (2.0 * (J * t_0)))) * (J * (-2.0 * t_0)))), 3.0);
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(J, K, U)
+	return Float64(Float64(Float64(-2.0 * J) * cos(Float64(K / 2.0))) * sqrt(Float64(1.0 + (Float64(U / Float64(Float64(2.0 * J) * cos(Float64(K / 2.0)))) ^ 2.0))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(J, K, U)
+	t_0 = cos(Float64(K * 0.5))
+	t_1 = t_0 ^ 2.0
+	t_2 = cos(Float64(K / 2.0))
+	t_3 = Float64(J * Float64(hypot(1.0, Float64(U / Float64(t_2 * Float64(J * 2.0)))) * Float64(t_2 * -2.0)))
+	tmp = 0.0
+	if (J &lt;= -1.4861515777192972e-152)
+		tmp = t_3;
+	elseif (J &lt;= -1.306477816240861e-172)
+		tmp = fma(2.0, Float64(Float64(J / Float64(U / J)) * t_1), U);
+	elseif (J &lt;= -1.8885869417417532e-235)
+		tmp = t_3;
+	elseif (J &lt;= 6.366851530521697e-240)
+		tmp = Float64(Float64(t_1 / Float64(Float64(Float64(U / J) / J) / -2.0)) - U);
+	else
+		tmp = cbrt(Float64(hypot(1.0, Float64(U / Float64(2.0 * Float64(J * t_0)))) * Float64(J * Float64(-2.0 * t_0)))) ^ 3.0;
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[J_, K_, U_] := N[(N[(N[(-2.0 * J), $MachinePrecision] * N[Cos[N[(K / 2.0), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] * N[Sqrt[N[(1.0 + N[Power[N[(U / N[(N[(2.0 * J), $MachinePrecision] * N[Cos[N[(K / 2.0), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision]), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[J_, K_, U_] := Block[{t$95$0 = N[Cos[N[(K * 0.5), $MachinePrecision]], $MachinePrecision]}, Block[{t$95$1 = N[Power[t$95$0, 2.0], $MachinePrecision]}, Block[{t$95$2 = N[Cos[N[(K / 2.0), $MachinePrecision]], $MachinePrecision]}, Block[{t$95$3 = N[(J * N[(N[Sqrt[1.0 ^ 2 + N[(U / N[(t$95$2 * N[(J * 2.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] ^ 2], $MachinePrecision] * N[(t$95$2 * -2.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[J, -1.4861515777192972e-152], t$95$3, If[LessEqual[J, -1.306477816240861e-172], N[(2.0 * N[(N[(J / N[(U / J), $MachinePrecision]), $MachinePrecision] * t$95$1), $MachinePrecision] + U), $MachinePrecision], If[LessEqual[J, -1.8885869417417532e-235], t$95$3, If[LessEqual[J, 6.366851530521697e-240], N[(N[(t$95$1 / N[(N[(N[(U / J), $MachinePrecision] / J), $MachinePrecision] / -2.0), $MachinePrecision]), $MachinePrecision] - U), $MachinePrecision], N[Power[N[Power[N[(N[Sqrt[1.0 ^ 2 + N[(U / N[(2.0 * N[(J * t$95$0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] ^ 2], $MachinePrecision] * N[(J * N[(-2.0 * t$95$0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], 1/3], $MachinePrecision], 3.0], $MachinePrecision]]]]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(\left(-2 \cdot J\right) \cdot \cos \left(\frac{K}{2}\right)\right) \cdot \sqrt{1 + {\left(\frac{U}{\left(2 \cdot J\right) \cdot \cos \left(\frac{K}{2}\right)}\right)}^{2}}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \cos \left(K \cdot 0.5\right)\\
+t_1 := {t_0}^{2}\\
+t_2 := \cos \left(\frac{K}{2}\right)\\
+t_3 := J \cdot \left(\mathsf{hypot}\left(1, \frac{U}{t_2 \cdot \left(J \cdot 2\right)}\right) \cdot \left(t_2 \cdot -2\right)\right)\\
+\mathbf{if}\;J \leq -1.4861515777192972 \cdot 10^{-152}:\\
+\;\;\;\;t_3\\
+
+\mathbf{elif}\;J \leq -1.306477816240861 \cdot 10^{-172}:\\
+\;\;\;\;\mathsf{fma}\left(2, \frac{J}{\frac{U}{J}} \cdot t_1, U\right)\\
+
+\mathbf{elif}\;J \leq -1.8885869417417532 \cdot 10^{-235}:\\
+\;\;\;\;t_3\\
+
+\mathbf{elif}\;J \leq 6.366851530521697 \cdot 10^{-240}:\\
+\;\;\;\;\frac{t_1}{\frac{\frac{\frac{U}{J}}{J}}{-2}} - U\\
+
+\mathbf{else}:\\
+\;\;\;\;{\left(\sqrt[3]{\mathsf{hypot}\left(1, \frac{U}{2 \cdot \left(J \cdot t_0\right)}\right) \cdot \left(J \cdot \left(-2 \cdot t_0\right)\right)}\right)}^{3}\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 4 regimes</li><li><h2><code>if <span class="condition"> J  &lt; -1.4861515777192972e-152 or -1.3064778162408609e-172 &lt;  J  &lt; -1.8885869417417532e-235</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 18.0">14.0</span></p><div class="math">\[\left(\left(-2 \cdot J\right) \cdot \cos \left(\frac{K}{2}\right)\right) \cdot \sqrt{1 + {\left(\frac{U}{\left(2 \cdot J\right) \cdot \cos \left(\frac{K}{2}\right)}\right)}^{2}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 6.5">5.0</span></p><div class="math">\[\leadsto \color{blue}{J \cdot \left(\mathsf{hypot}\left(1, \frac{U}{\cos \left(\frac{K}{2}\right) \cdot \left(J \cdot 2\right)}\right) \cdot \left(-2 \cdot \cos \left(\frac{K}{2}\right)\right)\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-1.4861515777192972e-152 &lt;  J  &lt; -1.3064778162408609e-172</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 56.0">36.0</span></p><div class="math">\[\left(\left(-2 \cdot J\right) \cdot \cos \left(\frac{K}{2}\right)\right) \cdot \sqrt{1 + {\left(\frac{U}{\left(2 \cdot J\right) \cdot \cos \left(\frac{K}{2}\right)}\right)}^{2}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 56.0">14.7</span></p><div class="math">\[\leadsto \color{blue}{J \cdot \left(\mathsf{hypot}\left(1, \frac{U}{\cos \left(\frac{K}{2}\right) \cdot \left(J \cdot 2\right)}\right) \cdot \left(-2 \cdot \cos \left(\frac{K}{2}\right)\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in U around -inf <span class="error" title="Internally 16.0">34.2</span></p><div class="math">\[\leadsto \color{blue}{2 \cdot \frac{{\cos \left(0.5 \cdot K\right)}^{2} \cdot {J}^{2}}{U} + U}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 16.0">34.2</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(2, \frac{J}{\frac{U}{J}} \cdot {\cos \left(0.5 \cdot K\right)}^{2}, U\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-1.8885869417417532e-235 &lt;  J  &lt; 6.36685153052169664e-240</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 54.9">43.3</span></p><div class="math">\[\left(\left(-2 \cdot J\right) \cdot \cos \left(\frac{K}{2}\right)\right) \cdot \sqrt{1 + {\left(\frac{U}{\left(2 \cdot J\right) \cdot \cos \left(\frac{K}{2}\right)}\right)}^{2}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 45.7">28.8</span></p><div class="math">\[\leadsto \color{blue}{J \cdot \left(\mathsf{hypot}\left(1, \frac{U}{\cos \left(\frac{K}{2}\right) \cdot \left(J \cdot 2\right)}\right) \cdot \left(-2 \cdot \cos \left(\frac{K}{2}\right)\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in J around 0 <span class="error" title="Internally 13.1">34.2</span></p><div class="math">\[\leadsto \color{blue}{-2 \cdot \frac{{\cos \left(0.5 \cdot K\right)}^{2} \cdot {J}^{2}}{U} + -1 \cdot U}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 13.1">34.1</span></p><div class="math">\[\leadsto \color{blue}{\frac{{\cos \left(0.5 \cdot K\right)}^{2}}{\frac{\frac{\frac{U}{J}}{J}}{-2}} - U}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">6.36685153052169664e-240 &lt;  J </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 17.0">14.6</span></p><div class="math">\[\left(\left(-2 \cdot J\right) \cdot \cos \left(\frac{K}{2}\right)\right) \cdot \sqrt{1 + {\left(\frac{U}{\left(2 \cdot J\right) \cdot \cos \left(\frac{K}{2}\right)}\right)}^{2}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 5.8">5.6</span></p><div class="math">\[\leadsto \color{blue}{J \cdot \left(\mathsf{hypot}\left(1, \frac{U}{\cos \left(\frac{K}{2}\right) \cdot \left(J \cdot 2\right)}\right) \cdot \left(-2 \cdot \cos \left(\frac{K}{2}\right)\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 5.7">6.1</span></p><div class="math">\[\leadsto \color{blue}{{\left(\sqrt[3]{\mathsf{hypot}\left(1, \frac{U}{2 \cdot \left(J \cdot \cos \left(K \cdot 0.5\right)\right)}\right) \cdot \left(\left(\cos \left(K \cdot 0.5\right) \cdot -2\right) \cdot J\right)}\right)}^{3}}
+\]</div></li></ol></li><li class="event">Recombined 4 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 6.8">9.3</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;J \leq -1.4861515777192972 \cdot 10^{-152}:\\
+\;\;\;\;J \cdot \left(\mathsf{hypot}\left(1, \frac{U}{\cos \left(\frac{K}{2}\right) \cdot \left(J \cdot 2\right)}\right) \cdot \left(\cos \left(\frac{K}{2}\right) \cdot -2\right)\right)\\
+
+\mathbf{elif}\;J \leq -1.306477816240861 \cdot 10^{-172}:\\
+\;\;\;\;\mathsf{fma}\left(2, \frac{J}{\frac{U}{J}} \cdot {\cos \left(K \cdot 0.5\right)}^{2}, U\right)\\
+
+\mathbf{elif}\;J \leq -1.8885869417417532 \cdot 10^{-235}:\\
+\;\;\;\;J \cdot \left(\mathsf{hypot}\left(1, \frac{U}{\cos \left(\frac{K}{2}\right) \cdot \left(J \cdot 2\right)}\right) \cdot \left(\cos \left(\frac{K}{2}\right) \cdot -2\right)\right)\\
+
+\mathbf{elif}\;J \leq 6.366851530521697 \cdot 10^{-240}:\\
+\;\;\;\;\frac{{\cos \left(K \cdot 0.5\right)}^{2}}{\frac{\frac{\frac{U}{J}}{J}}{-2}} - U\\
+
+\mathbf{else}:\\
+\;\;\;\;{\left(\sqrt[3]{\mathsf{hypot}\left(1, \frac{U}{2 \cdot \left(J \cdot \cos \left(K \cdot 0.5\right)\right)}\right) \cdot \left(J \cdot \left(-2 \cdot \cos \left(K \cdot 0.5\right)\right)\right)}\right)}^{3}\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (J K U)
+  :name "Maksimov and Kolovsky, Equation (3)"
+  :precision binary64
+  (* (* (* -2.0 J) (cos (/ K 2.0))) (sqrt (+ 1.0 (pow (/ U (* (* 2.0 J) (cos (/ K 2.0)))) 2.0)))))
+</code></pre></section></body></html>

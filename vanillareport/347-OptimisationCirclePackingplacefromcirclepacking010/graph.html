@@ -1,0 +1,98 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Optimisation.CirclePacking:place from circle-packing-0.1.0.4, D</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">7.1 → 1.1</span></div><div>Time: <span class="number">2.5s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[x + \frac{y \cdot \left(z - x\right)}{t}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_1 := x + \frac{y \cdot \left(z - x\right)}{t}\\
+t_2 := \mathsf{fma}\left(y, \frac{z - x}{t}, x\right)\\
+\mathbf{if}\;t_1 \leq -1 \cdot 10^{+301}:\\
+\;\;\;\;t_2\\
+
+\mathbf{elif}\;t_1 \leq 10^{+300}:\\
+\;\;\;\;\frac{y \cdot z}{t} + \left(x - \frac{x \cdot y}{t}\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;t_2\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z t) :precision binary64 (+ x (/ (* y (- z x)) t)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z t)
+ :precision binary64
+ (let* ((t_1 (+ x (/ (* y (- z x)) t))) (t_2 (fma y (/ (- z x) t) x)))
+   (if (&lt;= t_1 -1e+301)
+     t_2
+     (if (&lt;= t_1 1e+300) (+ (/ (* y z) t) (- x (/ (* x y) t))) t_2))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z, double t) {
+	return x + ((y * (z - x)) / t);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z, double t) {
+	double t_1 = x + ((y * (z - x)) / t);
+	double t_2 = fma(y, ((z - x) / t), x);
+	double tmp;
+	if (t_1 &lt;= -1e+301) {
+		tmp = t_2;
+	} else if (t_1 &lt;= 1e+300) {
+		tmp = ((y * z) / t) + (x - ((x * y) / t));
+	} else {
+		tmp = t_2;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z, t)
+	return Float64(x + Float64(Float64(y * Float64(z - x)) / t))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z, t)
+	t_1 = Float64(x + Float64(Float64(y * Float64(z - x)) / t))
+	t_2 = fma(y, Float64(Float64(z - x) / t), x)
+	tmp = 0.0
+	if (t_1 &lt;= -1e+301)
+		tmp = t_2;
+	elseif (t_1 &lt;= 1e+300)
+		tmp = Float64(Float64(Float64(y * z) / t) + Float64(x - Float64(Float64(x * y) / t)));
+	else
+		tmp = t_2;
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_, t_] := N[(x + N[(N[(y * N[(z - x), $MachinePrecision]), $MachinePrecision] / t), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_, t_] := Block[{t$95$1 = N[(x + N[(N[(y * N[(z - x), $MachinePrecision]), $MachinePrecision] / t), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$2 = N[(y * N[(N[(z - x), $MachinePrecision] / t), $MachinePrecision] + x), $MachinePrecision]}, If[LessEqual[t$95$1, -1e+301], t$95$2, If[LessEqual[t$95$1, 1e+300], N[(N[(N[(y * z), $MachinePrecision] / t), $MachinePrecision] + N[(x - N[(N[(x * y), $MachinePrecision] / t), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], t$95$2]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">x + \frac{y \cdot \left(z - x\right)}{t}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_1 := x + \frac{y \cdot \left(z - x\right)}{t}\\
+t_2 := \mathsf{fma}\left(y, \frac{z - x}{t}, x\right)\\
+\mathbf{if}\;t_1 \leq -1 \cdot 10^{+301}:\\
+\;\;\;\;t_2\\
+
+\mathbf{elif}\;t_1 \leq 10^{+300}:\\
+\;\;\;\;\frac{y \cdot z}{t} + \left(x - \frac{x \cdot y}{t}\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;t_2\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>7.1</td></tr><tr><th>Target</th><td>1.9</td></tr><tr><th>Herbie</th><td>1.1</td></tr></table><div class="math">\[x - \left(x \cdot \frac{y}{t} + \left(-z\right) \cdot \frac{y}{t}\right)
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> (+.f64 x (/.f64 (*.f64 y (-.f64 z x)) t))  &lt; -1.00000000000000005e301 or 1.0000000000000001e300 &lt;  (+.f64 x (/.f64 (*.f64 y (-.f64 z x)) t)) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 56.3">55.8</span></p><div class="math">\[x + \frac{y \cdot \left(z - x\right)}{t}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.2">3.4</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(y, \frac{z - x}{t}, x\right)}
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">-1.00000000000000005e301 &lt;  (+.f64 x (/.f64 (*.f64 y (-.f64 z x)) t))  &lt; 1.0000000000000001e300</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.7">0.8</span></p><div class="math">\[x + \frac{y \cdot \left(z - x\right)}{t}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 6.7">6.8</span></p><div class="math">\[\leadsto \color{blue}{\mathsf{fma}\left(y, \frac{z - x}{t}, x\right)}
+\]</div><div class="math">Proof</div></li><li><p>Taylor expanded in z around 0 <span class="error" title="Internally 0.7">0.8</span></p><div class="math">\[\leadsto \color{blue}{\frac{y \cdot z}{t} + \left(x + -1 \cdot \frac{y \cdot x}{t}\right)}
+\]</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 0.6">1.1</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;x + \frac{y \cdot \left(z - x\right)}{t} \leq -1 \cdot 10^{+301}:\\
+\;\;\;\;\mathsf{fma}\left(y, \frac{z - x}{t}, x\right)\\
+
+\mathbf{elif}\;x + \frac{y \cdot \left(z - x\right)}{t} \leq 10^{+300}:\\
+\;\;\;\;\frac{y \cdot z}{t} + \left(x - \frac{x \cdot y}{t}\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\mathsf{fma}\left(y, \frac{z - x}{t}, x\right)\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x y z t)
+  :name "Optimisation.CirclePacking:place from circle-packing-0.1.0.4, D"
+  :precision binary64
+
+  :herbie-target
+  (- x (+ (* x (/ y t)) (* (- z) (/ y t))))
+
+  (+ x (/ (* y (- z x)) t)))
+</code></pre></section></body></html>

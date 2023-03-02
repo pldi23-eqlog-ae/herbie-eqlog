@@ -1,0 +1,90 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for VandenBroeck and Keller, Equation (6)</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">17.1 → 2.3</span></div><div>Time: <span class="number">5.1s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\pi \cdot \ell - \frac{1}{F \cdot F} \cdot \tan \left(\pi \cdot \ell\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := {\pi}^{3} \cdot -0.3333333333333333\\
+t_1 := {\pi}^{3} \cdot -0.125 - \mathsf{fma}\left(0.008333333333333333, {\pi}^{3}, \frac{{\pi}^{6} \cdot -0.1111111111111111}{{\pi}^{3}}\right)\\
+t_2 := \mathsf{fma}\left({\pi}^{5}, -0.03333333333333333, {\pi}^{2} \cdot \left({\pi}^{3} \cdot 0.16666666666666666\right)\right)\\
+\pi \cdot \ell + \frac{-1}{F \cdot \left(F \cdot \left(\left(\frac{\ell}{{\pi}^{2}} \cdot t_0 + {\ell}^{5} \cdot \left(t_0 \cdot \frac{t_1}{\pi} + \left(\mathsf{fma}\left(0.041666666666666664, {\pi}^{3} \cdot \left({\pi}^{2} \cdot 0.3333333333333333\right), \mathsf{fma}\left(-0.5, t_2, {\pi}^{5} \cdot -0.001388888888888889\right)\right) - \mathsf{fma}\left({\pi}^{5}, -0.0001984126984126984, \frac{t_0}{{\pi}^{3}} \cdot t_2\right)\right)\right)\right) + \left(\frac{1}{\pi \cdot \ell} + {\ell}^{3} \cdot t_1\right)\right)\right)}
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (F l)
+ :precision binary64
+ (- (* PI l) (* (/ 1.0 (* F F)) (tan (* PI l)))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (F l)
+ :precision binary64
+ (let* ((t_0 (* (pow PI 3.0) -0.3333333333333333))
+        (t_1
+         (-
+          (* (pow PI 3.0) -0.125)
+          (fma
+           0.008333333333333333
+           (pow PI 3.0)
+           (/ (* (pow PI 6.0) -0.1111111111111111) (pow PI 3.0)))))
+        (t_2
+         (fma
+          (pow PI 5.0)
+          -0.03333333333333333
+          (* (pow PI 2.0) (* (pow PI 3.0) 0.16666666666666666)))))
+   (+
+    (* PI l)
+    (/
+     -1.0
+     (*
+      F
+      (*
+       F
+       (+
+        (+
+         (* (/ l (pow PI 2.0)) t_0)
+         (*
+          (pow l 5.0)
+          (+
+           (* t_0 (/ t_1 PI))
+           (-
+            (fma
+             0.041666666666666664
+             (* (pow PI 3.0) (* (pow PI 2.0) 0.3333333333333333))
+             (fma -0.5 t_2 (* (pow PI 5.0) -0.001388888888888889)))
+            (fma
+             (pow PI 5.0)
+             -0.0001984126984126984
+             (* (/ t_0 (pow PI 3.0)) t_2))))))
+        (+ (/ 1.0 (* PI l)) (* (pow l 3.0) t_1)))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double F, double l) {
+	return (((double) M_PI) * l) - ((1.0 / (F * F)) * tan((((double) M_PI) * l)));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double F, double l) {
+	double t_0 = pow(((double) M_PI), 3.0) * -0.3333333333333333;
+	double t_1 = (pow(((double) M_PI), 3.0) * -0.125) - fma(0.008333333333333333, pow(((double) M_PI), 3.0), ((pow(((double) M_PI), 6.0) * -0.1111111111111111) / pow(((double) M_PI), 3.0)));
+	double t_2 = fma(pow(((double) M_PI), 5.0), -0.03333333333333333, (pow(((double) M_PI), 2.0) * (pow(((double) M_PI), 3.0) * 0.16666666666666666)));
+	return (((double) M_PI) * l) + (-1.0 / (F * (F * ((((l / pow(((double) M_PI), 2.0)) * t_0) + (pow(l, 5.0) * ((t_0 * (t_1 / ((double) M_PI))) + (fma(0.041666666666666664, (pow(((double) M_PI), 3.0) * (pow(((double) M_PI), 2.0) * 0.3333333333333333)), fma(-0.5, t_2, (pow(((double) M_PI), 5.0) * -0.001388888888888889))) - fma(pow(((double) M_PI), 5.0), -0.0001984126984126984, ((t_0 / pow(((double) M_PI), 3.0)) * t_2)))))) + ((1.0 / (((double) M_PI) * l)) + (pow(l, 3.0) * t_1))))));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(F, l)
+	return Float64(Float64(pi * l) - Float64(Float64(1.0 / Float64(F * F)) * tan(Float64(pi * l))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(F, l)
+	t_0 = Float64((pi ^ 3.0) * -0.3333333333333333)
+	t_1 = Float64(Float64((pi ^ 3.0) * -0.125) - fma(0.008333333333333333, (pi ^ 3.0), Float64(Float64((pi ^ 6.0) * -0.1111111111111111) / (pi ^ 3.0))))
+	t_2 = fma((pi ^ 5.0), -0.03333333333333333, Float64((pi ^ 2.0) * Float64((pi ^ 3.0) * 0.16666666666666666)))
+	return Float64(Float64(pi * l) + Float64(-1.0 / Float64(F * Float64(F * Float64(Float64(Float64(Float64(l / (pi ^ 2.0)) * t_0) + Float64((l ^ 5.0) * Float64(Float64(t_0 * Float64(t_1 / pi)) + Float64(fma(0.041666666666666664, Float64((pi ^ 3.0) * Float64((pi ^ 2.0) * 0.3333333333333333)), fma(-0.5, t_2, Float64((pi ^ 5.0) * -0.001388888888888889))) - fma((pi ^ 5.0), -0.0001984126984126984, Float64(Float64(t_0 / (pi ^ 3.0)) * t_2)))))) + Float64(Float64(1.0 / Float64(pi * l)) + Float64((l ^ 3.0) * t_1)))))))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[F_, l_] := N[(N[(Pi * l), $MachinePrecision] - N[(N[(1.0 / N[(F * F), $MachinePrecision]), $MachinePrecision] * N[Tan[N[(Pi * l), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[F_, l_] := Block[{t$95$0 = N[(N[Power[Pi, 3.0], $MachinePrecision] * -0.3333333333333333), $MachinePrecision]}, Block[{t$95$1 = N[(N[(N[Power[Pi, 3.0], $MachinePrecision] * -0.125), $MachinePrecision] - N[(0.008333333333333333 * N[Power[Pi, 3.0], $MachinePrecision] + N[(N[(N[Power[Pi, 6.0], $MachinePrecision] * -0.1111111111111111), $MachinePrecision] / N[Power[Pi, 3.0], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$2 = N[(N[Power[Pi, 5.0], $MachinePrecision] * -0.03333333333333333 + N[(N[Power[Pi, 2.0], $MachinePrecision] * N[(N[Power[Pi, 3.0], $MachinePrecision] * 0.16666666666666666), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, N[(N[(Pi * l), $MachinePrecision] + N[(-1.0 / N[(F * N[(F * N[(N[(N[(N[(l / N[Power[Pi, 2.0], $MachinePrecision]), $MachinePrecision] * t$95$0), $MachinePrecision] + N[(N[Power[l, 5.0], $MachinePrecision] * N[(N[(t$95$0 * N[(t$95$1 / Pi), $MachinePrecision]), $MachinePrecision] + N[(N[(0.041666666666666664 * N[(N[Power[Pi, 3.0], $MachinePrecision] * N[(N[Power[Pi, 2.0], $MachinePrecision] * 0.3333333333333333), $MachinePrecision]), $MachinePrecision] + N[(-0.5 * t$95$2 + N[(N[Power[Pi, 5.0], $MachinePrecision] * -0.001388888888888889), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - N[(N[Power[Pi, 5.0], $MachinePrecision] * -0.0001984126984126984 + N[(N[(t$95$0 / N[Power[Pi, 3.0], $MachinePrecision]), $MachinePrecision] * t$95$2), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(N[(1.0 / N[(Pi * l), $MachinePrecision]), $MachinePrecision] + N[(N[Power[l, 3.0], $MachinePrecision] * t$95$1), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\pi \cdot \ell - \frac{1}{F \cdot F} \cdot \tan \left(\pi \cdot \ell\right)
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := {\pi}^{3} \cdot -0.3333333333333333\\
+t_1 := {\pi}^{3} \cdot -0.125 - \mathsf{fma}\left(0.008333333333333333, {\pi}^{3}, \frac{{\pi}^{6} \cdot -0.1111111111111111}{{\pi}^{3}}\right)\\
+t_2 := \mathsf{fma}\left({\pi}^{5}, -0.03333333333333333, {\pi}^{2} \cdot \left({\pi}^{3} \cdot 0.16666666666666666\right)\right)\\
+\pi \cdot \ell + \frac{-1}{F \cdot \left(F \cdot \left(\left(\frac{\ell}{{\pi}^{2}} \cdot t_0 + {\ell}^{5} \cdot \left(t_0 \cdot \frac{t_1}{\pi} + \left(\mathsf{fma}\left(0.041666666666666664, {\pi}^{3} \cdot \left({\pi}^{2} \cdot 0.3333333333333333\right), \mathsf{fma}\left(-0.5, t_2, {\pi}^{5} \cdot -0.001388888888888889\right)\right) - \mathsf{fma}\left({\pi}^{5}, -0.0001984126984126984, \frac{t_0}{{\pi}^{3}} \cdot t_2\right)\right)\right)\right) + \left(\frac{1}{\pi \cdot \ell} + {\ell}^{3} \cdot t_1\right)\right)\right)}
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 15.0">17.1</span></p><div class="math">\[\pi \cdot \ell - \frac{1}{F \cdot F} \cdot \tan \left(\pi \cdot \ell\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 15.0">16.8</span></p><div class="math">\[\leadsto \color{blue}{\pi \cdot \ell - \frac{\tan \left(\pi \cdot \ell\right)}{F \cdot F}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 11.0">12.7</span></p><div class="math">\[\leadsto \pi \cdot \ell - \color{blue}{\frac{\tan \left(\pi \cdot \ell\right)}{F} \cdot \frac{1}{F}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 11.0">12.7</span></p><div class="math">\[\leadsto \pi \cdot \ell - \color{blue}{\frac{1}{\frac{F}{\tan \left(\pi \cdot \ell\right)} \cdot F}}
+\]</div></li><li><p>Taylor expanded in l around 0 <span class="error" title="Internally 1.7">2.6</span></p><div class="math">\[\leadsto \pi \cdot \ell - \frac{1}{\color{blue}{\left(-1 \cdot \frac{F \cdot \left(\ell \cdot \left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right)\right)}{{\pi}^{2}} + \left(\frac{F}{\ell \cdot \pi} + \left(-1 \cdot \left(\left(\frac{\left(-0.0001984126984126984 \cdot {\pi}^{7} - \left(0.041666666666666664 \cdot \left(\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right) \cdot {\pi}^{4}\right) + \left(-0.001388888888888889 \cdot {\pi}^{7} + -0.5 \cdot \left(\left(0.008333333333333333 \cdot {\pi}^{5} - \left(0.041666666666666664 \cdot {\pi}^{5} + -0.5 \cdot \left(\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right) \cdot {\pi}^{2}\right)\right)\right) \cdot {\pi}^{2}\right)\right)\right)\right) \cdot F}{{\pi}^{2}} + \left(-1 \cdot \frac{\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right) \cdot \left(-1 \cdot \frac{F \cdot {\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right)}^{2}}{{\pi}^{3}} + \frac{F \cdot \left(0.008333333333333333 \cdot {\pi}^{5} - \left(0.041666666666666664 \cdot {\pi}^{5} + -0.5 \cdot \left(\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right) \cdot {\pi}^{2}\right)\right)\right)}{{\pi}^{2}}\right)}{\pi} + -1 \cdot \frac{F \cdot \left(\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right) \cdot \left(0.008333333333333333 \cdot {\pi}^{5} - \left(0.041666666666666664 \cdot {\pi}^{5} + -0.5 \cdot \left(\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right) \cdot {\pi}^{2}\right)\right)\right)\right)}{{\pi}^{3}}\right)\right) \cdot {\ell}^{5}\right) + -1 \cdot \left({\ell}^{3} \cdot \left(-1 \cdot \frac{F \cdot {\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right)}^{2}}{{\pi}^{3}} + \frac{F \cdot \left(0.008333333333333333 \cdot {\pi}^{5} - \left(0.041666666666666664 \cdot {\pi}^{5} + -0.5 \cdot \left(\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right) \cdot {\pi}^{2}\right)\right)\right)}{{\pi}^{2}}\right)\right)\right)\right)\right)} \cdot F}
+\]</div></li><li><p>Taylor expanded in F around 0 <span class="error" title="Internally 10.9">13.1</span></p><div class="math">\[\leadsto \pi \cdot \ell - \frac{1}{\color{blue}{{F}^{2} \cdot \left(-1 \cdot \left(\left(\left(-1 \cdot \frac{{\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right)}^{2}}{{\pi}^{3}} + 0.008333333333333333 \cdot {\pi}^{3}\right) - \left(-0.5 \cdot \left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right) + 0.041666666666666664 \cdot {\pi}^{3}\right)\right) \cdot {\ell}^{3}\right) + \left(-1 \cdot \left({\ell}^{5} \cdot \left(\left(-1 \cdot \frac{\left(\left(-1 \cdot \frac{{\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right)}^{2}}{{\pi}^{3}} + 0.008333333333333333 \cdot {\pi}^{3}\right) - \left(-0.5 \cdot \left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right) + 0.041666666666666664 \cdot {\pi}^{3}\right)\right) \cdot \left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right)}{\pi} + \left(-0.0001984126984126984 \cdot {\pi}^{5} + -1 \cdot \frac{\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right) \cdot \left(0.008333333333333333 \cdot {\pi}^{5} - \left(0.041666666666666664 \cdot {\pi}^{5} + -0.5 \cdot \left(\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right) \cdot {\pi}^{2}\right)\right)\right)}{{\pi}^{3}}\right)\right) - \left(0.041666666666666664 \cdot \left(\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right) \cdot {\pi}^{2}\right) + \left(-0.001388888888888889 \cdot {\pi}^{5} + -0.5 \cdot \left(0.008333333333333333 \cdot {\pi}^{5} - \left(0.041666666666666664 \cdot {\pi}^{5} + -0.5 \cdot \left(\left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right) \cdot {\pi}^{2}\right)\right)\right)\right)\right)\right)\right) + \left(-1 \cdot \frac{\ell \cdot \left(-0.16666666666666666 \cdot {\pi}^{3} - -0.5 \cdot {\pi}^{3}\right)}{{\pi}^{2}} + \frac{1}{\ell \cdot \pi}\right)\right)\right)}}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 1.2">2.3</span></p><div class="math">\[\leadsto \pi \cdot \ell - \frac{1}{\color{blue}{F \cdot \left(F \cdot \left(\left(\frac{\ell}{{\pi}^{2}} \cdot \left({\pi}^{3} \cdot -0.3333333333333333\right) - \left(\frac{\mathsf{fma}\left(0.008333333333333333, {\pi}^{3}, \frac{{\pi}^{6} \cdot -0.1111111111111111}{{\pi}^{3}}\right) - {\pi}^{3} \cdot -0.125}{\pi} \cdot \left({\pi}^{3} \cdot -0.3333333333333333\right) + \left(\mathsf{fma}\left({\pi}^{5}, -0.0001984126984126984, \frac{{\pi}^{3} \cdot -0.3333333333333333}{{\pi}^{3}} \cdot \mathsf{fma}\left({\pi}^{5}, -0.03333333333333333, {\pi}^{2} \cdot \left({\pi}^{3} \cdot 0.16666666666666666\right)\right)\right) - \mathsf{fma}\left(0.041666666666666664, {\pi}^{3} \cdot \left(0.3333333333333333 \cdot {\pi}^{2}\right), \mathsf{fma}\left(-0.5, \mathsf{fma}\left({\pi}^{5}, -0.03333333333333333, {\pi}^{2} \cdot \left({\pi}^{3} \cdot 0.16666666666666666\right)\right), {\pi}^{5} \cdot -0.001388888888888889\right)\right)\right)\right) \cdot {\ell}^{5}\right) + \left(\frac{1}{\ell \cdot \pi} - {\ell}^{3} \cdot \left(\mathsf{fma}\left(0.008333333333333333, {\pi}^{3}, \frac{{\pi}^{6} \cdot -0.1111111111111111}{{\pi}^{3}}\right) - {\pi}^{3} \cdot -0.125\right)\right)\right)\right)}}
+\]</div><div class="math">Proof</div></li><li><p>Final simplification<span class="error" title="Internally 1.2">2.3</span></p><div class="math">\[\leadsto \pi \cdot \ell + \frac{-1}{F \cdot \left(F \cdot \left(\left(\frac{\ell}{{\pi}^{2}} \cdot \left({\pi}^{3} \cdot -0.3333333333333333\right) + {\ell}^{5} \cdot \left(\left({\pi}^{3} \cdot -0.3333333333333333\right) \cdot \frac{{\pi}^{3} \cdot -0.125 - \mathsf{fma}\left(0.008333333333333333, {\pi}^{3}, \frac{{\pi}^{6} \cdot -0.1111111111111111}{{\pi}^{3}}\right)}{\pi} + \left(\mathsf{fma}\left(0.041666666666666664, {\pi}^{3} \cdot \left({\pi}^{2} \cdot 0.3333333333333333\right), \mathsf{fma}\left(-0.5, \mathsf{fma}\left({\pi}^{5}, -0.03333333333333333, {\pi}^{2} \cdot \left({\pi}^{3} \cdot 0.16666666666666666\right)\right), {\pi}^{5} \cdot -0.001388888888888889\right)\right) - \mathsf{fma}\left({\pi}^{5}, -0.0001984126984126984, \frac{{\pi}^{3} \cdot -0.3333333333333333}{{\pi}^{3}} \cdot \mathsf{fma}\left({\pi}^{5}, -0.03333333333333333, {\pi}^{2} \cdot \left({\pi}^{3} \cdot 0.16666666666666666\right)\right)\right)\right)\right)\right) + \left(\frac{1}{\pi \cdot \ell} + {\ell}^{3} \cdot \left({\pi}^{3} \cdot -0.125 - \mathsf{fma}\left(0.008333333333333333, {\pi}^{3}, \frac{{\pi}^{6} \cdot -0.1111111111111111}{{\pi}^{3}}\right)\right)\right)\right)\right)}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (F l)
+  :name "VandenBroeck and Keller, Equation (6)"
+  :precision binary64
+  (- (* PI l) (* (/ 1.0 (* F F)) (tan (* PI l)))))
+</code></pre></section></body></html>

@@ -1,0 +1,167 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Linear.Quaternion:$ctan from linear-1.19.1.3</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">7.6 → 0.5</span></div><div>Time: <span class="number">2.3s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Fortran</option><option>Java</option><option>Python</option><option>Julia</option><option>MATLAB</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{\cosh x \cdot \frac{y}{x}}{z}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \frac{\cosh x \cdot y}{z \cdot x}\\
+\mathbf{if}\;z \leq -1.6 \cdot 10^{-41}:\\
+\;\;\;\;t_0\\
+
+\mathbf{elif}\;z \leq 6.356807180506271 \cdot 10^{+59}:\\
+\;\;\;\;\frac{\cosh x \cdot \frac{y}{x}}{z}\\
+
+\mathbf{else}:\\
+\;\;\;\;t_0\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y z) :precision binary64 (/ (* (cosh x) (/ y x)) z))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y z)
+ :precision binary64
+ (let* ((t_0 (/ (* (cosh x) y) (* z x))))
+   (if (&lt;= z -1.6e-41)
+     t_0
+     (if (&lt;= z 6.356807180506271e+59) (/ (* (cosh x) (/ y x)) z) t_0))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y, double z) {
+	return (cosh(x) * (y / x)) / z;
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y, double z) {
+	double t_0 = (cosh(x) * y) / (z * x);
+	double tmp;
+	if (z &lt;= -1.6e-41) {
+		tmp = t_0;
+	} else if (z &lt;= 6.356807180506271e+59) {
+		tmp = (cosh(x) * (y / x)) / z;
+	} else {
+		tmp = t_0;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Fortran"><pre class="program">real(8) function code(x, y, z)
+    real(8), intent (in) :: x
+    real(8), intent (in) :: y
+    real(8), intent (in) :: z
+    code = (cosh(x) * (y / x)) / z
+end function
+</pre><div class="arrow">↓</div><pre class="program">real(8) function code(x, y, z)
+    real(8), intent (in) :: x
+    real(8), intent (in) :: y
+    real(8), intent (in) :: z
+    real(8) :: t_0
+    real(8) :: tmp
+    t_0 = (cosh(x) * y) / (z * x)
+    if (z &lt;= (-1.6d-41)) then
+        tmp = t_0
+    else if (z &lt;= 6.356807180506271d+59) then
+        tmp = (cosh(x) * (y / x)) / z
+    else
+        tmp = t_0
+    end if
+    code = tmp
+end function
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double x, double y, double z) {
+	return (Math.cosh(x) * (y / x)) / z;
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double x, double y, double z) {
+	double t_0 = (Math.cosh(x) * y) / (z * x);
+	double tmp;
+	if (z &lt;= -1.6e-41) {
+		tmp = t_0;
+	} else if (z &lt;= 6.356807180506271e+59) {
+		tmp = (Math.cosh(x) * (y / x)) / z;
+	} else {
+		tmp = t_0;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(x, y, z):
+	return (math.cosh(x) * (y / x)) / z
+</pre><div class="arrow">↓</div><pre class="program">def code(x, y, z):
+	t_0 = (math.cosh(x) * y) / (z * x)
+	tmp = 0
+	if z &lt;= -1.6e-41:
+		tmp = t_0
+	elif z &lt;= 6.356807180506271e+59:
+		tmp = (math.cosh(x) * (y / x)) / z
+	else:
+		tmp = t_0
+	return tmp
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y, z)
+	return Float64(Float64(cosh(x) * Float64(y / x)) / z)
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y, z)
+	t_0 = Float64(Float64(cosh(x) * y) / Float64(z * x))
+	tmp = 0.0
+	if (z &lt;= -1.6e-41)
+		tmp = t_0;
+	elseif (z &lt;= 6.356807180506271e+59)
+		tmp = Float64(Float64(cosh(x) * Float64(y / x)) / z);
+	else
+		tmp = t_0;
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="MATLAB"><pre class="program">function tmp = code(x, y, z)
+	tmp = (cosh(x) * (y / x)) / z;
+end
+</pre><div class="arrow">↓</div><pre class="program">function tmp_2 = code(x, y, z)
+	t_0 = (cosh(x) * y) / (z * x);
+	tmp = 0.0;
+	if (z &lt;= -1.6e-41)
+		tmp = t_0;
+	elseif (z &lt;= 6.356807180506271e+59)
+		tmp = (cosh(x) * (y / x)) / z;
+	else
+		tmp = t_0;
+	end
+	tmp_2 = tmp;
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_, z_] := N[(N[(N[Cosh[x], $MachinePrecision] * N[(y / x), $MachinePrecision]), $MachinePrecision] / z), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_, z_] := Block[{t$95$0 = N[(N[(N[Cosh[x], $MachinePrecision] * y), $MachinePrecision] / N[(z * x), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[z, -1.6e-41], t$95$0, If[LessEqual[z, 6.356807180506271e+59], N[(N[(N[Cosh[x], $MachinePrecision] * N[(y / x), $MachinePrecision]), $MachinePrecision] / z), $MachinePrecision], t$95$0]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{\cosh x \cdot \frac{y}{x}}{z}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \frac{\cosh x \cdot y}{z \cdot x}\\
+\mathbf{if}\;z \leq -1.6 \cdot 10^{-41}:\\
+\;\;\;\;t_0\\
+
+\mathbf{elif}\;z \leq 6.356807180506271 \cdot 10^{+59}:\\
+\;\;\;\;\frac{\cosh x \cdot \frac{y}{x}}{z}\\
+
+\mathbf{else}:\\
+\;\;\;\;t_0\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">x</label><input type="text" class="input-submit" name="var-name-0" value="1.0552049656540638e-168"/></li><li><label for="var-name-1">y</label><input type="text" class="input-submit" name="var-name-1" value="4.2308258584710285e+253"/></li><li><label for="var-name-2">z</label><input type="text" class="input-submit" name="var-name-2" value="3.696356576024374e+197"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>7.6</td></tr><tr><th>Target</th><td>0.5</td></tr><tr><th>Herbie</th><td>0.5</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;y &lt; -4.618902267687042 \cdot 10^{-52}:\\
+\;\;\;\;\frac{\frac{y}{z}}{x} \cdot \cosh x\\
+
+\mathbf{elif}\;y &lt; 1.038530535935153 \cdot 10^{-39}:\\
+\;\;\;\;\frac{\frac{\cosh x \cdot y}{x}}{z}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\frac{y}{z}}{x} \cdot \cosh x\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> z  &lt; -1.60000000000000006e-41 or 6.3568071805062708e59 &lt;  z </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 10.6">11.7</span></p><div class="math">\[\frac{\cosh x \cdot \frac{y}{x}}{z}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.6">0.4</span></p><div class="math">\[\leadsto \color{blue}{1 \cdot \frac{\cosh x \cdot y}{z \cdot x}}
+\]</div></li></ol><h2><code>if <span class="condition">-1.60000000000000006e-41 &lt;  z  &lt; 6.3568071805062708e59</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.2">0.6</span></p><div class="math">\[\frac{\cosh x \cdot \frac{y}{x}}{z}
+\]</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 0.5">0.5</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;z \leq -1.6 \cdot 10^{-41}:\\
+\;\;\;\;\frac{\cosh x \cdot y}{z \cdot x}\\
+
+\mathbf{elif}\;z \leq 6.356807180506271 \cdot 10^{+59}:\\
+\;\;\;\;\frac{\cosh x \cdot \frac{y}{x}}{z}\\
+
+\mathbf{else}:\\
+\;\;\;\;\frac{\cosh x \cdot y}{z \cdot x}\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x y z)
+  :name "Linear.Quaternion:$ctan from linear-1.19.1.3"
+  :precision binary64
+
+  :herbie-target
+  (if (&lt; y -4.618902267687042e-52) (* (/ (/ y z) x) (cosh x)) (if (&lt; y 1.038530535935153e-39) (/ (/ (* (cosh x) y) x) z) (* (/ (/ y z) x) (cosh x))))
+
+  (/ (* (cosh x) (/ y x)) z))
+</code></pre></section></body></html>

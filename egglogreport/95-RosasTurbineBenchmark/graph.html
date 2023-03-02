@@ -1,0 +1,44 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Rosa's TurbineBenchmark</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">12.9 → 0.2</span></div><div>Time: <span class="number">4.5s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(\left(3 + \frac{2}{r \cdot r}\right) - \frac{\left(0.125 \cdot \left(3 - 2 \cdot v\right)\right) \cdot \left(\left(\left(w \cdot w\right) \cdot r\right) \cdot r\right)}{1 - v}\right) - 4.5
+\]</div><div class="arrow">↓</div><div class="program math">\[-\left(1.5 - \mathsf{fma}\left(2, {r}^{-2}, \left(\left(-0.125 \cdot r\right) \cdot w\right) \cdot \left(\left(w \cdot r\right) \cdot \frac{\mathsf{fma}\left(2, v, -3\right)}{-1 + v}\right)\right)\right)
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (v w r)
+ :precision binary64
+ (-
+  (-
+   (+ 3.0 (/ 2.0 (* r r)))
+   (/ (* (* 0.125 (- 3.0 (* 2.0 v))) (* (* (* w w) r) r)) (- 1.0 v)))
+  4.5))</pre><div class="arrow">↓</div><pre class="program">(FPCore (v w r)
+ :precision binary64
+ (-
+  (-
+   1.5
+   (fma
+    2.0
+    (pow r -2.0)
+    (* (* (* -0.125 r) w) (* (* w r) (/ (fma 2.0 v -3.0) (+ -1.0 v))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double v, double w, double r) {
+	return ((3.0 + (2.0 / (r * r))) - (((0.125 * (3.0 - (2.0 * v))) * (((w * w) * r) * r)) / (1.0 - v))) - 4.5;
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double v, double w, double r) {
+	return -(1.5 - fma(2.0, pow(r, -2.0), (((-0.125 * r) * w) * ((w * r) * (fma(2.0, v, -3.0) / (-1.0 + v))))));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(v, w, r)
+	return Float64(Float64(Float64(3.0 + Float64(2.0 / Float64(r * r))) - Float64(Float64(Float64(0.125 * Float64(3.0 - Float64(2.0 * v))) * Float64(Float64(Float64(w * w) * r) * r)) / Float64(1.0 - v))) - 4.5)
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(v, w, r)
+	return Float64(-Float64(1.5 - fma(2.0, (r ^ -2.0), Float64(Float64(Float64(-0.125 * r) * w) * Float64(Float64(w * r) * Float64(fma(2.0, v, -3.0) / Float64(-1.0 + v)))))))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[v_, w_, r_] := N[(N[(N[(3.0 + N[(2.0 / N[(r * r), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - N[(N[(N[(0.125 * N[(3.0 - N[(2.0 * v), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * N[(N[(N[(w * w), $MachinePrecision] * r), $MachinePrecision] * r), $MachinePrecision]), $MachinePrecision] / N[(1.0 - v), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] - 4.5), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[v_, w_, r_] := (-N[(1.5 - N[(2.0 * N[Power[r, -2.0], $MachinePrecision] + N[(N[(N[(-0.125 * r), $MachinePrecision] * w), $MachinePrecision] * N[(N[(w * r), $MachinePrecision] * N[(N[(2.0 * v + -3.0), $MachinePrecision] / N[(-1.0 + v), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision])
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(\left(3 + \frac{2}{r \cdot r}\right) - \frac{\left(0.125 \cdot \left(3 - 2 \cdot v\right)\right) \cdot \left(\left(\left(w \cdot w\right) \cdot r\right) \cdot r\right)}{1 - v}\right) - 4.5
+</pre><div class="arrow">↓</div><pre class="program">-\left(1.5 - \mathsf{fma}\left(2, {r}^{-2}, \left(\left(-0.125 \cdot r\right) \cdot w\right) \cdot \left(\left(w \cdot r\right) \cdot \frac{\mathsf{fma}\left(2, v, -3\right)}{-1 + v}\right)\right)\right)
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 12.4">12.9</span></p><div class="math">\[\left(\left(3 + \frac{2}{r \cdot r}\right) - \frac{\left(0.125 \cdot \left(3 - 2 \cdot v\right)\right) \cdot \left(\left(\left(w \cdot w\right) \cdot r\right) \cdot r\right)}{1 - v}\right) - 4.5
+\]</div></li><li><p>Simplified<span class="error" title="Internally 6.1">6.8</span></p><div class="math">\[\leadsto \color{blue}{-\left(1.5 - \mathsf{fma}\left(2, {r}^{-2}, \frac{-0.125 \cdot \left(\mathsf{fma}\left(2, v, -3\right) \cdot {\left(w \cdot r\right)}^{2}\right)}{-1 + v}\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 6.1">6.8</span></p><div class="math">\[\leadsto -\left(1.5 - \mathsf{fma}\left(2, {r}^{-2}, \frac{-0.125 \cdot \color{blue}{\left(\left(w \cdot r\right) \cdot \left(\left(w \cdot r\right) \cdot \mathsf{fma}\left(2, v, -3\right)\right)\right)}}{-1 + v}\right)\right)
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 1.9">3.6</span></p><div class="math">\[\leadsto -\left(1.5 - \mathsf{fma}\left(2, {r}^{-2}, \color{blue}{\left(\left(-0.125 \cdot r\right) \cdot w\right) \cdot \frac{\left(w \cdot r\right) \cdot \mathsf{fma}\left(2, v, -3\right)}{-1 + v}}\right)\right)
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.1">0.2</span></p><div class="math">\[\leadsto -\left(1.5 - \mathsf{fma}\left(2, {r}^{-2}, \left(\left(-0.125 \cdot r\right) \cdot w\right) \cdot \color{blue}{\left(\left(w \cdot r\right) \cdot \frac{\mathsf{fma}\left(2, v, -3\right)}{-1 + v}\right)}\right)\right)
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (v w r)
+  :name "Rosa's TurbineBenchmark"
+  :precision binary64
+  (- (- (+ 3.0 (/ 2.0 (* r r))) (/ (* (* 0.125 (- 3.0 (* 2.0 v))) (* (* (* w w) r) r)) (- 1.0 v))) 4.5))
+</code></pre></section></body></html>

@@ -1,0 +1,162 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Henrywood and Agarwal, Equation (12)</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 64.0">26.8 → 21.0</span></div><div>Time: <span class="number">6.4s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="preprocess"><div class="program math">\[ \begin{array}{c}[M, D] = \mathsf{sort}([M, D])\\ \end{array} \]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left({\left(\frac{d}{h}\right)}^{\left(\frac{1}{2}\right)} \cdot {\left(\frac{d}{\ell}\right)}^{\left(\frac{1}{2}\right)}\right) \cdot \left(1 - \left(\frac{1}{2} \cdot {\left(\frac{M \cdot D}{2 \cdot d}\right)}^{2}\right) \cdot \frac{h}{\ell}\right)
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \sqrt{\frac{d}{\ell}}\\
+t_1 := \sqrt{\frac{d}{h}}\\
+t_2 := t_1 \cdot \left(t_0 \cdot \mathsf{fma}\left(-0.125, h \cdot \frac{D}{\ell \cdot \frac{\frac{d}{M} \cdot \frac{d}{M}}{D}}, 1\right)\right)\\
+t_3 := \frac{h}{\ell} \cdot -0.5\\
+t_4 := t_0 \cdot \mathsf{fma}\left({\left(\frac{\frac{D}{d}}{\frac{2}{M}}\right)}^{2}, t_3, 1\right)\\
+\mathbf{if}\;\ell \leq -1 \cdot 10^{-71}:\\
+\;\;\;\;\frac{\sqrt{-d}}{\sqrt{-h}} \cdot t_4\\
+
+\mathbf{elif}\;\ell \leq 10^{-290}:\\
+\;\;\;\;t_2\\
+
+\mathbf{elif}\;\ell \leq 10^{-175}:\\
+\;\;\;\;t_1 \cdot \left(\frac{\sqrt{d}}{\sqrt{\ell}} \cdot \mathsf{fma}\left({\left(D \cdot \frac{1}{d \cdot \frac{2}{M}}\right)}^{2}, t_3, 1\right)\right)\\
+
+\mathbf{elif}\;\ell \leq 10^{-47}:\\
+\;\;\;\;t_2\\
+
+\mathbf{else}:\\
+\;\;\;\;t_4 \cdot \left(\sqrt{d} \cdot \sqrt{\frac{1}{h}}\right)\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (d h l M D)
+ :precision binary64
+ (*
+  (* (pow (/ d h) (/ 1.0 2.0)) (pow (/ d l) (/ 1.0 2.0)))
+  (- 1.0 (* (* (/ 1.0 2.0) (pow (/ (* M D) (* 2.0 d)) 2.0)) (/ h l)))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (d h l M D)
+ :precision binary64
+ (let* ((t_0 (sqrt (/ d l)))
+        (t_1 (sqrt (/ d h)))
+        (t_2
+         (*
+          t_1
+          (*
+           t_0
+           (fma -0.125 (* h (/ D (* l (/ (* (/ d M) (/ d M)) D)))) 1.0))))
+        (t_3 (* (/ h l) -0.5))
+        (t_4 (* t_0 (fma (pow (/ (/ D d) (/ 2.0 M)) 2.0) t_3 1.0))))
+   (if (&lt;= l -1e-71)
+     (* (/ (sqrt (- d)) (sqrt (- h))) t_4)
+     (if (&lt;= l 1e-290)
+       t_2
+       (if (&lt;= l 1e-175)
+         (*
+          t_1
+          (*
+           (/ (sqrt d) (sqrt l))
+           (fma (pow (* D (/ 1.0 (* d (/ 2.0 M)))) 2.0) t_3 1.0)))
+         (if (&lt;= l 1e-47) t_2 (* t_4 (* (sqrt d) (sqrt (/ 1.0 h))))))))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double d, double h, double l, double M, double D) {
+	return (pow((d / h), (1.0 / 2.0)) * pow((d / l), (1.0 / 2.0))) * (1.0 - (((1.0 / 2.0) * pow(((M * D) / (2.0 * d)), 2.0)) * (h / l)));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double d, double h, double l, double M, double D) {
+	double t_0 = sqrt((d / l));
+	double t_1 = sqrt((d / h));
+	double t_2 = t_1 * (t_0 * fma(-0.125, (h * (D / (l * (((d / M) * (d / M)) / D)))), 1.0));
+	double t_3 = (h / l) * -0.5;
+	double t_4 = t_0 * fma(pow(((D / d) / (2.0 / M)), 2.0), t_3, 1.0);
+	double tmp;
+	if (l &lt;= -1e-71) {
+		tmp = (sqrt(-d) / sqrt(-h)) * t_4;
+	} else if (l &lt;= 1e-290) {
+		tmp = t_2;
+	} else if (l &lt;= 1e-175) {
+		tmp = t_1 * ((sqrt(d) / sqrt(l)) * fma(pow((D * (1.0 / (d * (2.0 / M)))), 2.0), t_3, 1.0));
+	} else if (l &lt;= 1e-47) {
+		tmp = t_2;
+	} else {
+		tmp = t_4 * (sqrt(d) * sqrt((1.0 / h)));
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(d, h, l, M, D)
+	return Float64(Float64((Float64(d / h) ^ Float64(1.0 / 2.0)) * (Float64(d / l) ^ Float64(1.0 / 2.0))) * Float64(1.0 - Float64(Float64(Float64(1.0 / 2.0) * (Float64(Float64(M * D) / Float64(2.0 * d)) ^ 2.0)) * Float64(h / l))))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(d, h, l, M, D)
+	t_0 = sqrt(Float64(d / l))
+	t_1 = sqrt(Float64(d / h))
+	t_2 = Float64(t_1 * Float64(t_0 * fma(-0.125, Float64(h * Float64(D / Float64(l * Float64(Float64(Float64(d / M) * Float64(d / M)) / D)))), 1.0)))
+	t_3 = Float64(Float64(h / l) * -0.5)
+	t_4 = Float64(t_0 * fma((Float64(Float64(D / d) / Float64(2.0 / M)) ^ 2.0), t_3, 1.0))
+	tmp = 0.0
+	if (l &lt;= -1e-71)
+		tmp = Float64(Float64(sqrt(Float64(-d)) / sqrt(Float64(-h))) * t_4);
+	elseif (l &lt;= 1e-290)
+		tmp = t_2;
+	elseif (l &lt;= 1e-175)
+		tmp = Float64(t_1 * Float64(Float64(sqrt(d) / sqrt(l)) * fma((Float64(D * Float64(1.0 / Float64(d * Float64(2.0 / M)))) ^ 2.0), t_3, 1.0)));
+	elseif (l &lt;= 1e-47)
+		tmp = t_2;
+	else
+		tmp = Float64(t_4 * Float64(sqrt(d) * sqrt(Float64(1.0 / h))));
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[d_, h_, l_, M_, D_] := N[(N[(N[Power[N[(d / h), $MachinePrecision], N[(1.0 / 2.0), $MachinePrecision]], $MachinePrecision] * N[Power[N[(d / l), $MachinePrecision], N[(1.0 / 2.0), $MachinePrecision]], $MachinePrecision]), $MachinePrecision] * N[(1.0 - N[(N[(N[(1.0 / 2.0), $MachinePrecision] * N[Power[N[(N[(M * D), $MachinePrecision] / N[(2.0 * d), $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision]), $MachinePrecision] * N[(h / l), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[d_, h_, l_, M_, D_] := Block[{t$95$0 = N[Sqrt[N[(d / l), $MachinePrecision]], $MachinePrecision]}, Block[{t$95$1 = N[Sqrt[N[(d / h), $MachinePrecision]], $MachinePrecision]}, Block[{t$95$2 = N[(t$95$1 * N[(t$95$0 * N[(-0.125 * N[(h * N[(D / N[(l * N[(N[(N[(d / M), $MachinePrecision] * N[(d / M), $MachinePrecision]), $MachinePrecision] / D), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + 1.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$3 = N[(N[(h / l), $MachinePrecision] * -0.5), $MachinePrecision]}, Block[{t$95$4 = N[(t$95$0 * N[(N[Power[N[(N[(D / d), $MachinePrecision] / N[(2.0 / M), $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision] * t$95$3 + 1.0), $MachinePrecision]), $MachinePrecision]}, If[LessEqual[l, -1e-71], N[(N[(N[Sqrt[(-d)], $MachinePrecision] / N[Sqrt[(-h)], $MachinePrecision]), $MachinePrecision] * t$95$4), $MachinePrecision], If[LessEqual[l, 1e-290], t$95$2, If[LessEqual[l, 1e-175], N[(t$95$1 * N[(N[(N[Sqrt[d], $MachinePrecision] / N[Sqrt[l], $MachinePrecision]), $MachinePrecision] * N[(N[Power[N[(D * N[(1.0 / N[(d * N[(2.0 / M), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], 2.0], $MachinePrecision] * t$95$3 + 1.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision], If[LessEqual[l, 1e-47], t$95$2, N[(t$95$4 * N[(N[Sqrt[d], $MachinePrecision] * N[Sqrt[N[(1.0 / h), $MachinePrecision]], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]]]]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left({\left(\frac{d}{h}\right)}^{\left(\frac{1}{2}\right)} \cdot {\left(\frac{d}{\ell}\right)}^{\left(\frac{1}{2}\right)}\right) \cdot \left(1 - \left(\frac{1}{2} \cdot {\left(\frac{M \cdot D}{2 \cdot d}\right)}^{2}\right) \cdot \frac{h}{\ell}\right)
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \sqrt{\frac{d}{\ell}}\\
+t_1 := \sqrt{\frac{d}{h}}\\
+t_2 := t_1 \cdot \left(t_0 \cdot \mathsf{fma}\left(-0.125, h \cdot \frac{D}{\ell \cdot \frac{\frac{d}{M} \cdot \frac{d}{M}}{D}}, 1\right)\right)\\
+t_3 := \frac{h}{\ell} \cdot -0.5\\
+t_4 := t_0 \cdot \mathsf{fma}\left({\left(\frac{\frac{D}{d}}{\frac{2}{M}}\right)}^{2}, t_3, 1\right)\\
+\mathbf{if}\;\ell \leq -1 \cdot 10^{-71}:\\
+\;\;\;\;\frac{\sqrt{-d}}{\sqrt{-h}} \cdot t_4\\
+
+\mathbf{elif}\;\ell \leq 10^{-290}:\\
+\;\;\;\;t_2\\
+
+\mathbf{elif}\;\ell \leq 10^{-175}:\\
+\;\;\;\;t_1 \cdot \left(\frac{\sqrt{d}}{\sqrt{\ell}} \cdot \mathsf{fma}\left({\left(D \cdot \frac{1}{d \cdot \frac{2}{M}}\right)}^{2}, t_3, 1\right)\right)\\
+
+\mathbf{elif}\;\ell \leq 10^{-47}:\\
+\;\;\;\;t_2\\
+
+\mathbf{else}:\\
+\;\;\;\;t_4 \cdot \left(\sqrt{d} \cdot \sqrt{\frac{1}{h}}\right)\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 4 regimes</li><li><h2><code>if <span class="condition"> l  &lt; -9.9999999999999992e-72</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 24.6">25.2</span></p><div class="math">\[\left({\left(\frac{d}{h}\right)}^{\left(\frac{1}{2}\right)} \cdot {\left(\frac{d}{\ell}\right)}^{\left(\frac{1}{2}\right)}\right) \cdot \left(1 - \left(\frac{1}{2} \cdot {\left(\frac{M \cdot D}{2 \cdot d}\right)}^{2}\right) \cdot \frac{h}{\ell}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 24.0">25.5</span></p><div class="math">\[\leadsto \color{blue}{\sqrt{\frac{d}{h}} \cdot \left(\sqrt{\frac{d}{\ell}} \cdot \mathsf{fma}\left({\left(\frac{\frac{D}{d}}{\frac{2}{M}}\right)}^{2}, \frac{h}{\ell} \cdot -0.5, 1\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 13.1">17.6</span></p><div class="math">\[\leadsto \color{blue}{\frac{\sqrt{-d}}{\sqrt{-h}}} \cdot \left(\sqrt{\frac{d}{\ell}} \cdot \mathsf{fma}\left({\left(\frac{\frac{D}{d}}{\frac{2}{M}}\right)}^{2}, \frac{h}{\ell} \cdot -0.5, 1\right)\right)
+\]</div></li></ol><h2><code>if <span class="condition">-9.9999999999999992e-72 &lt;  l  &lt; 1.0000000000000001e-290 or 1e-175 &lt;  l  &lt; 9.9999999999999997e-48</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 35.0">29.6</span></p><div class="math">\[\left({\left(\frac{d}{h}\right)}^{\left(\frac{1}{2}\right)} \cdot {\left(\frac{d}{\ell}\right)}^{\left(\frac{1}{2}\right)}\right) \cdot \left(1 - \left(\frac{1}{2} \cdot {\left(\frac{M \cdot D}{2 \cdot d}\right)}^{2}\right) \cdot \frac{h}{\ell}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 34.8">30.6</span></p><div class="math">\[\leadsto \color{blue}{\sqrt{\frac{d}{h}} \cdot \left(\sqrt{\frac{d}{\ell}} \cdot \mathsf{fma}\left({\left(\frac{\frac{D}{d}}{\frac{2}{M}}\right)}^{2}, \frac{h}{\ell} \cdot -0.5, 1\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 36.1">30.7</span></p><div class="math">\[\leadsto \sqrt{\frac{d}{h}} \cdot \left(\sqrt{\frac{d}{\ell}} \cdot \mathsf{fma}\left({\color{blue}{\left(D \cdot \frac{1}{d \cdot \frac{2}{M}}\right)}}^{2}, \frac{h}{\ell} \cdot -0.5, 1\right)\right)
+\]</div></li><li><p>Taylor expanded in D around 0 <span class="error" title="Internally 42.7">43.5</span></p><div class="math">\[\leadsto \sqrt{\frac{d}{h}} \cdot \left(\sqrt{\frac{d}{\ell}} \cdot \color{blue}{\left(1 + -0.125 \cdot \frac{{D}^{2} \cdot \left(h \cdot {M}^{2}\right)}{{d}^{2} \cdot \ell}\right)}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 25.2">30.9</span></p><div class="math">\[\leadsto \sqrt{\frac{d}{h}} \cdot \left(\sqrt{\frac{d}{\ell}} \cdot \color{blue}{\mathsf{fma}\left(-0.125, h \cdot \frac{D}{\ell \cdot \frac{\frac{d}{M} \cdot \frac{d}{M}}{D}}, 1\right)}\right)
+\]</div><div class="math">Proof</div></li></ol><h2><code>if <span class="condition">1.0000000000000001e-290 &lt;  l  &lt; 1e-175</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 18.7">35.9</span></p><div class="math">\[\left({\left(\frac{d}{h}\right)}^{\left(\frac{1}{2}\right)} \cdot {\left(\frac{d}{\ell}\right)}^{\left(\frac{1}{2}\right)}\right) \cdot \left(1 - \left(\frac{1}{2} \cdot {\left(\frac{M \cdot D}{2 \cdot d}\right)}^{2}\right) \cdot \frac{h}{\ell}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 23.1">37.5</span></p><div class="math">\[\leadsto \color{blue}{\sqrt{\frac{d}{h}} \cdot \left(\sqrt{\frac{d}{\ell}} \cdot \mathsf{fma}\left({\left(\frac{\frac{D}{d}}{\frac{2}{M}}\right)}^{2}, \frac{h}{\ell} \cdot -0.5, 1\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 18.7">36.5</span></p><div class="math">\[\leadsto \sqrt{\frac{d}{h}} \cdot \left(\sqrt{\frac{d}{\ell}} \cdot \mathsf{fma}\left({\color{blue}{\left(D \cdot \frac{1}{d \cdot \frac{2}{M}}\right)}}^{2}, \frac{h}{\ell} \cdot -0.5, 1\right)\right)
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 14.1">30.5</span></p><div class="math">\[\leadsto \sqrt{\frac{d}{h}} \cdot \left(\color{blue}{\frac{\sqrt{d}}{\sqrt{\ell}}} \cdot \mathsf{fma}\left({\left(D \cdot \frac{1}{d \cdot \frac{2}{M}}\right)}^{2}, \frac{h}{\ell} \cdot -0.5, 1\right)\right)
+\]</div></li></ol><h2><code>if <span class="condition">9.9999999999999997e-48 &lt;  l </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 30.5">25.5</span></p><div class="math">\[\left({\left(\frac{d}{h}\right)}^{\left(\frac{1}{2}\right)} \cdot {\left(\frac{d}{\ell}\right)}^{\left(\frac{1}{2}\right)}\right) \cdot \left(1 - \left(\frac{1}{2} \cdot {\left(\frac{M \cdot D}{2 \cdot d}\right)}^{2}\right) \cdot \frac{h}{\ell}\right)
+\]</div></li><li><p>Simplified<span class="error" title="Internally 30.6">25.6</span></p><div class="math">\[\leadsto \color{blue}{\sqrt{\frac{d}{h}} \cdot \left(\sqrt{\frac{d}{\ell}} \cdot \mathsf{fma}\left({\left(\frac{\frac{D}{d}}{\frac{2}{M}}\right)}^{2}, \frac{h}{\ell} \cdot -0.5, 1\right)\right)}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 19.7">17.2</span></p><div class="math">\[\leadsto \color{blue}{\left(\sqrt{d} \cdot \sqrt{\frac{1}{h}}\right)} \cdot \left(\sqrt{\frac{d}{\ell}} \cdot \mathsf{fma}\left({\left(\frac{\frac{D}{d}}{\frac{2}{M}}\right)}^{2}, \frac{h}{\ell} \cdot -0.5, 1\right)\right)
+\]</div></li></ol></li><li class="event">Recombined 4 regimes into one program.</li><li><p>Final simplification<span class="error" title="Internally 17.7">21.0</span></p><div class="math">\[\leadsto \begin{array}{l}
+\mathbf{if}\;\ell \leq -1 \cdot 10^{-71}:\\
+\;\;\;\;\frac{\sqrt{-d}}{\sqrt{-h}} \cdot \left(\sqrt{\frac{d}{\ell}} \cdot \mathsf{fma}\left({\left(\frac{\frac{D}{d}}{\frac{2}{M}}\right)}^{2}, \frac{h}{\ell} \cdot -0.5, 1\right)\right)\\
+
+\mathbf{elif}\;\ell \leq 10^{-290}:\\
+\;\;\;\;\sqrt{\frac{d}{h}} \cdot \left(\sqrt{\frac{d}{\ell}} \cdot \mathsf{fma}\left(-0.125, h \cdot \frac{D}{\ell \cdot \frac{\frac{d}{M} \cdot \frac{d}{M}}{D}}, 1\right)\right)\\
+
+\mathbf{elif}\;\ell \leq 10^{-175}:\\
+\;\;\;\;\sqrt{\frac{d}{h}} \cdot \left(\frac{\sqrt{d}}{\sqrt{\ell}} \cdot \mathsf{fma}\left({\left(D \cdot \frac{1}{d \cdot \frac{2}{M}}\right)}^{2}, \frac{h}{\ell} \cdot -0.5, 1\right)\right)\\
+
+\mathbf{elif}\;\ell \leq 10^{-47}:\\
+\;\;\;\;\sqrt{\frac{d}{h}} \cdot \left(\sqrt{\frac{d}{\ell}} \cdot \mathsf{fma}\left(-0.125, h \cdot \frac{D}{\ell \cdot \frac{\frac{d}{M} \cdot \frac{d}{M}}{D}}, 1\right)\right)\\
+
+\mathbf{else}:\\
+\;\;\;\;\left(\sqrt{\frac{d}{\ell}} \cdot \mathsf{fma}\left({\left(\frac{\frac{D}{d}}{\frac{2}{M}}\right)}^{2}, \frac{h}{\ell} \cdot -0.5, 1\right)\right) \cdot \left(\sqrt{d} \cdot \sqrt{\frac{1}{h}}\right)\\
+
+
+\end{array}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (d h l M D)
+  :name "Henrywood and Agarwal, Equation (12)"
+  :precision binary64
+  (* (* (pow (/ d h) (/ 1.0 2.0)) (pow (/ d l) (/ 1.0 2.0))) (- 1.0 (* (* (/ 1.0 2.0) (pow (/ (* M D) (* 2.0 d)) 2.0)) (/ h l)))))
+</code></pre></section></body></html>

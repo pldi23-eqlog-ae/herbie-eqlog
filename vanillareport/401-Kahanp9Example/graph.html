@@ -1,0 +1,87 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Kahan p9 Example</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 5.6">20.8 → 0.1</span></div><div>Time: <span class="number">2.2s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[\left(0 &lt; x \land x &lt; 1\right) \land y &lt; 1\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Julia</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{\left(x - y\right) \cdot \left(x + y\right)}{x \cdot x + y \cdot y}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \sqrt[3]{\mathsf{hypot}\left(x, y\right)}\\
+t_1 := \frac{\sqrt[3]{y}}{t_0}\\
+t_2 := {\left(\sqrt[3]{y}\right)}^{2}\\
+t_3 := {t_0}^{2}\\
+t_4 := \frac{t_2}{t_3}\\
+t_5 := \sqrt[3]{\frac{x}{\mathsf{hypot}\left(x, y\right)}}\\
+\left(\mathsf{fma}\left(\log \left(e^{\sqrt[3]{\frac{x}{\mathsf{hypot}\left(y, x\right)}}}\right) \cdot t_5, t_5, t_1 \cdot \frac{-t_2}{t_3}\right) + \mathsf{fma}\left(\frac{-\sqrt[3]{y}}{t_0}, t_4, t_1 \cdot t_4\right)\right) \cdot \frac{x + y}{\mathsf{hypot}\left(x, y\right)}
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y) :precision binary64 (/ (* (- x y) (+ x y)) (+ (* x x) (* y y))))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y)
+ :precision binary64
+ (let* ((t_0 (cbrt (hypot x y)))
+        (t_1 (/ (cbrt y) t_0))
+        (t_2 (pow (cbrt y) 2.0))
+        (t_3 (pow t_0 2.0))
+        (t_4 (/ t_2 t_3))
+        (t_5 (cbrt (/ x (hypot x y)))))
+   (*
+    (+
+     (fma
+      (* (log (exp (cbrt (/ x (hypot y x))))) t_5)
+      t_5
+      (* t_1 (/ (- t_2) t_3)))
+     (fma (/ (- (cbrt y)) t_0) t_4 (* t_1 t_4)))
+    (/ (+ x y) (hypot x y)))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y) {
+	return ((x - y) * (x + y)) / ((x * x) + (y * y));
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y) {
+	double t_0 = cbrt(hypot(x, y));
+	double t_1 = cbrt(y) / t_0;
+	double t_2 = pow(cbrt(y), 2.0);
+	double t_3 = pow(t_0, 2.0);
+	double t_4 = t_2 / t_3;
+	double t_5 = cbrt((x / hypot(x, y)));
+	return (fma((log(exp(cbrt((x / hypot(y, x))))) * t_5), t_5, (t_1 * (-t_2 / t_3))) + fma((-cbrt(y) / t_0), t_4, (t_1 * t_4))) * ((x + y) / hypot(x, y));
+}
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y)
+	return Float64(Float64(Float64(x - y) * Float64(x + y)) / Float64(Float64(x * x) + Float64(y * y)))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y)
+	t_0 = cbrt(hypot(x, y))
+	t_1 = Float64(cbrt(y) / t_0)
+	t_2 = cbrt(y) ^ 2.0
+	t_3 = t_0 ^ 2.0
+	t_4 = Float64(t_2 / t_3)
+	t_5 = cbrt(Float64(x / hypot(x, y)))
+	return Float64(Float64(fma(Float64(log(exp(cbrt(Float64(x / hypot(y, x))))) * t_5), t_5, Float64(t_1 * Float64(Float64(-t_2) / t_3))) + fma(Float64(Float64(-cbrt(y)) / t_0), t_4, Float64(t_1 * t_4))) * Float64(Float64(x + y) / hypot(x, y)))
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_] := N[(N[(N[(x - y), $MachinePrecision] * N[(x + y), $MachinePrecision]), $MachinePrecision] / N[(N[(x * x), $MachinePrecision] + N[(y * y), $MachinePrecision]), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_] := Block[{t$95$0 = N[Power[N[Sqrt[x ^ 2 + y ^ 2], $MachinePrecision], 1/3], $MachinePrecision]}, Block[{t$95$1 = N[(N[Power[y, 1/3], $MachinePrecision] / t$95$0), $MachinePrecision]}, Block[{t$95$2 = N[Power[N[Power[y, 1/3], $MachinePrecision], 2.0], $MachinePrecision]}, Block[{t$95$3 = N[Power[t$95$0, 2.0], $MachinePrecision]}, Block[{t$95$4 = N[(t$95$2 / t$95$3), $MachinePrecision]}, Block[{t$95$5 = N[Power[N[(x / N[Sqrt[x ^ 2 + y ^ 2], $MachinePrecision]), $MachinePrecision], 1/3], $MachinePrecision]}, N[(N[(N[(N[(N[Log[N[Exp[N[Power[N[(x / N[Sqrt[y ^ 2 + x ^ 2], $MachinePrecision]), $MachinePrecision], 1/3], $MachinePrecision]], $MachinePrecision]], $MachinePrecision] * t$95$5), $MachinePrecision] * t$95$5 + N[(t$95$1 * N[((-t$95$2) / t$95$3), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] + N[(N[((-N[Power[y, 1/3], $MachinePrecision]) / t$95$0), $MachinePrecision] * t$95$4 + N[(t$95$1 * t$95$4), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * N[(N[(x + y), $MachinePrecision] / N[Sqrt[x ^ 2 + y ^ 2], $MachinePrecision]), $MachinePrecision]), $MachinePrecision]]]]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{\left(x - y\right) \cdot \left(x + y\right)}{x \cdot x + y \cdot y}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \sqrt[3]{\mathsf{hypot}\left(x, y\right)}\\
+t_1 := \frac{\sqrt[3]{y}}{t_0}\\
+t_2 := {\left(\sqrt[3]{y}\right)}^{2}\\
+t_3 := {t_0}^{2}\\
+t_4 := \frac{t_2}{t_3}\\
+t_5 := \sqrt[3]{\frac{x}{\mathsf{hypot}\left(x, y\right)}}\\
+\left(\mathsf{fma}\left(\log \left(e^{\sqrt[3]{\frac{x}{\mathsf{hypot}\left(y, x\right)}}}\right) \cdot t_5, t_5, t_1 \cdot \frac{-t_2}{t_3}\right) + \mathsf{fma}\left(\frac{-\sqrt[3]{y}}{t_0}, t_4, t_1 \cdot t_4\right)\right) \cdot \frac{x + y}{\mathsf{hypot}\left(x, y\right)}
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>20.8</td></tr><tr><th>Target</th><td>0.1</td></tr><tr><th>Herbie</th><td>0.1</td></tr></table><div class="math">\[\begin{array}{l}
+\mathbf{if}\;0.5 &lt; \left|\frac{x}{y}\right| \land \left|\frac{x}{y}\right| &lt; 2:\\
+\;\;\;\;\frac{\left(x - y\right) \cdot \left(x + y\right)}{x \cdot x + y \cdot y}\\
+
+\mathbf{else}:\\
+\;\;\;\;1 - \frac{2}{1 + \frac{x}{y} \cdot \frac{x}{y}}\\
+
+
+\end{array}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 22.3">20.8</span></p><div class="math">\[\frac{\left(x - y\right) \cdot \left(x + y\right)}{x \cdot x + y \cdot y}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.0">0.0</span></p><div class="math">\[\leadsto \color{blue}{\frac{x - y}{\mathsf{hypot}\left(x, y\right)} \cdot \frac{x + y}{\mathsf{hypot}\left(x, y\right)}}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.0">0.1</span></p><div class="math">\[\leadsto \color{blue}{\left(\mathsf{fma}\left(\sqrt[3]{\frac{x}{\mathsf{hypot}\left(x, y\right)}} \cdot \sqrt[3]{\frac{x}{\mathsf{hypot}\left(x, y\right)}}, \sqrt[3]{\frac{x}{\mathsf{hypot}\left(x, y\right)}}, -\frac{\sqrt[3]{y}}{\sqrt[3]{\mathsf{hypot}\left(x, y\right)}} \cdot \frac{{\left(\sqrt[3]{y}\right)}^{2}}{{\left(\sqrt[3]{\mathsf{hypot}\left(x, y\right)}\right)}^{2}}\right) + \mathsf{fma}\left(-\frac{\sqrt[3]{y}}{\sqrt[3]{\mathsf{hypot}\left(x, y\right)}}, \frac{{\left(\sqrt[3]{y}\right)}^{2}}{{\left(\sqrt[3]{\mathsf{hypot}\left(x, y\right)}\right)}^{2}}, \frac{\sqrt[3]{y}}{\sqrt[3]{\mathsf{hypot}\left(x, y\right)}} \cdot \frac{{\left(\sqrt[3]{y}\right)}^{2}}{{\left(\sqrt[3]{\mathsf{hypot}\left(x, y\right)}\right)}^{2}}\right)\right)} \cdot \frac{x + y}{\mathsf{hypot}\left(x, y\right)}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.0">0.1</span></p><div class="math">\[\leadsto \left(\mathsf{fma}\left(\color{blue}{\log \left(e^{\sqrt[3]{\frac{x}{\mathsf{hypot}\left(y, x\right)}}}\right)} \cdot \sqrt[3]{\frac{x}{\mathsf{hypot}\left(x, y\right)}}, \sqrt[3]{\frac{x}{\mathsf{hypot}\left(x, y\right)}}, -\frac{\sqrt[3]{y}}{\sqrt[3]{\mathsf{hypot}\left(x, y\right)}} \cdot \frac{{\left(\sqrt[3]{y}\right)}^{2}}{{\left(\sqrt[3]{\mathsf{hypot}\left(x, y\right)}\right)}^{2}}\right) + \mathsf{fma}\left(-\frac{\sqrt[3]{y}}{\sqrt[3]{\mathsf{hypot}\left(x, y\right)}}, \frac{{\left(\sqrt[3]{y}\right)}^{2}}{{\left(\sqrt[3]{\mathsf{hypot}\left(x, y\right)}\right)}^{2}}, \frac{\sqrt[3]{y}}{\sqrt[3]{\mathsf{hypot}\left(x, y\right)}} \cdot \frac{{\left(\sqrt[3]{y}\right)}^{2}}{{\left(\sqrt[3]{\mathsf{hypot}\left(x, y\right)}\right)}^{2}}\right)\right) \cdot \frac{x + y}{\mathsf{hypot}\left(x, y\right)}
+\]</div></li><li><p>Final simplification<span class="error" title="Internally 0.0">0.1</span></p><div class="math">\[\leadsto \left(\mathsf{fma}\left(\log \left(e^{\sqrt[3]{\frac{x}{\mathsf{hypot}\left(y, x\right)}}}\right) \cdot \sqrt[3]{\frac{x}{\mathsf{hypot}\left(x, y\right)}}, \sqrt[3]{\frac{x}{\mathsf{hypot}\left(x, y\right)}}, \frac{\sqrt[3]{y}}{\sqrt[3]{\mathsf{hypot}\left(x, y\right)}} \cdot \frac{-{\left(\sqrt[3]{y}\right)}^{2}}{{\left(\sqrt[3]{\mathsf{hypot}\left(x, y\right)}\right)}^{2}}\right) + \mathsf{fma}\left(\frac{-\sqrt[3]{y}}{\sqrt[3]{\mathsf{hypot}\left(x, y\right)}}, \frac{{\left(\sqrt[3]{y}\right)}^{2}}{{\left(\sqrt[3]{\mathsf{hypot}\left(x, y\right)}\right)}^{2}}, \frac{\sqrt[3]{y}}{\sqrt[3]{\mathsf{hypot}\left(x, y\right)}} \cdot \frac{{\left(\sqrt[3]{y}\right)}^{2}}{{\left(\sqrt[3]{\mathsf{hypot}\left(x, y\right)}\right)}^{2}}\right)\right) \cdot \frac{x + y}{\mathsf{hypot}\left(x, y\right)}
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (x y)
+  :name "Kahan p9 Example"
+  :precision binary64
+  :pre (and (and (&lt; 0.0 x) (&lt; x 1.0)) (&lt; y 1.0))
+
+  :herbie-target
+  (if (and (&lt; 0.5 (fabs (/ x y))) (&lt; (fabs (/ x y)) 2.0)) (/ (* (- x y) (+ x y)) (+ (* x x) (* y y))) (- 1.0 (/ 2.0 (+ 1.0 (* (/ x y) (/ x y))))))
+
+  (/ (* (- x y) (+ x y)) (+ (* x x) (* y y))))
+</code></pre></section></body></html>

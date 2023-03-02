@@ -1,0 +1,156 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Codec.Picture.Types:toneMapping from JuicyPixels-3.2.6.1</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 64.0 → 21.0">9.2 → 0.1</span></div><div>Time: <span class="number">1.8s</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Fortran</option><option>Java</option><option>Python</option><option>Julia</option><option>MATLAB</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\frac{x \cdot \left(\frac{x}{y} + 1\right)}{x + 1}
+\]</div><div class="arrow">↓</div><div class="program math">\[\begin{array}{l}
+t_0 := \frac{x \cdot \left(\frac{x}{y} + 1\right)}{x + 1}\\
+t_1 := \frac{\left(x + y\right) \cdot \frac{x}{x + 1}}{y}\\
+\mathbf{if}\;t_0 \leq -5 \cdot 10^{+111}:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;t_0 \leq 5 \cdot 10^{-18}:\\
+\;\;\;\;\frac{\frac{x + y}{y} \cdot x}{x + 1}\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (x y) :precision binary64 (/ (* x (+ (/ x y) 1.0)) (+ x 1.0)))</pre><div class="arrow">↓</div><pre class="program">(FPCore (x y)
+ :precision binary64
+ (let* ((t_0 (/ (* x (+ (/ x y) 1.0)) (+ x 1.0)))
+        (t_1 (/ (* (+ x y) (/ x (+ x 1.0))) y)))
+   (if (&lt;= t_0 -5e+111)
+     t_1
+     (if (&lt;= t_0 5e-18) (/ (* (/ (+ x y) y) x) (+ x 1.0)) t_1))))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double x, double y) {
+	return (x * ((x / y) + 1.0)) / (x + 1.0);
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double x, double y) {
+	double t_0 = (x * ((x / y) + 1.0)) / (x + 1.0);
+	double t_1 = ((x + y) * (x / (x + 1.0))) / y;
+	double tmp;
+	if (t_0 &lt;= -5e+111) {
+		tmp = t_1;
+	} else if (t_0 &lt;= 5e-18) {
+		tmp = (((x + y) / y) * x) / (x + 1.0);
+	} else {
+		tmp = t_1;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Fortran"><pre class="program">real(8) function code(x, y)
+    real(8), intent (in) :: x
+    real(8), intent (in) :: y
+    code = (x * ((x / y) + 1.0d0)) / (x + 1.0d0)
+end function
+</pre><div class="arrow">↓</div><pre class="program">real(8) function code(x, y)
+    real(8), intent (in) :: x
+    real(8), intent (in) :: y
+    real(8) :: t_0
+    real(8) :: t_1
+    real(8) :: tmp
+    t_0 = (x * ((x / y) + 1.0d0)) / (x + 1.0d0)
+    t_1 = ((x + y) * (x / (x + 1.0d0))) / y
+    if (t_0 &lt;= (-5d+111)) then
+        tmp = t_1
+    else if (t_0 &lt;= 5d-18) then
+        tmp = (((x + y) / y) * x) / (x + 1.0d0)
+    else
+        tmp = t_1
+    end if
+    code = tmp
+end function
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double x, double y) {
+	return (x * ((x / y) + 1.0)) / (x + 1.0);
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double x, double y) {
+	double t_0 = (x * ((x / y) + 1.0)) / (x + 1.0);
+	double t_1 = ((x + y) * (x / (x + 1.0))) / y;
+	double tmp;
+	if (t_0 &lt;= -5e+111) {
+		tmp = t_1;
+	} else if (t_0 &lt;= 5e-18) {
+		tmp = (((x + y) / y) * x) / (x + 1.0);
+	} else {
+		tmp = t_1;
+	}
+	return tmp;
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(x, y):
+	return (x * ((x / y) + 1.0)) / (x + 1.0)
+</pre><div class="arrow">↓</div><pre class="program">def code(x, y):
+	t_0 = (x * ((x / y) + 1.0)) / (x + 1.0)
+	t_1 = ((x + y) * (x / (x + 1.0))) / y
+	tmp = 0
+	if t_0 &lt;= -5e+111:
+		tmp = t_1
+	elif t_0 &lt;= 5e-18:
+		tmp = (((x + y) / y) * x) / (x + 1.0)
+	else:
+		tmp = t_1
+	return tmp
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(x, y)
+	return Float64(Float64(x * Float64(Float64(x / y) + 1.0)) / Float64(x + 1.0))
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(x, y)
+	t_0 = Float64(Float64(x * Float64(Float64(x / y) + 1.0)) / Float64(x + 1.0))
+	t_1 = Float64(Float64(Float64(x + y) * Float64(x / Float64(x + 1.0))) / y)
+	tmp = 0.0
+	if (t_0 &lt;= -5e+111)
+		tmp = t_1;
+	elseif (t_0 &lt;= 5e-18)
+		tmp = Float64(Float64(Float64(Float64(x + y) / y) * x) / Float64(x + 1.0));
+	else
+		tmp = t_1;
+	end
+	return tmp
+end
+</pre></div><div class="implementation" data-language="MATLAB"><pre class="program">function tmp = code(x, y)
+	tmp = (x * ((x / y) + 1.0)) / (x + 1.0);
+end
+</pre><div class="arrow">↓</div><pre class="program">function tmp_2 = code(x, y)
+	t_0 = (x * ((x / y) + 1.0)) / (x + 1.0);
+	t_1 = ((x + y) * (x / (x + 1.0))) / y;
+	tmp = 0.0;
+	if (t_0 &lt;= -5e+111)
+		tmp = t_1;
+	elseif (t_0 &lt;= 5e-18)
+		tmp = (((x + y) / y) * x) / (x + 1.0);
+	else
+		tmp = t_1;
+	end
+	tmp_2 = tmp;
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[x_, y_] := N[(N[(x * N[(N[(x / y), $MachinePrecision] + 1.0), $MachinePrecision]), $MachinePrecision] / N[(x + 1.0), $MachinePrecision]), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[x_, y_] := Block[{t$95$0 = N[(N[(x * N[(N[(x / y), $MachinePrecision] + 1.0), $MachinePrecision]), $MachinePrecision] / N[(x + 1.0), $MachinePrecision]), $MachinePrecision]}, Block[{t$95$1 = N[(N[(N[(x + y), $MachinePrecision] * N[(x / N[(x + 1.0), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] / y), $MachinePrecision]}, If[LessEqual[t$95$0, -5e+111], t$95$1, If[LessEqual[t$95$0, 5e-18], N[(N[(N[(N[(x + y), $MachinePrecision] / y), $MachinePrecision] * x), $MachinePrecision] / N[(x + 1.0), $MachinePrecision]), $MachinePrecision], t$95$1]]]]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\frac{x \cdot \left(\frac{x}{y} + 1\right)}{x + 1}
+</pre><div class="arrow">↓</div><pre class="program">\begin{array}{l}
+t_0 := \frac{x \cdot \left(\frac{x}{y} + 1\right)}{x + 1}\\
+t_1 := \frac{\left(x + y\right) \cdot \frac{x}{x + 1}}{y}\\
+\mathbf{if}\;t_0 \leq -5 \cdot 10^{+111}:\\
+\;\;\;\;t_1\\
+
+\mathbf{elif}\;t_0 \leq 5 \cdot 10^{-18}:\\
+\;\;\;\;\frac{\frac{x + y}{y} \cdot x}{x + 1}\\
+
+\mathbf{else}:\\
+\;\;\;\;t_1\\
+
+
+\end{array}
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">x</label><input type="text" class="input-submit" name="var-name-0" value="-1.3410502258422692e-191"/></li><li><label for="var-name-1">y</label><input type="text" class="input-submit" name="var-name-1" value="-3.730838613172765e-168"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>9.2</td></tr><tr><th>Target</th><td>0.1</td></tr><tr><th>Herbie</th><td>0.1</td></tr></table><div class="math">\[\frac{x}{1} \cdot \frac{\frac{x}{y} + 1}{x + 1}
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li class="event">Split input into 2 regimes</li><li><h2><code>if <span class="condition"> (/.f64 (*.f64 x (+.f64 (/.f64 x y) 1)) (+.f64 x 1))  &lt; -4.9999999999999997e111 or 5.00000000000000036e-18 &lt;  (/.f64 (*.f64 x (+.f64 (/.f64 x y) 1)) (+.f64 x 1)) </span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 27.4">20.5</span></p><div class="math">\[\frac{x \cdot \left(\frac{x}{y} + 1\right)}{x + 1}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 27.4">20.5</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left(\frac{x}{y}, x, x\right)}{x + 1}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 27.5">20.5</span></p><div class="math">\[\leadsto \frac{\color{blue}{\frac{x + y}{y} \cdot x}}{x + 1}
+\]</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.0">0.1</span></p><div class="math">\[\leadsto \color{blue}{\frac{\left(x + y\right) \cdot \frac{x}{x + 1}}{y}}
+\]</div></li></ol><h2><code>if <span class="condition">-4.9999999999999997e111 &lt;  (/.f64 (*.f64 x (+.f64 (/.f64 x y) 1)) (+.f64 x 1))  &lt; 5.00000000000000036e-18</span></code></h2><ol><li><p>Initial program <span class="error" title="Internally 0.0">0.1</span></p><div class="math">\[\frac{x \cdot \left(\frac{x}{y} + 1\right)}{x + 1}
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0.0">0.1</span></p><div class="math">\[\leadsto \color{blue}{\frac{\mathsf{fma}\left(\frac{x}{y}, x, x\right)}{x + 1}}
+\]</div><div class="math">Proof</div></li><li><p>Applied <span class="rule">egg-rr</span><span class="error" title="Internally 0.0">0.1</span></p><div class="math">\[\leadsto \frac{\color{blue}{\frac{x + y}{y} \cdot x}}{x + 1}
+\]</div></li></ol></li><li class="event">Recombined 2 regimes into one program.</li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 
+(FPCore (x y)
+  :name "Codec.Picture.Types:toneMapping from JuicyPixels-3.2.6.1"
+  :precision binary64
+
+  :herbie-target
+  (* (/ x 1.0) (/ (+ (/ x y) 1.0) (+ x 1.0)))
+
+  (/ (* x (+ (/ x y) 1.0)) (+ x 1.0)))
+</code></pre></section></body></html>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Result for Expression, p6</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.css" integrity="sha384-9tPv11A+glH/on/wEu99NVwDPwkMQESOocs/ZGXPoIiLE8MU/qkqUcZ3zzL+6DuH" crossorigin="anonymous"/><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/katex.min.js" integrity="sha384-U8Vrjwb8fuHMt6ewaCy8uqeUXv4oitYACKdB0VziCerzt011iQ/0TqlSlv8MReCm" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.10.0-beta/dist/contrib/auto-render.min.js" integrity="sha384-aGfk5kvhIq5x1x5YdvCp4upKZYnA8ckafviDpmWEKp4afOZEqOli7gqSnh8I6enH" crossorigin="anonymous"></script><script src="https://unpkg.com/mathjs@4.4.2/dist/math.min.js"></script><script src="https://unpkg.com/d3@6.7.0/dist/d3.min.js"></script><script src="https://unpkg.com/@observablehq/plot@0.4.3/dist/plot.umd.min.js"></script><link rel="stylesheet" type="text/css" href="../report.css"/><script src="interactive.js"></script><script src="../report.js" type="module"></script></head><body><nav id="links"><div class="right"><a href="../results.html">Report</a><a href="timeline.html">Metrics</a></div><div><a href="#graphs">Error</a><a href="#try-it">Try it out!</a><a href="#comparison">Target</a><a href="#history">Derivation</a><a href="#reproduce">Reproduce</a></div></nav><section id="large"><div>Average Error: <span class="number" title="Maximum error: 15.6 → 0">3.6 → 0</span></div><div>Time: <span class="number">607.0ms</span></div><div>Precision: <span class="number"><kbd>binary64</kbd></span></div></section><section id="program"><div id="precondition"><div class="program math">\[\left(\left(\left(-14 \leq a \land a \leq -13\right) \land \left(-3 \leq b \land b \leq -2\right)\right) \land \left(3 \leq c \land c \leq 3.5\right)\right) \land \left(12.5 \leq d \land d \leq 13.5\right)\]</div></div><select id="language"><option>Math</option><option>FPCore</option><option>C</option><option>Fortran</option><option>Java</option><option>Python</option><option>Julia</option><option>MATLAB</option><option>Wolfram</option><option>TeX</option></select><div class="implementation" data-language="Math"><div class="program math">\[\left(a + \left(b + \left(c + d\right)\right)\right) \cdot 2
+\]</div><div class="arrow">↓</div><div class="program math">\[\left(\left(b + c\right) + \left(d + a\right)\right) \cdot 2
+\]</div></div><div class="implementation" data-language="FPCore"><pre class="program">(FPCore (a b c d) :precision binary64 (* (+ a (+ b (+ c d))) 2.0))</pre><div class="arrow">↓</div><pre class="program">(FPCore (a b c d) :precision binary64 (* (+ (+ b c) (+ d a)) 2.0))</pre></div><div class="implementation" data-language="C"><pre class="program">double code(double a, double b, double c, double d) {
+	return (a + (b + (c + d))) * 2.0;
+}
+</pre><div class="arrow">↓</div><pre class="program">double code(double a, double b, double c, double d) {
+	return ((b + c) + (d + a)) * 2.0;
+}
+</pre></div><div class="implementation" data-language="Fortran"><pre class="program">real(8) function code(a, b, c, d)
+    real(8), intent (in) :: a
+    real(8), intent (in) :: b
+    real(8), intent (in) :: c
+    real(8), intent (in) :: d
+    code = (a + (b + (c + d))) * 2.0d0
+end function
+</pre><div class="arrow">↓</div><pre class="program">real(8) function code(a, b, c, d)
+    real(8), intent (in) :: a
+    real(8), intent (in) :: b
+    real(8), intent (in) :: c
+    real(8), intent (in) :: d
+    code = ((b + c) + (d + a)) * 2.0d0
+end function
+</pre></div><div class="implementation" data-language="Java"><pre class="program">public static double code(double a, double b, double c, double d) {
+	return (a + (b + (c + d))) * 2.0;
+}
+</pre><div class="arrow">↓</div><pre class="program">public static double code(double a, double b, double c, double d) {
+	return ((b + c) + (d + a)) * 2.0;
+}
+</pre></div><div class="implementation" data-language="Python"><pre class="program">def code(a, b, c, d):
+	return (a + (b + (c + d))) * 2.0
+</pre><div class="arrow">↓</div><pre class="program">def code(a, b, c, d):
+	return ((b + c) + (d + a)) * 2.0
+</pre></div><div class="implementation" data-language="Julia"><pre class="program">function code(a, b, c, d)
+	return Float64(Float64(a + Float64(b + Float64(c + d))) * 2.0)
+end
+</pre><div class="arrow">↓</div><pre class="program">function code(a, b, c, d)
+	return Float64(Float64(Float64(b + c) + Float64(d + a)) * 2.0)
+end
+</pre></div><div class="implementation" data-language="MATLAB"><pre class="program">function tmp = code(a, b, c, d)
+	tmp = (a + (b + (c + d))) * 2.0;
+end
+</pre><div class="arrow">↓</div><pre class="program">function tmp = code(a, b, c, d)
+	tmp = ((b + c) + (d + a)) * 2.0;
+end
+</pre></div><div class="implementation" data-language="Wolfram"><pre class="program">code[a_, b_, c_, d_] := N[(N[(a + N[(b + N[(c + d), $MachinePrecision]), $MachinePrecision]), $MachinePrecision] * 2.0), $MachinePrecision]
+</pre><div class="arrow">↓</div><pre class="program">code[a_, b_, c_, d_] := N[(N[(N[(b + c), $MachinePrecision] + N[(d + a), $MachinePrecision]), $MachinePrecision] * 2.0), $MachinePrecision]
+</pre></div><div class="implementation" data-language="TeX"><pre class="program">\left(a + \left(b + \left(c + d\right)\right)\right) \cdot 2
+</pre><div class="arrow">↓</div><pre class="program">\left(\left(b + c\right) + \left(d + a\right)\right) \cdot 2
+</pre></div></section><section id="graphs"><h1>Error</h1><div id="graphs-content"></div></section><section id="try-it"><h1>Try it out</h1><div id="try-inputs-wrapper"><form id="try-inputs"><p class="header">Your Program's Arguments</p><ol><li><label for="var-name-0">a</label><input type="text" class="input-submit" name="var-name-0" value="-13.73411498111756"/></li><li><label for="var-name-1">b</label><input type="text" class="input-submit" name="var-name-1" value="-2.543825485592207"/></li><li><label for="var-name-2">c</label><input type="text" class="input-submit" name="var-name-2" value="3.410285566708382"/></li><li><label for="var-name-3">d</label><input type="text" class="input-submit" name="var-name-3" value="13.340289727073124"/></li></ol></form></div><div id="try-result" class="no-error"><p class="header">Results</p><table><tbody><tr><td><label for="try-original-output">In</label></td><td><output id="try-original-output"></output></td></tr><tr><td><label for="try-herbie-output">Out</label></td><td><output id="try-herbie-output"></output></td></tr></tbody></table><div id="try-error">Enter valid numbers for all inputs</div></div></section><section id="comparison"><h1>Target</h1><table><tr><th>Original</th><td>3.6</td></tr><tr><th>Target</th><td>3.8</td></tr><tr><th>Herbie</th><td>0</td></tr></table><div class="math">\[\left(a + b\right) \cdot 2 + \left(c + d\right) \cdot 2
+\]</div></section><section id="history"><h1>Derivation</h1><ol class="history"><li><p>Initial program <span class="error" title="Internally 3.6">3.6</span></p><div class="math">\[\left(a + \left(b + \left(c + d\right)\right)\right) \cdot 2
+\]</div></li><li><p>Simplified<span class="error" title="Internally 0">0</span></p><div class="math">\[\leadsto \color{blue}{\left(\left(b + c\right) + \left(d + a\right)\right) \cdot 2}
+\]</div><div class="math">Proof</div></li><li><p>Final simplification<span class="error" title="Internally 0">0</span></p><div class="math">\[\leadsto \left(\left(b + c\right) + \left(d + a\right)\right) \cdot 2
+\]</div></li></ol></section><section id="reproduce"><h1>Reproduce</h1><pre class="shell"><code>herbie shell --seed 0 -o generate:egglog
+(FPCore (a b c d)
+  :name "Expression, p6"
+  :precision binary64
+  :pre (and (and (and (and (&lt;= -14.0 a) (&lt;= a -13.0)) (and (&lt;= -3.0 b) (&lt;= b -2.0))) (and (&lt;= 3.0 c) (&lt;= c 3.5))) (and (&lt;= 12.5 d) (&lt;= d 13.5)))
+
+  :herbie-target
+  (+ (* (+ a b) 2.0) (* (+ c d) 2.0))
+
+  (* (+ a (+ b (+ c d))) 2.0))
+</code></pre></section></body></html>
