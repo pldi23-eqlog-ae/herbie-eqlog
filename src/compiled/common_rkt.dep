@@ -1,0 +1,1 @@
+("8.6" tarm64osx ("19140e1393327f09640b021710c5ba6f8ae20866" . "bae6574304b2feacaf0ac9fea380769586a199cf") (collects #"herbie" #"config.rkt") (collects #"math" #"base.rkt") (collects #"racket" #"flonum.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"runtime-path.rkt") (collects #"rackunit" #"main.rkt"))

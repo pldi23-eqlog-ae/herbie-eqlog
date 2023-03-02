@@ -1,0 +1,1 @@
+("8.6" tarm64osx ("a460c5c1b19bddffdb60f7705d47d8b02e171928" . "98f860ec6d63606351937624a7f23e8929635373") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"rackunit" #"main.rkt") (indirect collects #"racket" #"match" #"gen-match.rkt") (indirect collects #"racket" #"match" #"parse.rkt") (indirect collects #"racket" #"match" #"patterns.rkt"))

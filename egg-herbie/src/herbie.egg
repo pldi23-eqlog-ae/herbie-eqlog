@@ -1,0 +1,1009 @@
+;; Implements part of the simplification layer of herbie in egg-smol🫡
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Datatypes
+
+(datatype Math
+  ; Ground terms
+  (Num Rational)
+  (Var String)
+
+  ; Custom ops
+  (Unary String Math)
+  (Binary String Math Math)
+  (PI)
+  (E)
+
+  ; Constant-folding ops
+  (Add Math Math)
+  (Sub Math Math)
+  (Mul Math Math)
+  (Div Math Math)
+  (Pow Math Math)
+  (Neg Math)
+  (Sqrt Math)
+  (Cbrt Math) ; cube root
+  (Fabs Math)
+  (Ceil Math)
+  (Floor Math)
+  (Round Math)
+  (Log Math)
+  (Exp Math)
+  (If Math Math Math)
+  (Fma Math Math Math)
+  (Sin Math)
+  (Cos Math)
+  (Tan Math)
+  (Atan Math)
+  (Atan2 Math Math)
+  (Asin Math)
+  (Acos Math)
+  (Hypot Math Math)
+  (Expm1 Math)
+  (Log1p Math)
+  )
+
+;; shorthands- must be added to the exclude list of extraction
+(define r-zero (rational "0" "1"))
+(define r-one  (rational "1" "1"))
+(define r-two  (rational "2" "1"))
+(define r-three (rational "3" "1"))
+(define r-four (rational "4" "1"))
+(define r-neg-one (rational "-1" "1"))
+(define zero (Num r-zero) :cost 10000000)
+(define one  (Num r-one) :cost 10000000)
+(define two  (Num r-two) :cost 10000000)
+(define three (Num r-three) :cost 10000000)
+(define neg-one (Neg one) :cost 10000000)
+(define four (Num r-four) :cost 10000000)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Analyses
+;; --------
+;; This example has three analyses:
+;; an interval analysis consisting of a hi and lo component
+;; and a non-zero analysis.
+;; The non-zero analysis is built off the interval analysis (in order to prove
+;; that rewrites are sound, even if some parts of an expr can't be const-evaled)
+
+; TODO: unbounded intervals?
+(function hi (Math) Rational :merge (min old new))
+(function lo (Math) Rational :merge (max old new))
+;; universe is a hack so we can quantify over it
+(relation universe (Math))
+(relation non-zero (Math))
+(relation non-negative (Math))
+(relation positive (Math))
+(relation neq (Math Math))
+
+;; First, constant folding!
+;; We don't need an explicit constant folding analysis, we can just union
+;; with nums when we can
+
+; Cases
+(rewrite (Add (Num a) (Num b)) (Num (+ a b)))
+(rewrite (Sub (Num a) (Num b)) (Num (- a b)))
+(rewrite (Mul (Num a) (Num b)) (Num (* a b)))
+(rewrite (Div (Num a) denom) (Num (/ a b)) :when ((= denom (Num b)) (non-zero denom)))
+(rewrite (Pow (Num a) (Num b)) (Num res) :when ((= res (pow a b))))
+(rewrite (Neg (Num a)) (Num (neg a)))
+;; TODO unimplemented
+;; (rewrite (Sqrt (Num a)) (Num res) :when ((= res (sqrt a))))
+;; (rewrite (Cbrt (Num a)) (Num res) :when ((= res (cbrt a))))
+(rewrite (Fabs (Num a)) (Num (abs a)))
+(rewrite (Ceil (Num a)) (Num (ceil a)))
+(rewrite (Floor (Num a)) (Num (floor a)))
+(rewrite (Round (Num a)) (Num (round a)))
+(rewrite (Log (Num a)) (Num res) :when ((= res (log a))))
+
+;; To check if something is zero, we check that zero is not contained in the
+;; interval. There are two possible (overlapping!) cases:
+;; - There exists a lo interval, in which case it must be larger than 0
+;; - There exists a hi interval, in which case it must be smaller than 0
+;; This assumes that intervals are well-formed: lo <= hi at all times.
+(rule ((= l (lo e))
+       (> l r-zero))
+      ((non-zero e)))
+(rule ((= h (hi e))
+       (< h r-zero))
+      ((non-zero e)))
+
+(rule ((= l (lo e))
+       (>= l r-zero))
+      ((non-negative e)))
+
+(rule ((= l (lo e))
+       (> l r-zero))
+      ((positive e)))
+
+(rule ((= e (Num ve)))
+      ((set (lo e) ve)
+       (set (hi e) ve)))
+
+;; The interval analyses are similar to the constant-folding analysis,
+;; except we have to take the lower/upper bound of the results we get
+(rule ((= e (Add a b))
+       (= la (lo a))
+       (= lb (lo b)))
+      ((set (lo e) (+ la lb))))
+(rule ((= e (Add a b))
+       (= ha (hi a))
+       (= hb (hi b)))
+      ((set (hi e) (+ ha hb))))
+      
+(rule ((= e (Sub a b))
+       (= la (lo a))
+       (= ha (hi a))
+       (= lb (lo b))
+       (= hb (hi b)))
+      ((set (lo e) 
+          (min (min (- la lb) (- la hb))
+               (min (- ha lb) (- ha hb))))
+       (set (hi e) 
+          (max (max (- la lb) (- la hb))
+               (max (- ha lb) (- ha hb))))))
+
+(rule ((= e (Mul a b))
+       (= la (lo a))
+       (= ha (hi a))
+       (= lb (lo b))
+       (= hb (hi b)))
+      ((set (lo e) 
+          (min (min (* la lb) (* la hb))
+               (min (* ha lb) (* ha hb))))
+       (set (hi e) 
+          (max (max (* la lb) (* la hb))
+               (max (* ha lb) (* ha hb))))))
+
+(rule ((= e (Div a b))
+       (= la (lo a))
+       (= ha (hi a))
+       (= lb (lo b))
+       (= hb (hi b)))
+      ((set (lo e) 
+          (min (min (/ la lb) (/ la hb))
+               (min (/ ha lb) (/ ha hb))))
+       (set (hi e) 
+          (max (max (/ la lb) (/ la hb))
+               (max (/ ha lb) (/ ha hb))))))
+
+(rule ((= e (Neg a))
+       (= la (lo a))
+       (= ha (hi a)))
+      ((set (lo e) (neg ha))
+       (set (hi e) (neg la))))
+
+(rule ((= e (Sqrt a)))
+      ((set (lo e) r-zero)))
+
+;; TODO: better evaluation of sqrt
+(rule ((= e (Sqrt a))
+       (= loa (lo a)))
+      (
+        (set (lo e) (sqrt loa))
+      ))
+(rule ((= e (Sqrt a))
+       (= hia (hi a)))
+      (
+        (set (hi e) (sqrt hia))
+      ))
+
+; Sqrt infer downwards
+(rule ((= e (Sqrt a)))
+      ((set (lo a) r-zero)))
+
+
+; TODO: Cbrt
+
+
+(rule ((= e (Fabs a))
+       (= la (lo a))
+       (= ha (hi a)))
+      ((set (lo e) (min (abs la) (abs ha)))
+       (set (hi e) (max (abs la) (abs ha)))))
+
+(rule ((= e (Ceil a))
+       (= la (lo a)))
+      ((set (lo e) (ceil la))))
+(rule ((= e (Ceil a))
+       (= ha (hi a)))
+      ((set (hi e) (ceil ha))))
+
+(rule ((= e (Floor a))
+       (= la (lo a)))
+      ((set (lo e) (floor la))))
+(rule ((= e (Floor a))
+       (= ha (hi a)))
+      ((set (hi e) (floor ha))))
+
+(rule ((= e (Round a))
+       (= la (lo a)))
+      ((set (lo e) (round la))))
+(rule ((= e (Round a))
+       (= ha (hi a)))
+      ((set (hi e) (round ha))))
+
+; TODO: Log
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Not equals analysis
+
+(rule ((neq a b))
+      ((neq b a)))
+
+(rule ((= t1 (Add a b))
+       (= lob (lo b))
+       (> lob r-zero))
+      ((neq (Add a b) a)))
+
+(rule ((= t1 (Add a b))
+       (= hib (hi b))
+       (< hib r-zero))
+      ((neq (Add a b) a)))
+
+
+;; monotonic functions
+(rule ((= t1 (Sqrt a))
+       (= t2 (Sqrt b))
+       (neq a b))
+      ((neq (Sqrt a) (Sqrt b))))
+
+(rule ((= t1 (Cbrt a))
+       (= t2 (Cbrt b))
+       (neq a b))
+      ((neq (Cbrt a) (Cbrt b))))
+
+
+;; UNIVERSE
+
+(rule ((= t (Num a)))
+      ((universe t)))
+(rule ((= t (Var a)))
+      ((universe t)))
+(rule ((= t (Unary a b)))
+      ((universe t)))
+(rule ((= t (Binary a b c)))
+      ((universe t)))
+(rule ((= t (PI)))
+      ((universe t)))
+(rule ((= t (E)))
+      ((universe t)))
+
+(rule ((= t (Add a b)))
+      ((universe t)))
+(rule ((= t (Sub a b)))
+      ((universe t)))
+(rule ((= t (Mul a b)))
+      ((universe t)))
+(rule ((= t (Div a b)))
+      ((universe t)))
+(rule ((= t (Pow a b)))
+      ((universe t)))
+(rule ((= t (Neg a)))
+      ((universe t)))
+(rule ((= t (Sqrt a)))
+      ((universe t)))
+(rule ((= t (Cbrt a)))
+      ((universe t)))
+(rule ((= t (Fabs a)))
+      ((universe t)))
+(rule ((= t (Ceil a)))
+      ((universe t)))
+(rule ((= t (Floor a)))
+      ((universe t)))
+(rule ((= t (Round a)))
+      ((universe t)))
+(rule ((= t (Log a)))
+      ((universe t)))
+(rule ((= t (Exp a)))
+      ((universe t)))
+(rule ((= t (If a b c)))
+      ((universe t)))
+(rule ((= t (Fma a b c)))
+      ((universe t)))
+(rule ((= t (Sin a)))
+      ((universe t)))
+(rule ((= t (Cos a)))
+      ((universe t)))
+(rule ((= t (Tan a)))
+      ((universe t)))
+(rule ((= t (Atan a)))
+      ((universe t)))
+(rule ((= t (Atan2 a b)))
+      ((universe t)))
+(rule ((= t (Asin a)))
+      ((universe t)))
+(rule ((= t (Acos a)))
+      ((universe t)))
+(rule ((= t (Hypot a b)))
+      ((universe t)))
+(rule ((= t (Expm1 a)))
+      ((universe t)))
+(rule ((= t (Log1p a)))
+      ((universe t)))
+      
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Rewrites
+;; --------
+;; These rewrites were compiled from src/syntax/rules.rkt in the herbie repo,
+;; using all rewrites in the `simplify` rewrite group.
+
+(add-ruleset analysis)
+(clear-rules)
+
+
+;; INJECTIVITY ooooohh
+
+(rule ((= t1 (Add a b))
+       (= t2 (Add a c))
+       (= t1 t2))
+       ((union b c)))
+
+(rule ((= t1 (Mul a b))
+       (= t2 (Mul a c))
+       (= t1 t2)
+       (non-zero a))
+       ((union b c)))
+
+(rule ((= t1 (Div a b))
+       (= t2 (Div a c))
+       (= t1 t2)
+       (non-zero a))
+       ((union b c)))
+
+(rule ((= t1 (Div a b))
+       (= t2 (Div c b))
+       (= t1 t2))
+       ((union a c)))
+
+(rule ((= t1 (Sqrt a))
+       (= t2 (Sqrt b))
+       (= t1 t2))
+       ((union a b)))
+
+(rule ((= t1 (Cbrt a))
+       (= t2 (Cbrt b))
+       (= t1 t2))
+       ((union a b)))
+
+;; Commutativity
+(rewrite (Add a b) (Add b a))
+(rewrite (Mul a b) (Mul b a))
+
+;; Associativity
+(rewrite (Add a (Add b c)) (Add (Add a b) c))
+(rewrite (Add (Add a b) c) (Add a (Add b c)))
+(rewrite (Add a (Sub b c)) (Sub (Add a b) c))
+(rewrite (Add (Sub a b) c) (Sub a (Sub b c)))
+(rewrite (Sub a (Add b c)) (Sub (Sub a b) c))
+(rewrite (Sub (Add a b) c) (Add a (Sub b c)))
+(rewrite (Sub (Sub a b) c) (Sub a (Add b c)))
+(rewrite (Sub a (Sub b c)) (Add (Sub a b) c))
+(rewrite (Mul a (Mul b c)) (Mul (Mul a b) c))
+(rewrite (Mul (Mul a b) c) (Mul a (Mul b c)))
+(rewrite (Mul a (Div b c)) (Div (Mul a b) c))
+(rewrite (Mul (Div a b) c) (Div (Mul a c) b))
+(rewrite (Div a (Mul b c)) (Div (Div a b) c))
+(rewrite (Div (Mul b c) a) (Div b (Div a c)) :when ((non-zero c)))
+(rewrite (Div a (Div b c)) (Mul (Div a b) c) :when ((non-zero c)))
+(rewrite (Div (Div b c) a) (Div b (Mul a c)) :when ((non-zero a)))
+
+;; Counting
+(rewrite (Add x x) (Mul two x))
+
+;; Distributivity
+(rewrite (Mul a (Add b c))         (Add (Mul a b) (Mul a c)))
+(rewrite (Mul a (Add b c))         (Add (Mul b a) (Mul c a)))
+(rewrite (Add (Mul a b) (Mul a c)) (Mul a (Add b c)))
+(rewrite (Sub (Mul a b) (Mul a c)) (Mul a (Sub b c)))
+(rewrite (Add (Mul b a) (Mul c a)) (Mul a (Add b c)))
+(rewrite (Sub (Mul b a) (Mul c a)) (Mul a (Sub b c)))
+(rewrite (Add (Mul b a) a)         (Mul (Add b one) a))
+(rewrite (Add a (Mul c a))         (Mul (Add c one) a))
+
+(rewrite (Neg (Mul a b))       (Mul (Neg a) b))
+(rewrite (Neg (Mul a b))       (Mul a (Neg b)))
+(rewrite (Mul (Neg a) b)       (Neg (Mul a b)))
+(rewrite (Mul a (Neg b))       (Neg (Mul a b)))
+(rewrite (Neg (Add a b))       (Add (Neg a) (Neg b)))
+(rewrite (Add (Neg a) (Neg b)) (Neg (Add a b)))
+(rewrite (Div (Neg a) b)       (Neg (Div a b)))
+(rewrite (Neg (Div a b))       (Div (Neg a) b))
+
+(rewrite (Sub a (Mul (Neg b) c)) (Add a (Mul b c)))
+(rewrite (Sub a (Mul b c))       (Add a (Mul (Neg b) c)))
+
+;; Difference of squares
+(rewrite (Mul (Mul a b) (Mul a b))                           (Mul (Mul a a) (Mul b b)))
+(rewrite (Mul (Mul a a) (Mul b b))                           (Mul (Mul a b) (Mul a b)))
+(rewrite (Sub (Mul a a) (Mul b b))                           (Mul (Add a b) (Sub a b)))
+(rewrite (Sub (Mul a a) one)                (Mul (Add a one) (Sub a one)))
+(rewrite (Add (Mul a a) (Neg one))          (Mul (Add a one) (Sub a one)))
+
+(rule ((= e (Pow a b))
+       (= loa (lo a))
+       (> loa r-zero))
+      ((set (Pow a b) (Mul (Pow a (Div b two)) (Pow a (Div b two))))))
+(rewrite (Mul (Pow a b) (Pow a b))                           (Pow a (Mul two b)))
+(rewrite (Pow a three)
+         (Mul a (Mul a a)))
+(rewrite (Pow a four)
+         (Mul (Pow a two) (Pow a two)))
+
+
+
+;; Identity
+;; This isn't subsumed by const folding since this can return results
+;; even if we can't evaluate a precise value for x
+(rewrite (Div one (Div one x))
+         x)
+(rewrite (Mul x (Div one x))
+         one)
+(rewrite (Mul (Div one x) x)
+         one)
+
+(rewrite (Sub x x) zero)
+(rewrite (Div x x) one)
+(rewrite (Div zero x) zero)
+(rewrite (Mul zero x) zero)
+(rewrite (Mul x zero) zero)
+
+(rewrite (Add zero x) x)
+(rewrite (Add x zero) x)
+(rewrite (Sub zero x) (Neg x))
+(rewrite (Sub x zero) x)
+(rewrite (Neg (Neg x)) x)
+(rewrite (Mul one x) x)
+(rewrite (Mul x one) x)
+(rewrite (Div x one) x)
+(rewrite (Mul neg-one x) (Neg x))
+ 
+(rewrite (Sub a b) (Add a (Neg b)))
+(rewrite (Sub a b) (Neg (Sub b a)))
+(rewrite (Add a (Neg b)) (Sub a b))
+(rewrite (Neg x) (Sub zero x))
+(rewrite (Neg x) (Mul neg-one x))
+
+(rewrite (Div x y) (Mul x (Div one y)))
+(rewrite (Mul x (Div one y)) (Div x y))
+(rewrite (Div x y) (Div one (Div y x))
+  :when ((non-zero x)
+         (non-zero y)))
+
+(rule ((universe t))
+      ((union t (Mul one t))))
+
+;; Fractions
+(rewrite (Div (Sub a b) c)         (Sub (Div a c) (Div b c)))
+(rewrite (Div (Mul a b) (Mul c d)) (Mul (Div a c) (Div b d)))
+
+;; Square root
+(rewrite (Mul (Sqrt x) (Sqrt x)) x)
+(rewrite (Sqrt (Mul x x)) (Fabs x))
+
+(rewrite (Mul (Neg x) (Neg x)) (Mul x x))
+(rewrite (Mul (Fabs x) (Fabs x)) (Mul x x))
+
+;; Absolute values
+(rewrite (Fabs (Fabs x)) (Fabs x))
+(rewrite (Fabs (Sub a b)) (Fabs (Sub b a)))
+(rewrite (Fabs (Neg x)) (Fabs x))
+(rewrite (Fabs (Mul x x)) (Mul x x))
+(rewrite (Fabs (Mul a b)) (Mul (Fabs a) (Fabs b)))
+(rewrite (Fabs (Div a b)) (Div (Fabs a) (Fabs b)))
+
+;; Cube root
+(rewrite (Pow (Cbrt x) three)    x)
+(rewrite (Cbrt (Pow x three))    x)
+(rewrite (Mul (Mul (Cbrt x) (Cbrt x)) (Cbrt x)) x)
+(rewrite (Mul (Cbrt x) (Mul (Cbrt x) (Cbrt x))) x)
+(rewrite (Pow (Neg x) three)     (Neg (Pow x three)))
+
+(rewrite (Pow (Mul x y) three)
+         (Mul (Pow x three) (Pow y three)))
+(rewrite (Pow (Div x y) three)
+         (Div (Pow x three) (Pow y three)))
+ 
+(rewrite (Pow x three) (Mul x (Mul x x)))
+; FIXME: this rewrite is slow and has the potential to blow up the egraph
+;        this is bc this rule and the second-to-last difference of squares rule
+;        have some cyclic behavior goin on
+;        the last identity rule compounds this behavior
+(rewrite (Mul x (Mul x x)) (Pow x three))
+
+;; Exponentials
+(rule ((= t1 (Exp (Log x))) ;; verified
+       (= lox (lo x))
+       (>= lox r-zero))
+      ((set (Exp (Log x))
+            x)))
+(rewrite (Log (Exp x)) x)
+
+(rewrite (Exp zero) one)
+(rewrite (Exp one) (E))
+;; (rewrite one               (Exp zero))
+(rewrite (E)       (Exp one))
+
+(rewrite (Exp (Add a b)) (Mul (Exp a) (Exp b)))
+(rewrite (Exp (Sub a b)) (Div (Exp a) (Exp b)))
+(rewrite (Exp (Neg a))   (Div one (Exp a)))
+
+(rewrite (Mul (Exp a) (Exp b))      (Exp (Add a b)))
+(rewrite (Div one (Exp a)) (Exp (Neg a)))
+(rewrite (Div (Exp a) (Exp b))      (Exp (Sub a b)))
+(rewrite (Exp (Mul a b))                    (Pow (Exp a) b))
+(rewrite (Exp (Div a two)) (Sqrt (Exp a)))
+(rewrite (Exp (Div a three)) (Cbrt (Exp a)))
+(rewrite (Exp (Mul a two)) (Mul (Exp a) (Exp a)))
+(rewrite (Exp (Mul a three)) (Pow (Exp a) three))
+
+;; Powers
+(rewrite (Pow a neg-one) (Div one a))
+(rewrite (Pow a one) a)
+(rewrite (Div one a) (Pow a neg-one))
+
+(rule ((universe a))
+      ((union (Pow a one) a)))
+
+; 0^0 is undefined
+(rewrite (Pow a zero) one :when ((non-zero a)))
+(rewrite (Pow one a) one)
+
+(rewrite (Exp (Mul (Log a) b)) (Pow a b))
+(rewrite (Mul (Pow a b) a) (Pow a (Add b one)))
+(rewrite (Pow a (Num (rational "1" "2"))) (Sqrt a))
+(rewrite (Pow a two) (Mul a a))
+(rewrite (Pow a (Num (rational "1" "3"))) (Cbrt a))
+(rewrite (Pow a three) (Mul (Mul a a) a))
+
+; 0^0 is undefined
+(rewrite (Pow zero a) zero :when ((non-zero a)))
+
+;; Logarithms
+(rewrite (Log (Mul a b)) (Add (Log a) (Log b)) :when ((positive a) (positive b)))
+(rewrite (Log (Div a b)) (Sub (Log a) (Log b)) :when ((positive a) (positive b)))
+(rewrite (Log (Div one a)) (Neg (Log a)))
+(rewrite (Log (Pow a b)) (Mul b (Log a)) :when ((positive a)))
+(rewrite (Log (E)) one)
+
+;; Trigonometry
+(rewrite (Add (Mul (Cos a) (Cos a)) (Mul (Sin a) (Sin a))) ;;verified
+         one)
+(rewrite (Sub one (Mul (Cos a) (Cos a))) ;; verified
+         (Mul (Sin a) (Sin a)))
+(rewrite (Sub one (Mul (Sin a) (Sin a))) ;; verified
+         (Mul (Cos a) (Cos a)))
+(rewrite (Add (Mul (Cos a) (Cos a)) (Num (rational "-1" "1"))) ;; verified
+         (Neg (Mul (Sin a) (Sin a))))
+(rewrite (Add (Mul (Sin a) (Sin a)) (Num (rational "-1" "1"))) ;; verified
+         (Neg (Mul (Cos a) (Cos a))))
+(rewrite (Sub (Mul (Cos a) (Cos a)) one)  ;; verified
+         (Neg (Mul (Sin a) (Sin a))))
+(rewrite (Sub (Mul (Sin a) (Sin a)) one)  ;; verified
+         (Neg (Mul (Cos a) (Cos a))))
+(rewrite (Sin (Div (PI) (Num (rational "6" "1"))))  ;;verified     
+         (Num (rational "1" "2")))
+(rewrite (Sin (Div (PI) (Num (rational "4" "1"))))       ;; verified
+         (Div (Sqrt two) two))
+(rewrite (Sin (Div (PI) three))   ;;verified
+         (Div (Sqrt three) two))
+(rewrite (Sin (Div (PI) two)) ;;verified      
+         one)
+(rewrite (Sin (PI))  ;;verified
+         zero)
+(rewrite (Sin (Add x (PI)))  ;; verified    
+         (Neg (Sin x)))
+(rewrite (Sin (Add x (Div (PI) two))) ;; verified
+         (Cos x))
+(rewrite (Cos (Div (PI) (Num (rational "6" "1"))))   ;; verified
+         (Div (Sqrt three) two))
+(rewrite (Cos (Div (PI) (Num (rational "4" "1"))))       ;; verified
+         (Div (Sqrt two) two))
+(rewrite (Cos (Div (PI) three))      ;; verified
+         (Num (rational "1" "2")))
+(rewrite (Cos (Div (PI) two))   ;; verified
+         zero)
+(rewrite (Cos (PI))     ;; verified
+         (Num (rational "-1" "1")))
+(rewrite (Cos (Add x (PI)))  ;; verified
+         (Neg (Cos x)))
+(rewrite (Cos (Add x (Div (PI) two))) ;; verified
+         (Neg (Sin x)))
+(rewrite (Tan (Div (PI) (Num (rational "6" "1"))))  ;; verified
+         (Div one (Sqrt three)))
+(rewrite (Tan (Div (PI) (Num (rational "4" "1"))))  ;; verified
+         one)
+(rewrite (Tan (Div (PI) three)) ;; verified
+         (Sqrt three))
+(rewrite (Tan (PI))  ;; verified
+         zero)
+(rewrite (Tan (Add x (PI)))  ;; verified   
+         (Tan x))
+(rewrite (Tan (Add x (Div (PI) two))) ;; verified
+         (Div neg-one (Tan x)))
+(rewrite (Div (Sin a) (Add one (Cos a)))  ;; verified
+         (Tan (Div a two)))
+(rewrite (Div (Neg (Sin a)) (Add one (Cos a))) ;; verified
+         (Tan (Div (Neg a) two)))
+(rewrite (Div (Sub one (Cos a)) (Sin a))  ;; verified
+         (Tan (Div a two)))
+(rewrite (Div (Sub one (Cos a)) (Neg (Sin a))) ;; verified
+         (Tan (Div (Neg a) two)))
+(rewrite (Div (Add (Sin a) (Sin b)) (Add (Cos a) (Cos b))) ;; verified
+         (Tan (Div (Add a b) two)))
+(rewrite (Div (Sub (Sin a) (Sin b)) (Add (Cos a) (Cos b))) ;;verified
+         (Tan (Div (Sub a b) two)))
+
+(rewrite (Sin zero) zero) ;; verified
+(rewrite (Cos zero) one) ;; verified
+(rewrite (Tan zero) zero) ;; verified
+
+(rewrite (Sin (Neg x)) (Neg (Sin x))) ;; verified
+(rewrite (Cos (Neg x)) (Cos x)) ;; verified
+(rewrite (Tan (Neg x)) (Neg (Tan x))) ;; verified
+
+; Hyperbolics
+(rewrite (Unary "sinh" x) (Div (Sub (Exp x) (Exp (Neg x))) two))
+(rewrite (Unary "cosh" x) (Div (Add (Exp x) (Exp (Neg x))) two))
+(rewrite (Unary "tanh" x) (Div (Sub (Exp x) (Exp (Neg x))) (Add (Exp x) (Exp (Neg x)))))
+(rewrite (Unary "tanh" x) (Div (Sub (Exp (Mul two x)) one) (Add (Exp (Mul two x)) one)))
+(rewrite (Unary "tanh" x) (Div (Sub one (Exp (Mul (Num (rational "-2" "1")) x))) (Add one (Exp (Mul (Num (rational "-2" "1")) x)))))
+(rewrite (Sub (Mul (Unary "cosh" x) (Unary "cosh" x)) (Mul (Unary "sinh" x) (Unary "sinh" x))) one)
+(rewrite (Add (Unary "cosh" x) (Unary "sinh" x)) (Exp x))
+(rewrite (Sub (Unary "cosh" x) (Unary "sinh" x)) (Exp (Neg x)))
+
+
+;; --------------------------------------------------
+;; -----------------------------------------------
+;; OTHER RULES FROM HERBIE- polynomials, fractions, ect
+
+;; Difference of squares flip
+;; demand for the rule
+(rule
+       ((= (Add a b) t1))
+       ((Sub a b)))
+(rewrite
+       (Add a b)
+       (Div (Sub (Mul a a) (Mul b b)) (Sub a b))
+       :when
+       ((non-zero (Sub a b))))
+
+;; demand for the rule
+(rule
+       ((= (Sub a b) t1))
+       ((Add a b)))
+(rewrite
+       (Sub a b)
+       (Div (Sub (Mul a a) (Mul b b)) (Add a b))
+       :when 
+       ((non-zero (Add a b))))
+
+
+;; difference-of-cubes
+;; sum of cubes
+(rewrite
+       (Add (Pow a three) (Pow b three))
+       (Mul (Add (Mul a a) (Sub (Mul b b) (Mul a b)))
+            (Add a b)))
+;; difference of cubes
+(rewrite (Sub (Pow a three) (Pow b three))
+         (Mul (Add (Mul a a) (Add (Mul b b) (Mul a b)))
+              (Sub a b)))
+
+;; flip3-+
+;; TODO: refactor this into an OR between all these conditions
+;; demand
+(rule ((= t1 (Add a b)))
+      ((Add (Mul a a) (Sub (Mul b b) (Mul a b)))))
+(rewrite (Add a b)
+         (Div (Add (Pow a three) (Pow b three))
+              (Add (Mul a a) (Sub (Mul b b) (Mul a b))))
+         :when ((non-zero (Add (Mul a a) (Sub (Mul b b) (Mul a b))))))
+(rewrite (Add a b)
+         (Div (Add (Pow a three) (Pow b three))
+              (Add (Mul a a) (Sub (Mul b b) (Mul a b))))
+         :when ((non-zero a)))
+(rewrite (Add a b)
+         (Div (Add (Pow a three) (Pow b three))
+              (Add (Mul a a) (Sub (Mul b b) (Mul a b))))
+         :when ((non-zero b)))
+(rewrite (Add a b)
+         (Div (Add (Pow a three) (Pow b three))
+              (Add (Mul a a) (Sub (Mul b b) (Mul a b))))
+         :when ((neq a b)))
+
+
+;;flip3--
+;; demand
+(rule ((= t1 (Sub a b)))
+      ((Add (Mul a a) (Add (Mul b b) (Mul a b)))))
+(rewrite (Sub a b)
+         (Div (Sub (Pow a three) (Pow b three))
+              (Add (Mul a a) (Add (Mul b b) (Mul a b))))
+         :when ((non-zero a))) ;; when a and b are non-zero a^2+b^2-ab is positive => a^2+b^2+ab is positive
+(rewrite (Sub a b)
+         (Div (Sub (Pow a three) (Pow b three))
+              (Add (Mul a a) (Add (Mul b b) (Mul a b))))
+         :when ((non-zero b)))
+(rewrite (Sub a b)
+         (Div (Sub (Pow a three) (Pow b three))
+              (Add (Mul a a) (Add (Mul b b) (Mul a b))))
+         :when ((neq a b)))
+(rewrite (Sub a b)
+         (Div (Sub (Pow a three) (Pow b three))
+              (Add (Mul a a) (Add (Mul b b) (Mul a b))))
+         :when ((non-zero (Add (Mul a a) (Add (Mul b b) (Mul a b))))))
+
+
+;;fractions transform
+(rewrite (Sub (Div a c) (Div b c))
+         (Div (Sub a b) c))
+
+(rewrite (Add (Div a c) (Div b c))
+         (Div (Add a b) c))
+
+(rewrite (Add (Div a b) (Div c d))
+         (Div (Add (Mul a d) (Mul b c))
+              (Mul b d)))
+
+(rewrite (Sub (Div a b) (Div c d))
+         (Div (Sub (Mul a d) (Mul b c))
+              (Mul b d)))
+
+(rewrite (Mul (Div a b) (Div c d))
+         (Div (Mul a c) (Mul b d)))
+
+(rewrite (Div a b)
+         (Div (Neg a) (Neg b)))
+
+
+;; squares transform
+(rule ((= t1 (Sqrt (Mul x y)))
+       (= lox (lo x))
+       (= loy (lo y))
+       (>= lox r-zero)
+       (>= loy r-zero))
+      ((set (Sqrt (Mul x y))
+            (Mul (Sqrt x) (Sqrt y)))))
+
+(rule ((= t1 (Sqrt (Div x y)))
+       (non-zero (Sqrt y)))
+      ((set (Div (Sqrt x) (Sqrt y))
+            t1)))
+
+(rewrite (Sqrt (Pow x y))
+         (Pow x (Div y two)) :when ((non-negative x)))
+
+(rewrite (Pow (Sqrt x) y)
+         (Pow x (Div y two)))
+       
+(rewrite (Mul (Sqrt x) (Sqrt y))
+         (Sqrt (Mul x y)))
+
+(rewrite (Div (Sqrt x) (Sqrt y))
+         (Sqrt (Div x y))
+         :when ((non-zero y)))
+
+(rule ((universe t)
+       (= lox (lo t))
+       (>= lox r-zero))
+      ((union t (Mul (Sqrt t) (Sqrt t)))))
+
+
+;; cubes transform
+
+(rewrite (Cbrt (Mul x y))
+         (Mul (Cbrt x) (Cbrt y)))
+(rewrite (Cbrt (Div x y))
+         (Div (Cbrt x) (Cbrt y)))
+(rewrite (Mul (Cbrt x) (Cbrt y))
+         (Cbrt (Mul x y)))
+(rewrite (Div (Cbrt x) (Cbrt y))
+         (Cbrt (Div x y)))
+(rule ((universe x))
+      ((union x (Mul (Cbrt x) (Mul (Cbrt x) (Cbrt x))))))
+(rule ((universe x))
+      ((union x (Cbrt (Pow x three)))))
+
+
+(rewrite (Pow (Exp a) b) ;; verified
+         (Exp (Mul a b)))
+(rewrite (Pow a b) ;; verified
+         (Exp (Mul (Log a) b))
+         :when ((positive a)))
+(rewrite (Mul (Pow a b) (Pow a c)) ;; verified
+         (Pow a (Add b c))) ;; two integers cannot sum to a fraction
+(rewrite (Mul (Pow b a) (Pow c a)) ;; verified
+         (Pow (Mul b c) a)) ;; either neg -> a is an integer
+
+;; if a is zero, both b and zero must be strictly positive
+;; if a is positive, a^b is positive
+(rewrite (Pow (Pow a b) c) ;; verified
+         (Pow a (Mul b c))
+         :when ((non-negative a)))
+(rewrite (Pow a (Neg b)) ;; verified
+         (Div one (Pow a b)) :when ((non-zero a)))
+(rewrite (Div one (Pow a b)) ;; verified
+         (Pow a (Neg b)))
+(rewrite (Div (Pow a b) (Pow a c)) ;; verified
+         (Pow a (Sub b c)))
+(rewrite (Pow a (Sub b c))
+         (Div (Pow a b) (Pow a c)) :when ((positive a)))
+;; a could be negative, and also a*b could be negative
+(rewrite (Pow a (Mul b c))
+         (Pow (Pow a b) c)
+         :when ((non-negative a) (non-negative (Pow a b))))
+(rewrite (Pow a (Add b c))
+         (Mul (Pow a b) (Pow a c))
+         :when ((non-negative a)))
+(rewrite (Pow (Mul b c) a)
+         (Mul (Pow b a) (Pow c a))
+         :when ((non-negative b) (non-negative c))) ;; or a is an integer!
+(rewrite (Sqrt a)
+         (Pow a (Div one two)))
+(rewrite (Mul a a) (Pow a two))
+(rewrite (Cbrt a) (Pow a (Div one three)))
+(rewrite (Mul (Mul a a) a) (Pow a three))
+
+
+;; log factor
+(rewrite (Add (Log a) (Log b)) ;; we know a and b pos
+       (Log (Mul a b)))
+(rewrite (Sub (Log a) (Log b)) ;; a and b positive
+         (Log (Div a b)))
+(rewrite (Neg (Log a)) (Log (Div one a))) ;; a positive
+
+
+;; trig expand
+(rewrite (Sin (Add a b))
+         (Add (Mul (Sin a) (Cos b))
+              (Mul (Cos a) (Sin b)))) ;; verified
+(rewrite (Cos (Add a b))
+         (Sub (Mul (Cos a) (Cos b))
+              (Mul (Sin a) (Sin b)))) ;; verified
+(rewrite (Tan (Add x y)) ;; verified
+         (Div (Add (Tan x) (Tan y))
+              (Sub one (Mul (Tan x) (Tan y)))))
+(rewrite (Sin (Sub x y)) ;; verified
+         (Sub (Mul (Sin x) (Cos y))
+               (Mul (Cos x) (Sin y))))
+(rewrite (Cos (Sub x y)) ;; verified
+         (Add (Mul (Cos x) (Cos y))
+              (Mul (Sin x) (Sin y))))
+       
+(rewrite (Sin (Mul two x)) ;; verified
+         (Mul two (Mul (Sin x) (Cos x))))
+(rewrite (Sin (Mul three x)) ;; verified
+         (Sub (Mul three (Sin x))
+              (Mul four (Pow (Sin x) three))))
+(rewrite (Mul two (Mul (Sin x) (Cos x))) ;; verified
+         (Sin (Mul two x)))
+(rewrite (Sub (Mul three (Sin x)) ;; verified
+              (Mul four (Pow (Sin x) three)))
+         (Sin (Mul three x)))
+(rewrite (Cos (Mul two x))
+         (Sub (Mul (Cos x) (Cos x))
+              (Mul (Sin x) (Sin x))))
+(rewrite (Cos (Mul three x))
+         (Sub (Mul four (Pow (Cos x) three))
+              (Mul three (Cos x))))
+(rewrite (Sub (Mul (Cos x) (Cos x))
+              (Mul (Sin x) (Sin x)))
+              (Cos (Mul two x)))
+(rewrite  (Sub (Mul four (Pow (Cos x) three))
+              (Mul three (Cos x)))
+              (Cos (Mul three x)))
+(rewrite (Mul (Sin x) (Sin x))
+         (Sub (Num (rational "1" "2"))
+              (Mul (Num (rational "1" "2"))
+                   (Cos (Mul two x)))))
+(rewrite (Mul (Cos x) (Cos x))
+         (Add (Num (rational "1" "2"))
+              (Mul (Num (rational "1" "2"))
+                   (Cos (Mul two x)))))
+
+(rewrite (Sub (Sin x) (Sin y)) ;; verified
+         (Mul two (Mul (Sin (Div (Sub x y) two))
+                       (Cos (Div (Add x y) two)))))
+(rewrite (Sub (Cos x) (Cos y)) ;; verified
+         (Mul (Neg two) (Mul (Sin (Div (Add x y) two))
+                             (Sin (Div (Sub x y) two)))))
+(rewrite (Mul (Cos x) (Cos y)) ;; verified
+       (Div (Add (Cos (Add x y))
+                 (Cos (Sub x y)))
+       two))
+(rewrite (Mul (Sin x) (Sin y)) ;; verified
+       (Div (Sub (Cos (Sub x y))
+                 (Cos (Add x y)))
+       two))
+(rewrite (Mul (Sin x) (Cos y))
+         (Div (Add (Sin (Sub x y))
+                   (Sin (Add x y)))
+              two))
+(rewrite (Sub (Atan x) (Atan y))
+         (Atan2 (Sub x y) (Add one (Mul x y))))
+(rewrite (Add (Atan x) (Atan y))
+         (Atan2 (Add x y) (Sub one (Mul x y))))
+(rewrite (Tan x) (Div (Sin x) (Cos x)))
+(rewrite (Div (Sin x) (Cos x)) (Tan x))
+(rewrite (Tan (Div (Add x y) two))
+         (Div (Add (Sin x) (Sin y))
+              (Add (Cos x) (Cos y))))
+(rewrite (Tan (Div (Sub x y) two))
+         (Div (Sub (Sin x) (Sin y))
+              (Add (Cos x) (Cos y))))
+(rewrite (Mul (Sin x) (Sin x))
+         (Sub one (Mul (Cos x) (Cos x))))
+(rewrite (Mul (Cos x) (Cos x))
+         (Sub one (Mul (Sin x) (Sin x))))
+
+
+;; trig inverses
+(rule ((= t1 (Sin (Asin x)))
+       (= l (lo t1))
+       (= h (hi t1))
+       (>= l r-neg-one)
+       (<= h r-one))
+    ((union x t1)))  
+(rule ((= t1 (Cos (Acos x)))
+       (= l (lo t1))
+       (= h (hi t1))
+       (>= l r-neg-one)
+       (<= h r-one))
+    ((union x t1)))  
+(rewrite (Tan (Atan x)) x)
+(rule ((= t1 (Atan (Tan x)))
+       (= l (lo t1))
+       (= h (hi t1))
+       (>= l r-neg-one)
+       (<= h r-one))
+    ((union x t1)))
+
+
+
+;; specialied numerical functions
+(rewrite (Sub (Exp x) one)
+         (Expm1 x))
+(rewrite (Log (Add one x))
+         (Log1p x))
+(rewrite (Log1p (Expm1 x)) x)
+(rule ((= t1 (Expm1 (Log1p x)))
+       (= l (lo x))
+       (> l r-neg-one))
+       ((union x t1)))
+(rewrite (Sqrt (Add (Mul x x) (Mul y y)))
+         (Hypot x y))
+(rewrite (Sqrt (Add one (Mul y y)))
+         (Hypot one y))
+(rewrite (Add (Mul x y) z)
+         (Fma x y z))
+(rewrite (Fma x y z)
+         (Add (Mul x y) z))
+(rewrite (Sub (Mul x y) z)
+         (Fma x y (Neg z)))
+
+(rewrite (Expm1 x) (Sub (Exp x) one))
+(rewrite (Log1p x) (Log (Add one x)))
+(rewrite (Hypot x y) (Sqrt (Add (Mul x x) (Mul y y))))
+
+
+
+(add-ruleset rules)
+(clear-rules)
+
+;; Herbie then adds expressions here and runs them
+
+;;(define e (Add one zero))
+;;(load-ruleset analysis)
+;;(run 10)
+;;(clear-rules)
+
+;;(load-ruleset rules)
+;;(run 1)
+;;(clear-rules)
