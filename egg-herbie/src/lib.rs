@@ -352,7 +352,7 @@ pub unsafe extern "C" fn egraph_add_expr_egglog(ptr: *mut Context, expr: *const 
     })
 }
 
-unsafe fn ptr_to_string(ptr: *const i8) -> String {
+unsafe fn ptr_to_string(ptr: *const u8) -> String {
     let bytes = CStr::from_ptr(ptr).to_bytes();
     String::from_utf8(bytes.to_vec()).unwrap()
 }
@@ -756,7 +756,7 @@ pub unsafe extern "C" fn egraph_is_unsound_detected(ptr: *mut Context) -> bool {
 
 #[no_mangle]
 #[allow(clippy::missing_safety_doc)]
-pub unsafe extern "C" fn egraph_get_times_applied(ptr: *mut Context, name: *const i8) -> u32 {
+pub unsafe extern "C" fn egraph_get_times_applied(ptr: *mut Context, name: *const u8) -> u32 {
     ffirun(|| {
         let ctx = &*ptr;
         let runner = ctx

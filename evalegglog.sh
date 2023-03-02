@@ -3,11 +3,6 @@
 # exit immediately upon first error
 set -e -x
 
-make install
-
-# build egg-herbie to make sure updated
-cargo build --release --manifest-path=egg-herbie/Cargo.toml
-
 SEED=0
 CORES=1
 BENCHMARKS="bench/"
