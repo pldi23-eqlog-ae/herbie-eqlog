@@ -1,1 +1,0 @@
-("8.6" tarm64osx ("588bc25c1ed0c38fd53109557057361ea54fc753" . "e0ab1f668e2516cc942afda48f689f96d5427c3f") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"syntax" #"parse.rkt"))
