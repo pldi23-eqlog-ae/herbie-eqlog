@@ -17,15 +17,13 @@ update:
 	raco pkg install --skip-installed --auto --name herbie src/
 	raco pkg update --name herbie --deps search-auto src/
 
-egg-herbie-pkg: egg-herbie
+egg-herbie-pkg:
 	raco pkg remove --force egg-herbie && echo "Warning: uninstalling egg-herbie and reinstalling local version" || :
 	raco pkg remove --force egg-herbie-linux && echo "Warning: uninstalling egg-herbie and reinstalling local version" || :
 	raco pkg remove --force egg-herbie-windows && echo "Warning: uninstalling egg-herbie and reinstalling local version" || :
 	raco pkg remove --force egg-herbie-osx && echo "Warning: uninstalling egg-herbie and reinstalling local version" || :
-	raco pkg install ./egg-herbie
+	raco pkg install --auto ./egg-herbie
 
-egg-herbie:
-	cargo build --release --manifest-path=egg-herbie/Cargo.toml
 
 distribution: minimal-distribution
 	cp -r bench herbie-compiled/
