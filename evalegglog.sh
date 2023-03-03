@@ -4,7 +4,7 @@
 set -e -x
 
 SEED=0
-CORES=1
+CORES=6
 BENCHMARKS="bench/"
 TIMEOUT=500
 
