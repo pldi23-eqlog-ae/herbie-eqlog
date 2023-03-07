@@ -65,10 +65,10 @@
 
 
 
-;; TODO get proofs from egglog
+;; TODO get proofs from eqlog
 (define (get-proof input start end)
   empty
-  #;(if (flag-set? 'generate 'egglog)
+  #;(if (flag-set? 'generate 'eqlog)
       empty
       (run-simplify-input
        input
@@ -102,8 +102,8 @@
                 (egg-expr->expr
 
 
-                 (if (flag-set? 'generate 'egglog)
-                     (egglog-get-simplest egg-graph id)
+                 (if (flag-set? 'generate 'eqlog)
+                     (eqlog-get-simplest egg-graph id)
                      (egraph-get-simplest egg-graph id iter))
                  egg-graph)))
                  node-ids))))
@@ -136,12 +136,12 @@
    (lambda (egg-graph)
      (define node-ids
        (map (curry
-             (if (flag-set? 'generate 'egglog) egraph-add-expr-egglog egraph-add-expr)
+             (if (flag-set? 'generate 'eqlog) egraph-add-expr-eqlog egraph-add-expr)
              egg-graph)
             exprs))
      (define iter-data
-       (if (flag-set? 'generate 'egglog)
-           (egglog-run egg-graph)
+       (if (flag-set? 'generate 'eqlog)
+           (eqlog-run egg-graph)
            (egg-run-rules egg-graph (*node-limit*) irules node-ids (and precompute? true))))
         
      (when (egraph-is-unsound-detected egg-graph)

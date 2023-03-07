@@ -6,14 +6,14 @@
 (define all-flags
   #hash([precision . (double fallback)]
         [setup . (simplify search)]
-        [generate . (egglog rr taylor simplify better-rr)]
+        [generate . (eqlog rr taylor simplify better-rr)]
         [reduce . (regimes avg-error binary-search branch-expressions)]
         [rules . (arithmetic polynomials fractions exponents trigonometry hyperbolic numerics special bools branches)]))
 
 (define default-flags
   #hash([precision . ()]
         [setup . (simplify search)]
-        [generate . (egglog rr taylor simplify)]
+        [generate . (eqlog rr taylor simplify)]
         [reduce . (regimes avg-error binary-search branch-expressions)]
         [rules . (arithmetic polynomials fractions exponents trigonometry hyperbolic numerics special bools branches)]))
 
@@ -72,8 +72,8 @@
 ;; Number of iterations of the core loop for improving program accuracy
 (define *num-iterations* (make-parameter 4))
 
-;; Use egglog instead of egg
-(define *egglog-enabled* (make-parameter #t))
+;; Use eqlog instead of egg
+(define *eqlog-enabled* (make-parameter #t))
 
 ;; The maximum depth for splitting the space when searching for valid areas of points.
 (define *max-find-range-depth* (make-parameter 12))

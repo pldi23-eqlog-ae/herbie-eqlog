@@ -12,8 +12,8 @@
          make-ffi-rules free-ffi-rules egraph-get-cost
          egraph-stop-reason egraph-is-unsound-detected
          egraph-get-times-applied egraph-get-proof
-         egraph-add-expr-egglog egglog-run
-         egglog-get-simplest egglog-get-variants
+         egraph-add-expr-eqlog eqlog-run
+         eqlog-get-simplest eqlog-get-variants
          (struct-out iteration-data))
 
 ;; the first hash table maps all symbols and non-integer values to new names for egg
@@ -29,15 +29,15 @@
   (destroy_string ptr)
   str)
 
-(define (egglog-get-simplest egraph-data node-id)
-  (define ptr (egglog_get_simplest (egraph-data-egraph-pointer egraph-data) node-id))
+(define (eqlog-get-simplest egraph-data node-id)
+  (define ptr (eqlog_get_simplest (egraph-data-egraph-pointer egraph-data) node-id))
   (define str (cast ptr _pointer _string/utf-8))
   (destroy_string ptr)
   str)
 
-(define (egglog-get-variants egraph-data node-id orig-expr)
+(define (eqlog-get-variants egraph-data node-id orig-expr)
   (define expr-str (expr->egg-expr orig-expr egraph-data))
-  (define ptr (egglog_get_variants (egraph-data-egraph-pointer egraph-data) node-id expr-str))
+  (define ptr (eqlog_get_variants (egraph-data-egraph-pointer egraph-data) node-id expr-str))
   (define str (cast ptr _pointer _string/utf-8))
   (destroy_string ptr)
   str)
@@ -109,10 +109,10 @@
   (destroy_egraphiters res-len egraphiters)
   res)
 
-(define (egglog-run egraph-data)
+(define (eqlog-run egraph-data)
   (define egraph-ptr (egraph-data-egraph-pointer egraph-data))
   (define-values (egraphiters res-len)
-    (egraph_run_egglog egraph-ptr))
+    (egraph_run_eqlog egraph-ptr))
   (define res (convert-iteration-data egraphiters res-len))
   (destroy_egraphiters res-len egraphiters)
   res)
@@ -209,9 +209,9 @@
             (current-continuation-marks))))
   (- result 1))
 
-(define (egraph-add-expr-egglog eg-data expr)
+(define (egraph-add-expr-eqlog eg-data expr)
   (define egg-expr (expr->egg-expr expr eg-data))
-  (define result (egraph_add_expr_egglog (egraph-data-egraph-pointer eg-data) egg-expr))
+  (define result (egraph_add_expr_eqlog (egraph-data-egraph-pointer eg-data) egg-expr))
   (when (= result 0)
     (raise (egg-add-exn
             "Failed to add expr to egraph"

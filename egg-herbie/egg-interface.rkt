@@ -5,15 +5,15 @@
          racket/runtime-path)
 
 (provide egraph_create egraph_destroy egraph_add_expr
-         egraph_add_expr_egglog
+         egraph_add_expr_eqlog
          egraph_run egraph_run_with_iter_limit
          egraph_get_stop_reason
          egraph_get_simplest egraph_get_variants
-         egglog_get_variants
+         eqlog_get_variants
          _EGraphIter destroy_egraphiters egraph_get_cost
          egraph_is_unsound_detected egraph_get_times_applied
          egraph_get_proof destroy_string
-         egraph_run_egglog egglog_get_simplest
+         egraph_run_eqlog eqlog_get_simplest
          (struct-out EGraphIter)
          (struct-out FFIRule))
 
@@ -51,7 +51,7 @@
 ;; egraph pointer, s-expr string -> node number
 (define-eggmath egraph_add_expr (_fun _egraph-pointer _string/utf-8 -> _uint))
 
-(define-eggmath egraph_add_expr_egglog (_fun _egraph-pointer _string/utf-8 -> _uint))
+(define-eggmath egraph_add_expr_eqlog (_fun _egraph-pointer _string/utf-8 -> _uint))
 
 (define-eggmath destroy_egraphiters (_fun _uint _EGraphIter-pointer -> _void))
 
@@ -78,7 +78,7 @@
         -> (iters : _EGraphIter-pointer)
         -> (values iters len)))
 
-(define-eggmath egraph_run_egglog
+(define-eggmath egraph_run_eqlog
   (_fun _egraph-pointer                           ;; egraph
         (len : (_ptr o _uint))                    ;; pointer to size of resulting array
         -> (iters : _EGraphIter-pointer)
@@ -94,7 +94,7 @@
                                          _uint ;; iteration
                                          -> _pointer))
 
-(define-eggmath egglog_get_simplest (_fun _egraph-pointer
+(define-eggmath eqlog_get_simplest (_fun _egraph-pointer
                                           _uint ;; node id
                                           -> _pointer))
 
@@ -109,7 +109,7 @@
                                           _string/utf-8   ;; original expr
                                           -> _pointer))   ;; string pointer
 
-(define-eggmath egglog_get_variants
+(define-eggmath eqlog_get_variants
   (_fun _egraph-pointer
         _uint ;; node id
         _string/utf-8 ;; original expr

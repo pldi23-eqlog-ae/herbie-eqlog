@@ -404,9 +404,9 @@
         (map (compose program-body alt-program) joined-alts) empty
         (*fp-safe-simplify-rules*) #t)))
 
-  ;; TODO: we don't have fp-safe for egglog yet
+  ;; TODO: we don't have fp-safe for eqlog yet
   (define cleaned-alts
-    (if (flag-set? 'generate 'egglog)
+    (if (flag-set? 'generate 'eqlog)
         joined-alts
       (remove-duplicates
         (for/list ([altn joined-alts] [progs progss*])
