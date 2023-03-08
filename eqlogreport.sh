@@ -8,6 +8,6 @@ if [ -d "eqlogdata" ]; then rm -Rf eqlogdata; fi
 mkdir eqlogdata
 
 VANILLA=vanillareport
-EGGLOG=eqlogreport
+EQLOG=eqlogreport
 
-python3 eqlogplot.py "$VANILLA/results.json" "$EGGLOG/results.json" "eqlogdata/error.pdf" "eqlogdata/macros.tex" "eqlogdata"
+python3 eqlogplot.py "$VANILLA/results.json" "$EQLOG/results.json" "eqlogdata/error.pdf" "eqlogdata/macros.tex" "eqlogdata"
